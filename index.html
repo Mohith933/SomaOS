@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soma OS</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="light-theme">
+
+    <div id="bios-screen">
+        <div class="bios-header">SOMA INSIDE CORE MODULE BIOS v4.02.26</div>
+        <div class="bios-header">COPYRIGHT (C) 2026 SOMA CORE SYSTEMS INC.</div>
+        <div class="bios-log" id="bios-log-output"></div>
+        <div class="bios-footer">Press [DEL] or [F2] to Intercept Matrix // Running initialization...</div>
+    </div>
+
+    <div id="setup-wizard-screen" class="wizard-hidden">
+        <div class="wizard-card">
+            <div class="wizard-header-logo">🌙</div>
+            <h2>Initialize Identity Node</h2>
+            <p>Welcome to Soma OS. Customize your profile environment parameters below.</p>
+            
+            <div class="wizard-field-group">
+                <label>User Account Profile Handle</label>
+                <input type="text" id="setup-username-input" placeholder="Enter name (e.g. Creator, Neo)..." value="Creator">
+            </div>
+
+            <div class="wizard-field-group">
+                <label>Choose Environment Profile Avatar Matrix</label>
+                <div class="avatar-selection-grid">
+                    <div class="avatar-option selected" onclick="selectWizardAvatar(this, '🌸')">🌸</div>
+                    <div class="avatar-option" onclick="selectWizardAvatar(this, '🪐')">🪐</div>
+                    <div class="avatar-option" onclick="selectWizardAvatar(this, '🕊️')">🕊️</div>
+                    <div class="avatar-option" onclick="selectWizardAvatar(this, '🦊')">🦊</div>
+                    <div class="avatar-option" onclick="selectWizardAvatar(this, '🔮')">🔮</div>
+                    <div class="avatar-option" onclick="selectWizardAvatar(this, '🚀')">🚀</div>
+                </div>
+            </div>
+
+            <button class="wizard-submit-btn" onclick="commitUserAccountSetup()">Establish Account Node ➔</button>
+        </div>
+    </div>
+
+    <div id="boot-screen">
+        <div class="boot-logo">🌙</div>
+        <div class="boot-text" id="boot-status-text">Soma OS is waking up...</div>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+
+    <div id="system-auth-layer" class="auth-overlay hidden-auth">
+       <div id="lock-screen" class="auth-screen">
+    <div class="lock-status-bar" style="position: absolute; top: 20px; right: 30px; display: flex; gap: 15px; font-size: 0.8rem; color:var(--text-color); opacity: 0.9; z-index: 9999;">
+        <i class="fas fa-wifi" id="lock-wifi-icon"></i>
+        <i class="fas fa-battery-three-quarters" id="lock-battery-icon"></i>
+    </div>
+
+    <div class="lock-clock-container">
+        <div id="lock-time">00:00</div>
+        <div id="lock-date">Loading...</div>
+    </div>
+    <div class="lock-hint">Click anywhere or press any key to unlock</div>
+</div>
+
+        <div id="login-screen" class="auth-screen screen-hidden">
+            <div class="login-card">
+                <div class="profile-avatar" id="login-display-avatar">🌸</div>
+                <h2 class="user-welcome" id="login-display-welcome">Welcome back, Creator</h2>
+                <div class="login-input-group">
+                    <input type="password" id="user-pass-input" placeholder="Enter PIN or press Sign In"
+                        onkeydown="handleLoginKeyPress(event)" autofocus />
+                    <button class="login-submit-btn" onclick="authenticateUser()">➔</button>
+                </div>
+                <button class="guest-login-hint" onclick="authenticateUser()">Sign In as Guest</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="desktop">
+        <div id="desktop-context-menu" class="context-menu hidden">
+            <div id="menu-group-item-actions">
+                <div class="menu-item bold-item" onclick="handleMenuAction('open')">
+                    <span class="menu-icon">📂</span> Open
+                </div>
+                <div class="menu-item" onclick="handleMenuAction('pin')">
+                    <span class="menu-icon">📌</span> Pin to Start
+                </div>
+                <hr class="menu-divider" />
+            </div>
+
+            <div class="menu-item" onclick="handleMenuAction('refresh')">
+                <span class="menu-icon">🔄</span> Refresh
+            </div>
+            <div class="menu-item" onclick="handleMenuAction('theme')">
+                <span class="menu-icon">🌓</span> Personalize Theme
+            </div>
+            <div class="menu-item" onclick="handleMenuAction('terminal')">
+                <span class="menu-icon">🖳</span> Open in Terminal
+            </div>
+        </div>
+
+        <div class="icon-grid">
+            <div class="desktop-icon" onclick="openWindow('my-space')">
+                <div class="icon-visual">📂</div>
+                <div class="icon-label">My Space</div>
+            </div>
+            <div class="desktop-icon" onclick="openApp('app-notepad')">
+                <div class="icon-visual">📝</div>
+                <div class="icon-label">Notepad</div>
+            </div>
+            <div class="desktop-icon" onclick="openApp('app-terminal')">
+                <div class="icon-visual">🕊️</div>
+                <div class="icon-label">Terminal</div>
+            </div>
+            <div class="desktop-icon" onclick="openApp('app-calculator')">
+                <div class="icon-visual">🧮</div>
+                <div class="icon-label">Calculator</div>
+            </div>
+            <div class="desktop-icon" onclick="openApp('app-calendar'); initSomaCalendar();">
+                <div class="icon-visual">📅</div>
+                <div class="icon-label">Calendar</div>
+            </div>
+            <div class="desktop-icon" onclick="openApp('app-clock')">
+                <div class="icon-visual">⏱️</div>
+                <div class="icon-label">World Clock</div>
+            </div>
+            <div class="desktop-icon" onclick="openApp('app-music')">
+                <div class="icon-visual">🎵</div>
+                <div class="icon-label">Music Player</div>
+            </div>
+            <div class="desktop-icon" onclick="openApp('app-video')">
+                <div class="icon-visual">🎬</div>
+                <div class="icon-label">Video Player</div>
+            </div>
+            <div class="desktop-icon" onclick="openApp('app-game')">
+                <div class="icon-visual">🕹️</div>
+                <div class="icon-label">Mini-Game</div>
+            </div>
+            <div class="desktop-icon" onclick="openApp('app-settings')">
+    <div class="icon-visual">⚙️</div>
+    <div class="icon-label">Settings</div>
+</div>
+        </div>
+
+        <div id="system-window" class="window hidden" style="top: 10%; left: 10%;">
+    <div class="window-header" onmousedown="dragStart(event, 'system-window')">
+        <div class="header-left">
+            <span class="window-dot" style="background-color: var(--accent-color);"></span>
+            <span id="window-title">My Space</span>
+        </div>
+        <div class="window-controls">
+            <button class="control-btn min-btn" onclick="minimizeFileExplorerWindow()">─</button>
+            <button class="control-btn max-btn" onclick="maximizeFileExplorerWindow()">🗖</button>
+            <button class="control-btn close-btn" onclick="closeFileExplorerWindow()">✕</button>
+        </div>
+    </div>
+
+    <div class="window-action-bar" style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="breadcrumbs" id="window-breadcrumbs">My Space</div>
+        <div class="gui-explorer-actions" id="explorer-action-buttons">
+            </div>
+    </div>
+
+    <div class="window-body-container">
+        <div class="explorer-sidebar">
+            <div class="sidebar-item active" id="sb-my-space" onclick="openWindow('my-space')">🌸 My Space</div>
+            <div class="sidebar-item" id="sb-computer" onclick="openWindow('computer')">💻 Computer</div>
+            <div class="sidebar-item" id="sb-recycle-bin" onclick="openWindow('recycle-bin')">🗑️ Recycle Bin</div>
+        </div>
+        <div class="explorer-view" id="explorer-grid"></div>
+    </div>
+</div>
+
+<div id="app-calendar" class="window hidden" style="top: 15%; left: 35%; width: 340px; height: 420px;">
+            <div class="window-header" onmousedown="dragStart(event, 'app-calendar')">
+                <div class="header-left">
+                    <span class="window-dot" style="background: #ffb3c6;"></span>
+                    <span>Calendar</span>
+                </div>
+                <div class="window-controls">
+                    <button class="control-btn min-btn" onclick="minimizeApp('app-calendar')">─</button>
+                    <button class="control-btn close-btn" onclick="closeApp('app-calendar')">✕</button>
+                </div>
+            </div>
+            <div class="window-body-container" style="padding: 14px; background: var(--panel-bg); display: flex; flex-direction: column; gap: 12px; height: calc(100% - 38px);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 id="cal-month-title" style="margin: 0; font-size: 1.1rem; color: var(--text-color);">June 2026</h3>
+                    <div>
+                        <button class="gui-action-pill" style="margin:0; padding: 4px 8px;" onclick="shiftSomaMonth(-1)">◀</button>
+                        <button class="gui-action-pill" style="margin:0 0 0 4px; padding: 4px 8px;" onclick="shiftSomaMonth(1)">▶</button>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); opacity: 0.8;">
+                    <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
+                </div>
+
+                <div id="cal-days-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; flex-grow: 1; align-content: start;">
+                    </div>
+            </div>
+        </div>
+
+        <div id="app-notepad" class="window hidden" style="top: 15%; left: 30%; width: 500px; height: 360px;" onmousedown="focusAppWindow('app-notepad')">
+            <div class="window-header" onmousedown="dragStart(event, 'app-notepad')">
+                <div class="header-left">
+                    <span class="window-dot" style="background: #ffb3c6;"></span>
+                    <span>Notepad Editor</span>
+                </div>
+                <div class="window-controls">
+                    <button class="control-btn min-btn" onclick="minimizeApp('app-notepad')">─</button>
+                    <button class="control-btn close-btn" onclick="closeApp('app-notepad')">✕</button>
+                </div>
+            </div>
+            <div class="window-body-container" style="padding: 10px;">
+                <textarea class="human-notepad" placeholder="Write workspace canvas details here..."></textarea>
+            </div>
+        </div>
+
+        <div id="app-terminal" class="window hidden" style="top: 25%; left: 20%; width: 560px; height: 360px;">
+    <div class="window-header" onmousedown="dragStart(event, 'app-terminal')">
+        <div class="header-left">
+            <span class="window-dot" style="background: #2b1c1e;"></span>
+            <span>Soma CMD</span>
+        </div>
+        <div class="window-controls">
+            <button class="control-btn min-btn" onclick="minimizeApp('app-terminal')">─</button>
+            <button class="control-btn close-btn" onclick="closeApp('app-terminal')">✕</button>
+        </div>
+    </div>
+    <div class="window-body-container cli-terminal" style="padding: 0; display: flex; flex-direction: column; justify-content: space-between;">
+        <div class="terminal-box" style="flex-grow: 1; display: flex; flex-direction: column;">
+            <div class="terminal-output" id="term-out" style="flex-grow: 1; overflow-y: auto;">Soma OS MicroKernel Client v1.0... Type 'help' to see human operational parameters.</div>
+            
+            <div id="term-suggestions" class="terminal-suggestion-bar">
+                💡 Tip: Start typing a parameter like 'disk', 'mem', 'create', or 'npm' to see human guide shortcuts...
+            </div>
+
+            <div class="terminal-input-line">
+                <span>soma ~ $</span>
+                <input type="text" id="cli-input" onkeydown="handleTerminalCommand(event)" oninput="updateTerminalSuggestions(this.value)" autocomplete="off" />
+            </div>
+        </div>
+    </div>
+</div>
+
+        <div id="app-calculator" class="window hidden" style="top: 20%; left: 55%; width: 260px; height: 360px;">
+            <div class="window-header" onmousedown="dragStart(event, 'app-calculator')">
+                <div class="header-left">
+                    <span class="window-dot" style="background: #ff85a2;"></span>
+                    <span>Calculator</span>
+                </div>
+                <div class="window-controls">
+                    <button class="control-btn min-btn" onclick="minimizeApp('app-calculator')">─</button>
+                    <button class="control-btn close-btn" onclick="closeApp('app-calculator')">✕</button>
+                </div>
+            </div>
+            <div class="window-body-container calc-layout" style="flex-direction: column; padding: 12px;">
+                <input type="text" id="calc-screen" readonly value="0" />
+                <div class="calc-buttons-grid">
+                    <button class="calc-btn" onclick="calcClear()">C</button>
+                    <button class="calc-btn" onclick="calcInput('/')">/</button>
+                    <button class="calc-btn" onclick="calcInput('*')">*</button>
+                    <button class="calc-btn" onclick="calcInput('-')">-</button>
+                    <button class="calc-btn" onclick="calcInput('7')">7</button>
+                    <button class="calc-btn" onclick="calcInput('8')">8</button>
+                    <button class="calc-btn" onclick="calcInput('9')">9</button>
+                    <button class="calc-btn" onclick="calcInput('+')">+</button>
+                    <button class="calc-btn" onclick="calcInput('4')">4</button>
+                    <button class="calc-btn" onclick="calcInput('5')">5</button>
+                    <button class="calc-btn" onclick="calcInput('6')">6</button>
+                    <button class="calc-btn action-pink" onclick="calcEvaluate()"
+                        style="grid-row: span 2; height: 100%;">=</button>
+                    <button class="calc-btn" onclick="calcInput('1')">1</button>
+                    <button class="calc-btn" onclick="calcInput('2')">2</button>
+                    <button class="calc-btn" onclick="calcInput('3')">3</button>
+                    <button class="calc-btn" onclick="calcInput('0')" style="grid-column: span 2;">0</button>
+                    <button class="calc-btn" onclick="calcInput('.')">.</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="app-clock" class="window hidden" style="top: 35%; left: 45%; width: 300px; height: 220px;">
+            <div class="window-header" onmousedown="dragStart(event, 'app-clock')">
+                <div class="header-left">
+                    <span class="window-dot" style="background: #8a7074;"></span>
+                    <span>World Clock</span>
+                </div>
+                <div class="window-controls">
+                    <button class="control-btn min-btn" onclick="minimizeApp('app-clock')">─</button>
+                    <button class="control-btn close-btn" onclick="closeApp('app-clock')">✕</button>
+                </div>
+            </div>
+            <div class="window-body-container"
+                style="padding: 20px; text-align: center; flex-direction: column; justify-content: center; gap: 8px;">
+                <div class="clock-widget-title">Local Core Node Time</div>
+                <div id="app-clock-display" style="font-size: 2.2rem; font-weight: 700;">00:00:00</div>
+                <div id="app-clock-date" style="font-size: 0.9rem; opacity: 0.7;">Loading System Date...</div>
+            </div>
+        </div>
+
+        <div id="app-music" class="window hidden" style="top: 20%; left: 25%; width: 340px; height: 380px;">
+            <div class="window-header" onmousedown="dragStart(event, 'app-music')">
+                <div class="header-left">
+                    <span class="window-dot" style="background: #a29bfe;"></span>
+                    <span>Soma Audio Suite</span>
+                </div>
+                <div class="window-controls">
+                    <button class="control-btn min-btn" onclick="minimizeApp('app-music')">─</button>
+                    <button class="control-btn close-btn" onclick="closeApp('app-music')">✕</button>
+                </div>
+            </div>
+            <div class="window-body-container audio-player-layout"
+                style="padding: 15px; flex-direction: column; justify-content: space-between;">
+                <div class="audio-track-card" style="text-align: center; margin-top: 10px;">
+                    <div class="track-vinyl" id="music-vinyl">🎵</div>
+                    <div class="track-title" id="music-track-name"
+                        style="font-weight: 700; margin-top: 10px; color: var(--text-color);">Lo-Fi Chill Focus Beats
+                    </div>
+                    <div class="track-artist" style="font-size: 0.8rem; color: var(--text-muted);">Soma Core Node Node
+                    </div>
+                </div>
+                <div class="audio-progress-bar"
+                    style="width: 100%; background: rgba(0,0,0,0.05); height: 6px; border-radius: 3px; margin: 15px 0; position: relative; overflow: hidden;">
+                    <div id="music-progress-fill"
+                        style="width: 35%; height: 100%; background: var(--accent-color); transition: width 0.5s ease;">
+                    </div>
+                </div>
+                <div class="audio-controls-row"
+                    style="display: flex; justify-content: center; gap: 20px; align-items: center; margin-bottom: 10px;">
+                    <button class="media-btn" onclick="changeMusicTrack(-1)"
+                        style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-color);">⏮</button>
+                    <button class="media-btn main-play" id="music-play-trigger" onclick="toggleMusicPlayback()"
+                        style="background: var(--accent-color); border: none; font-size: 1.4rem; cursor: pointer; color: white; width: 50px; height: 50px; border-radius: 50%;">▶</button>
+                    <button class="media-btn" onclick="changeMusicTrack(1)"
+                        style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-color);">⏭</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="app-video" class="window hidden" style="top: 15%; left: 40%; width: 480px; height: 360px;">
+            <div class="window-header" onmousedown="dragStart(event, 'app-video')">
+                <div class="header-left">
+                    <span class="window-dot" style="background: #fdcb6e;"></span>
+                    <span>Soma Cinema Cinema</span>
+                </div>
+                <div class="window-controls">
+                    <button class="control-btn min-btn" onclick="minimizeApp('app-video')">─</button>
+                    <button class="control-btn close-btn" onclick="closeApp('app-video')">✕</button>
+                </div>
+            </div>
+            <div class="window-body-container video-player-layout"
+                style="padding: 0; flex-direction: column; background: #000;">
+                <div class="video-display-canvas" id="video-screen"
+                    style="flex-grow: 1; display: flex; align-items: center; justify-content: center; color: #fff; position: relative; overflow: hidden; background: linear-gradient(45deg, #111, #222);">
+                    <div class="video-simulation-graphics" id="video-graphic"
+                        style="font-size: 3rem; animation: pulse 2s infinite alternate ease-in-out; display:none;">🌌
+                    </div>
+                    <div class="video-overlay-text" id="video-status-msg"
+                        style="font-family: monospace; font-size: 0.9rem; text-align: center; color: rgba(255,255,255,0.7);">
+                        Media Player Ready<br>Click Play below to render simulation stream</div>
+                </div>
+                <div class="video-controls-strip"
+                    style="background: #110c0d; padding: 10px; display: flex; align-items: center; gap: 15px;">
+                    <button class="video-control-btn" id="video-play-btn" onclick="toggleVideoPlayback()"
+                        style="background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer;">▶
+                        Play</button>
+                    <div
+                        style="flex-grow: 1; background: rgba(255,255,255,0.2); height: 4px; border-radius: 2px; overflow: hidden;">
+                        <div id="video-progress-fill" style="width: 0%; height: 100%; background: #fdcb6e;"></div>
+                    </div>
+                    <button class="video-control-btn" onclick="resetVideoPlayer()"
+                        style="background: none; border: none; color: #fff; font-size: 0.85rem; cursor: pointer;">⏹
+                        Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="app-game" class="window hidden" style="top: 25%; left: 30%; width: 340px; height: 470px;">
+            <div class="window-header" onmousedown="dragStart(event, 'app-game')">
+                <div class="header-left">
+                    <span class="window-dot" style="background: #00b894;"></span>
+                    <span>Retro Snake Arcade v1.0</span>
+                </div>
+                <div class="window-controls">
+                    <button class="control-btn min-btn" onclick="minimizeApp('app-game')">─</button>
+                    <button class="control-btn close-btn" onclick="closeApp('app-game')">✕</button>
+                </div>
+            </div>
+            <div class="window-body-container game-container-layout"
+                style="padding: 12px; flex-direction: column; align-items: center; justify-content: space-between;">
+                <div class="game-score-board"
+                    style="display: flex; justify-content: space-between; width: 100%; font-weight: 700; font-family: monospace; color: var(--text-color); margin-bottom: 5px;">
+                    <span>SCORE: <span id="snake-score">0</span></span>
+                    <span>HIGH: <span id="snake-highscore">0</span></span>
+                </div>
+                <canvas id="snakeCanvas" width="300" height="300"
+                    style="background: #1e1e24; border-radius: 8px; border: 2px solid rgba(0,0,0,0.1); box-shadow: inset 0 4px 12px rgba(0,0,0,0.5); font-smooth: never;"></canvas>
+                <button class="game-action-btn" id="snake-start-btn" onclick="initializeSnakeGame()"
+                    style="width: 100%; background: #00b894; color: white; font-weight: 700; padding: 8px; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; font-family: inherit;">🎮
+                    Start Engine Matrix</button>
+            </div>
+        </div>
+
+        <div id="app-settings" class="window hidden" style="top: 12%; left: 35%; width: 520px; height: 400px;">
+    <div class="window-header" onmousedown="dragStart(event, 'app-settings')">
+        <div class="header-left">
+            <span class="window-dot" style="background: #74b9ff;"></span>
+            <span>System Settings</span>
+        </div>
+        <div class="window-controls">
+            <button class="control-btn min-btn" onclick="minimizeApp('app-settings')">─</button>
+            <button class="control-btn close-btn" onclick="closeApp('app-settings')">✕</button>
+        </div>
+    </div>
+    <div class="window-body-container settings-layout" style="display: flex; padding: 0; height: 100%;">
+        <div class="settings-sidebar" style="width: 150px; background: rgba(0,0,0,0.03); border-right: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 5px; padding: 10px;">
+            <button class="settings-nav-btn active" onclick="switchSettingsTab('personalize')">🌸 Look & Feel</button>
+            <button class="settings-nav-btn" onclick="switchSettingsTab('network')">🌐 Network & Power</button>
+        </div>
+        <div class="settings-content" style="flex-grow: 1; padding: 20px; overflow-y: auto;">
+            <!-- Tab 1: Personalization -->
+            <div id="set-tab-personalize" class="settings-pane">
+                <h3 style="margin-top:0; margin-bottom:15px; color: var(--text-color);">Personalization</h3>
+                <label style="display:block; margin-bottom:8px; font-size:0.9rem; font-weight:600; color:var(--text-muted);">Desktop Wallpaper Background</label>
+                <div class="wallpaper-presets" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;">
+                    <div class="wp-card" onclick="changeWallpaper('linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)')" style="height:50px; background:linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius:6px; cursor:pointer; border:2px solid transparent;"></div>
+                    <div class="wp-card" onclick="changeWallpaper('linear-gradient(135deg, #ffdee9 0%, #b5fffc 100%)')" style="height:50px; background:linear-gradient(135deg, #ffdee9 0%, #b5fffc 100%); border-radius:6px; cursor:pointer; border:2px solid transparent;"></div>
+                    <div class="wp-card" onclick="changeWallpaper('#2d1c1e')" style="height:50px; background:#2d1c1e; border-radius:6px; cursor:pointer; border:2px solid transparent;"></div>
+                </div>
+                <label style="display:block; margin-bottom:8px; font-size:0.9rem; font-weight:600; color:var(--text-muted);">Interface Theme Layout</label>
+                <button onclick="toggleTheme()" style="padding: 8px 16px; background: var(--accent-color); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight:600;">Toggle Light/Dark Theme</button>
+            </div>
+            <!-- Tab 2: Network & Power -->
+            <div id="set-tab-network" class="settings-pane style-hidden" style="display:none;">
+                <h3 style="margin-top:0; margin-bottom:15px; color: var(--text-color);">Network & Power Matrix</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-bottom:10px; border-bottom:1px solid rgba(0,0,0,0.05);">
+                    <div>
+                        <div style="font-weight:600; color:var(--text-color);">Wireless Adapter (Wi-Fi)</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted);">Toggle network connection handshake</div>
+                    </div>
+                    <input type="checkbox" id="settings-wifi-toggle" checked onchange="toggleHardwareState('wifi')" style="width:40px; height:20px; cursor:pointer;">
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div style="font-weight:600; color:var(--text-color);">Battery Eco-Saver Mode</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted);">Simulate power drainage limiters</div>
+                    </div>
+                    <input type="checkbox" id="settings-battery-toggle" onchange="toggleHardwareState('battery')" style="width:40px; height:20px; cursor:pointer;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <div id="start-menu" class="start-menu hidden">
+            <div class="start-menu-sidebar">
+                <div class="start-user-profile">
+                    <div class="start-avatar">🌸</div>
+                    <div class="start-user-info">
+                        <div class="start-username">Creator</div>
+                        <div class="start-status">Online</div>
+                    </div>
+                </div>
+                <div class="start-sidebar-links">
+                    <div class="start-link-item" onclick="openWindow('my-space'); toggleStartMenu();">📂 My Personal
+                        Space</div>
+                    <div class="start-link-item" onclick="openWindow('computer'); toggleStartMenu();">💻 Core Computer
+                    </div>
+                    <div class="start-link-item" onclick="openWindow('recycle-bin'); toggleStartMenu();">🗑️ Recycle Bin
+                    </div>
+                </div>
+                <div class="start-sidebar-footer">
+                    <button class="start-footer-btn" onclick="lockSystemAuth()">🔒 Lock System</button>
+                </div>
+            </div>
+            <div class="start-menu-apps">
+                <div class="apps-section-title">Pinned Applications</div>
+                <div class="apps-list-grid">
+                    <div class="app-item" onclick="openApp('app-notepad'); toggleStartMenu();">
+                        <span class="app-icon">📝</span> Notepad Editor
+                    </div>
+                    <div class="app-item" onclick="openApp('app-terminal'); toggleStartMenu();">
+                        <span class="app-icon">🕊️</span> Hridaya Terminal
+                    </div>
+                    <div class="app-item" onclick="openApp('app-calculator'); toggleStartMenu();">
+                        <span class="app-icon">🧮</span> Calculator
+                    </div>
+                    <div class="app-item" onclick="openApp('app-clock'); toggleStartMenu();">
+                        <span class="app-icon">⏱️</span> World Clock
+                    </div>
+                    <div class="app-item" onclick="toggleTheme(); toggleStartMenu();">
+                        <span class="app-icon">🌓</span> Switch Theme Mode
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="taskbar">
+            <button class="start-menu-btn" onclick="toggleStartMenu()">🌙</button>
+            <div class="taskbar-center" id="taskbar-apps"></div>
+            <div class="taskbar-right">
+                <button id="theme-toggle" onclick="toggleTheme()">🌓 Theme</button>
+                <div class="hardware-status" style="display: flex; gap: 12px; font-size: 0.8rem; color: var(--text-color); margin-right: 5px;">
+        <i class="fas fa-wifi" id="sys-wifi" title="Wi-Fi: Connected"></i>
+        <i class="fas fa-battery-three-quarters" id="sys-battery" title="Battery: 85% Remaining"></i>
+    </div>
+                <div id="digital-clock">00:00</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

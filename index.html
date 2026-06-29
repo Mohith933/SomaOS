@@ -154,11 +154,12 @@
             <span class="window-dot" style="background-color: var(--accent-color);"></span>
             <span id="window-title">My Space</span>
         </div>
-        <div class="window-controls">
-            <button class="control-btn min-btn" onclick="minimizeFileExplorerWindow()">─</button>
-            <button class="control-btn max-btn" onclick="maximizeFileExplorerWindow()">🗖</button>
-            <button class="control-btn close-btn" onclick="closeFileExplorerWindow()">✕</button>
-        </div>
+        <!-- Locate the File Explorer control buttons in your HTML and update them to look like this: -->
+<div class="window-controls">
+    <button class="control-btn min-btn" onclick="minimizeApp('system-window')">─</button>
+    <button class="control-btn max-btn" onclick="maximizeFileExplorerWindow()">🗖</button>
+    <button class="control-btn close-btn" onclick="closeFileExplorerWindow()">✕</button>
+</div>
     </div>
 
     <div class="window-action-bar" style="display: flex; justify-content: space-between; align-items: center;">
@@ -214,7 +215,7 @@
                 </div>
                 <div class="window-controls">
                     <button class="control-btn min-btn" onclick="minimizeApp('app-notepad')">─</button>
-                    <button class="control-btn close-btn" onclick="closeApp('app-notepad')">✕</button>
+                    <div class="window-control close-btn" onclick="closeNotepadWithSaveCheck()">✕</div>
                 </div>
             </div>
             <div class="window-body-container" style="padding: 10px;">
@@ -303,6 +304,7 @@
                 <div id="app-clock-date" style="font-size: 0.9rem; opacity: 0.7;">Loading System Date...</div>
             </div>
         </div>
+        
 
         <div id="app-music" class="window hidden" style="top: 20%; left: 25%; width: 340px; height: 380px;">
             <div class="window-header" onmousedown="dragStart(event, 'app-music')">
@@ -506,10 +508,11 @@
             <div class="taskbar-center" id="taskbar-apps"></div>
             <div class="taskbar-right">
                 <button id="theme-toggle" onclick="toggleTheme()">🌓 Theme</button>
-                <div class="hardware-status" style="display: flex; gap: 12px; font-size: 0.8rem; color: var(--text-color); margin-right: 5px;">
-        <i class="fas fa-wifi" id="sys-wifi" title="Wi-Fi: Connected"></i>
-        <i class="fas fa-battery-three-quarters" id="sys-battery" title="Battery: 85% Remaining"></i>
-    </div>
+                <div class="hardware-status" style="display: flex; gap: 12px; font-size: 0.8rem; color: var(--text-color); margin-right: 5px; cursor: pointer;" onclick="openControlCenter()">
+    <i class="fas fa-wifi" title="Wi-Fi: Connected"></i>
+    <i class="fas fa-volume-up" title="Sound: 70%"></i> <!-- New Sound Icon -->
+    <i class="fas fa-battery-three-quarters" title="Battery: 85% Remaining"></i>
+</div>
                 <div id="digital-clock">00:00</div>
             </div>
         </div>

@@ -8,35 +8,110 @@ let explorerPreMaximizeBounds = { top: '', left: '', width: '', height: '' };
 // mock placeholder sound engine tool to prevent script failure checks
 function playSound(type) {
     console.log(`[Audio Event Triggered]: ${type}`);
+    
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    
+    // ✨ FIX: If the browser suspended the audio, wake it up immediately
+    if (ctx.state === 'suspended') {
+        ctx.resume();
+    }
+    
+    const gainNode = ctx.createGain();
+    gainNode.connect(ctx.destination);
+
+    switch (type) {
+        case 'click':
+            const clickOsc = ctx.createOscillator();
+            clickOsc.type = 'sine';
+            clickOsc.frequency.setValueAtTime(800, ctx.currentTime);
+            clickOsc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.04);
+            
+            gainNode.gain.setValueAtTime(0.05, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+            
+            clickOsc.connect(gainNode);
+            clickOsc.start();
+            clickOsc.stop(ctx.currentTime + 0.05);
+            break;
+
+        case 'clear':
+            [440, 554].forEach((freq, index) => {
+                const osc = ctx.createOscillator();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, ctx.currentTime + (index * 0.03));
+                
+                gainNode.gain.setValueAtTime(0.08, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+                
+                osc.connect(gainNode);
+                osc.start(ctx.currentTime + (index * 0.03));
+                osc.stop(ctx.currentTime + 0.15);
+            });
+            break;
+
+        case 'startup':
+            const now = ctx.currentTime;
+            const chords = [261.63, 329.63, 392.00, 523.25];
+            
+            chords.forEach((freq, idx) => {
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now);
+                
+                const lfo = ctx.createOscillator();
+                const lfoGain = ctx.createGain();
+                lfo.frequency.value = 5;
+                lfoGain.gain.value = 2;
+                lfo.connect(lfoGain);
+                lfoGain.connect(osc.frequency);
+                
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(0.04, now + 0.2);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+                
+                osc.connect(gainNode);
+                lfo.start(now);
+                osc.start(now);
+                lfo.stop(now + 1.2);
+                osc.stop(now + 1.2);
+            });
+            break;
+    }
 }
-    const bootScreen = document.getElementById('boot-screen');
-    const authLayer = document.getElementById('system-auth-layer');
+
+const bootScreen = document.getElementById('boot-screen');
+const authLayer = document.getElementById('system-auth-layer');
+
+// Step 1: Initialize BIOS Loader Sequences
+setTimeout(() => {
+    if (bootScreen) bootScreen.style.opacity = '0';
+    if (authLayer) authLayer.classList.remove('hidden-auth');
     
-    // Step 1: Initialize BIOS Loader Sequences
     setTimeout(() => {
-        bootScreen.style.opacity = '0';
-        authLayer.classList.remove('hidden-auth');
-        
-        setTimeout(() => {
-            bootScreen.style.visibility = 'hidden';
-        }, 800);
-    }, 2500);
+        if (bootScreen) bootScreen.style.visibility = 'hidden';
+    }, 800);
+}, 2500);
 
-    // Step 2: Kick off Core Interface Chronometer
-    updateSystemClocks();
-    setInterval(updateSystemClocks, 1000);
-    
-    // Step 3: Global System Authentication Workspace Interceptors
-    document.addEventListener('keydown', (e) => {
-        const lockScreen = document.getElementById('lock-screen');
-        if (lockScreen && !lockScreen.classList.contains('screen-hidden')) {
-            liftLockScreen();
-        }
-    });
+// Step 2: Kick off Core Interface Chronometer
+updateSystemClocks();
+setInterval(updateSystemClocks, 1000);
 
-    document.getElementById('lock-screen').addEventListener('click', () => {
+// Step 3: Global System Authentication Workspace Interceptors
+document.addEventListener('keydown', (e) => {
+    const lockScreen = document.getElementById('lock-screen');
+    if (lockScreen && !lockScreen.classList.contains('screen-hidden')) {
+        liftLockScreen();
+    }
+});
+
+const lockScreenEl = document.getElementById('lock-screen');
+if (lockScreenEl) {
+    lockScreenEl.addEventListener('click', () => {
         liftLockScreen();
     });
+}
 
 // ⏱️ HIGH FREQUENCY HARDWARE SYNC ENGINES
 function updateSystemClocks() {
@@ -46,7 +121,8 @@ function updateSystemClocks() {
     let seconds = now.getSeconds().toString().padStart(2, '0');
     const timeString = `${hours}:${minutes}`;
     
-    document.getElementById('digital-clock').innerText = timeString;
+    const digitalClock = document.getElementById('digital-clock');
+    if (digitalClock) digitalClock.innerText = timeString;
     
     const lockTimeEl = document.getElementById('lock-time');
     if (lockTimeEl) lockTimeEl.innerText = timeString;
@@ -68,15 +144,17 @@ function liftLockScreen() {
     const lockScreen = document.getElementById('lock-screen');
     const loginScreen = document.getElementById('login-screen');
     
-    lockScreen.style.transform = 'translateY(-100%)';
-    lockScreen.style.opacity = '0';
-    
-    setTimeout(() => {
-        lockScreen.classList.add('screen-hidden');
-        loginScreen.classList.remove('screen-hidden');
-        const inputField = document.getElementById('user-pass-input');
-        if (inputField) inputField.focus();
-    }, 400);
+    if (lockScreen && loginScreen) {
+        lockScreen.style.transform = 'translateY(-100%)';
+        lockScreen.style.opacity = '0';
+        
+        setTimeout(() => {
+            lockScreen.classList.add('screen-hidden');
+            loginScreen.classList.remove('screen-hidden');
+            const inputField = document.getElementById('user-pass-input');
+            if (inputField) inputField.focus();
+        }, 400);
+    }
 }
 
 function handleLoginKeyPress(event) {
@@ -85,14 +163,16 @@ function handleLoginKeyPress(event) {
 
 function authenticateUser() {
     const authLayer = document.getElementById('system-auth-layer');
-    playSound('boot'); 
+    playSound('startup'); 
     
-    authLayer.style.opacity = '0';
-    authLayer.style.transform = 'scale(1.02)';
-    
-    setTimeout(() => {
-        authLayer.classList.add('hidden-auth');
-    }, 600);
+    if (authLayer) {
+        authLayer.style.opacity = '0';
+        authLayer.style.transform = 'scale(1.02)';
+        
+        setTimeout(() => {
+            authLayer.classList.add('hidden-auth');
+        }, 600);
+    }
 }
 
 // 🎛️ UNIVERSAL WORKSPACE DRAG MANAGER ARCHITECTURE
@@ -136,8 +216,8 @@ function openApp(windowId) {
     winEl.classList.remove('hidden');
     winEl.classList.remove('minimized');
     focusAppWindow(windowId);
+    playSound('click');
     
-    // Pull correct textual tags out of titles cleanly
     activeRunningApps[windowId] = winEl.querySelector('.window-header span:nth-child(2)').innerText;
     renderTaskbarTrays();
 }
@@ -145,6 +225,7 @@ function openApp(windowId) {
 function closeApp(windowId) {
     const winEl = document.getElementById(windowId);
     if (!winEl) return;
+    playSound('click');
     winEl.classList.add('hidden');
     delete activeRunningApps[windowId];
     renderTaskbarTrays();
@@ -153,6 +234,7 @@ function closeApp(windowId) {
 function minimizeApp(windowId) {
     const winEl = document.getElementById(windowId);
     if (!winEl) return;
+    playSound('click');
     winEl.classList.add('minimized');
     renderTaskbarTrays();
 }
@@ -160,17 +242,19 @@ function minimizeApp(windowId) {
 function restoreApp(windowId) {
     const winEl = document.getElementById(windowId);
     if (!winEl) return;
+    playSound('clear');
     winEl.classList.remove('minimized');
     focusAppWindow(windowId);
     renderTaskbarTrays();
 }
 
-// 📁 EXTENDED FILESYSTEM MATRIX ENGINE TRACKER
-// Track the active directory key globally so our GUI buttons know where to insert new items
+// ============================================================================
+// 📁 EXTENDED FILESYSTEM MATRIX ENGINE TRACKER WITH LOCALSTORAGE PERSISTENCE
+// ============================================================================
 let currentActiveDirectoryKey = 'my-space'; 
+let activeNotepadFileRef = null; // Tracks the name of the file open in Notepad
 
-// Let's ensure your somaFileSystem object can hold dynamic entries safely
-let somaFileSystem = {
+let somaFileSystem = JSON.parse(localStorage.getItem('soma_vfs')) || {
     'my-space': {
         title: 'My Space',
         items: [
@@ -180,7 +264,7 @@ let somaFileSystem = {
     'my-space/documents': {
         title: 'Documents',
         items: [
-            { icon: '📝', name: 'Soma Architecture.txt', type: 'file', content: 'Soma OS Framework has uncoupled individual applications natively from file navigation trees successfully.' }
+            { icon: '📝', name: 'Soma Architecture.txt', type: 'file', content: 'Soma OS Framework has uncoupled individual applications natively from file navigation trees successfully.', meta: 'Plain Text' }
         ]
     },
     'computer': {
@@ -192,24 +276,29 @@ let somaFileSystem = {
     'recycle-bin': { title: 'Recycle Bin', items: [] }
 };
 
+// Helper function to save file modifications safely
+function commitFileSystem() {
+    localStorage.setItem('soma_vfs', JSON.stringify(somaFileSystem));
+}
+
 /**
- * 🪟 REWRITTEN OPEN WINDOW CONTROLLER WITH CONTEXTUAL GUI BUTTONS
+ * 🪟 REWRITTEN OPEN WINDOW CONTROLLER
  */
 function openWindow(spaceKey) {
-    currentActiveDirectoryKey = spaceKey; // Remember where the user is looking
+    currentActiveDirectoryKey = spaceKey; 
+    playSound('click')
     
     const windowEl = document.getElementById('system-window');
+    if (!windowEl) return;
     windowEl.classList.remove('hidden');
     windowEl.classList.remove('minimized-state');
     
     const activeData = somaFileSystem[spaceKey];
     if (!activeData) return;
 
-    // 1. Sync Title and Breadcrumbs Text Elements
     document.getElementById('window-title').innerText = activeData.title;
     document.getElementById('window-breadcrumbs').innerText = `Root → ${activeData.title.replace('Disk Root', 'Computer')}`;
     
-    // 2. Clear and Render Content View Cards Grid
     const gridEl = document.getElementById('explorer-grid');
     gridEl.innerHTML = '';
 
@@ -217,10 +306,15 @@ function openWindow(spaceKey) {
         gridEl.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted); font-size:0.9rem;">✨ This directory workspace folder is empty.</div>`;
     }
 
-    activeData.items.forEach(item => {
-        let action = item.type === 'folder' ? `openWindow('${item.target}')` : `launchAppTextContent('${item.content || 'Empty human note file assets.'}')`;
+    activeData.items.forEach((item, index) => {
+        // Direct safe lookup approach prevents backtick quote error breakage entirely
+        let action = item.type === 'folder' 
+            ? `openWindow('${item.target}')` 
+            : `launchAppTextContent('${item.name}')`;
+
+        // Right click context registration helper attributes mapping
         gridEl.insertAdjacentHTML('beforeend', `
-            <div class="file-card" onclick="${action}">
+            <div class="file-card" data-name="${item.name}" data-index="${index}" onclick="${action}">
                 <div class="card-icon">${item.icon}</div>
                 <div class="card-name">${item.name}</div>
                 <div class="card-meta">${item.meta || 'System Data Document'}</div>
@@ -228,10 +322,8 @@ function openWindow(spaceKey) {
         `);
     });
 
-    // 3. RENDER CUSTOM CONTEXTUAL DYNAMIC GUI ACTION BUTTONS
     renderExplorerGuiActionButtons();
 
-    // Update active sidebar item highlighting
     document.querySelectorAll('.explorer-sidebar .sidebar-item').forEach(el => el.classList.remove('active'));
     if (spaceKey === 'my-space') document.getElementById('sb-my-space')?.classList.add('active');
     if (spaceKey === 'computer' || spaceKey === 'computer/disk-d') document.getElementById('sb-computer')?.classList.add('active');
@@ -248,9 +340,8 @@ function renderExplorerGuiActionButtons() {
     const actionBtnBox = document.getElementById('explorer-action-buttons');
     if (!actionBtnBox) return;
 
-    actionBtnBox.innerHTML = ''; // Reset actions frame
+    actionBtnBox.innerHTML = ''; 
 
-    // Scenario A: If user is inside the Computer Root directory, offer to partition a Local Disk D
     if (currentActiveDirectoryKey === 'computer') {
         if (!somaFileSystem['computer/disk-d']) {
             actionBtnBox.innerHTML = `<button class="gui-action-pill" onclick="guiCreateLocalDiskD()">➕ Create Local Disk D</button>`;
@@ -258,7 +349,6 @@ function renderExplorerGuiActionButtons() {
             actionBtnBox.innerHTML = `<span style="font-size:0.78rem; color:var(--text-muted); font-style:italic;">All partitions active</span>`;
         }
     } 
-    // Scenario B: If inside standard file structure nodes, allow creation of BOTH Files and Folders
     else if (currentActiveDirectoryKey !== 'recycle-bin') {
         actionBtnBox.innerHTML = `
             <button class="gui-action-pill" onclick="guiCreateNewElement('folder')">📁 + New Folder</button>
@@ -279,7 +369,6 @@ function guiCreateNewElement(type) {
     if (type === 'folder') {
         const targetPathKey = `${currentActiveDirectoryKey}/${sanitizedName.toLowerCase().replace(/\s+/g, '-')}`;
         
-        // 1. Register the items details inside the parent directory list array structure
         somaFileSystem[currentActiveDirectoryKey].items.push({
             icon: '📁',
             name: sanitizedName,
@@ -288,24 +377,23 @@ function guiCreateNewElement(type) {
             meta: 'User Workspace Folder'
         });
 
-        // 2. Initialize the child directory inside the virtual file directory tree
         somaFileSystem[targetPathKey] = {
             title: sanitizedName,
             items: []
         };
     } 
     else {
-        // Create an editable note asset component configuration
+        const finalName = sanitizedName.endsWith('.txt') ? sanitizedName : `${sanitizedName}.txt`;
         somaFileSystem[currentActiveDirectoryKey].items.push({
             icon: '📝',
-            name: sanitizedName.endsWith('.txt') ? sanitizedName : `${sanitizedName}.txt`,
+            name: finalName,
             type: 'file',
             content: `This text content was generated inside the new file named: ${sanitizedName}`,
             meta: 'Plain Text Document'
         });
     }
 
-    // Refresh view immediately to render the changes
+    commitFileSystem();
     openWindow(currentActiveDirectoryKey);
 }
 
@@ -313,13 +401,11 @@ function guiCreateNewElement(type) {
  * VIRTUAL DISK PARTITION PROVISIONER HANDLER
  */
 function guiCreateLocalDiskD() {
-    // 1. Provision mapping entries in VFS registers array
     somaFileSystem['computer/disk-d'] = {
         title: 'Local Disk D:',
         items: []
     };
 
-    // 2. Connect links inside parent workspace node container list
     somaFileSystem['computer'].items.push({
         icon: '💽',
         name: 'Local Disk D:',
@@ -328,10 +414,8 @@ function guiCreateLocalDiskD() {
         meta: '150GB Storage Volume'
     });
 
-    // 3. Physically insert a shortcut into the left explorer navigation sidebar layout automatically
     const sidebar = document.querySelector('.explorer-sidebar');
     if (sidebar) {
-        // Find recycle bin item and slot Disk D inside space right ahead of it
         const rbNode = document.getElementById('sb-recycle-bin');
         const newSidebarItem = document.createElement('div');
         newSidebarItem.className = 'sidebar-item';
@@ -342,21 +426,59 @@ function guiCreateLocalDiskD() {
     }
 
     alert("GUI Partition Mount Success: Created and mounted Local Disk D: into Soma system trees securely.");
-    
-    // Refresh the computer window to show the newly mounted device drive asset item icon
+    commitFileSystem();
     openWindow('computer');
 }
 
-// FIXED FUNCTION MAPPING: This now processes individual document logs into the external Notepad frame
-function launchAppTextContent(contentStr) {
+// ==========================================
+// 📝 NOTEPAD CONTROLLERS WITH STORAGE CONFIRMATIONS
+// ==========================================
+function launchAppTextContent(fileName) {
+    activeNotepadFileRef = fileName; 
     openApp('app-notepad');
+    
+    const notepadHeader = document.querySelector('#app-notepad .window-header span:nth-child(2)');
+    if (notepadHeader) notepadHeader.innerText = `Notepad - ${fileName}`;
+
     const notepadTextBox = document.querySelector('#app-notepad textarea');
-    if (notepadTextBox) notepadTextBox.value = contentStr;
+    if (notepadTextBox) {
+        const activeItems = somaFileSystem[currentActiveDirectoryKey]?.items || [];
+        const currentFile = activeItems.find(i => i.name === fileName);
+        notepadTextBox.value = currentFile ? currentFile.content : '';
+    }
 }
+
+/**
+ * ✕ CLICK INTERCEPTOR: Asks to save changes inside localStorage or discards
+ */
+function closeNotepadWithSaveCheck() {
+    const notepadTextBox = document.querySelector('#app-notepad textarea');
+    const updatedContent = notepadTextBox ? notepadTextBox.value : '';
+
+    if (activeNotepadFileRef) {
+        const activeItems = somaFileSystem[currentActiveDirectoryKey]?.items || [];
+        const currentFile = activeItems.find(i => i.name === activeNotepadFileRef);
+
+        if (currentFile && currentFile.content !== updatedContent) {
+            const saveConfirm = confirm(`Do you want to save changes to "${activeNotepadFileRef}" before closing?`);
+            if (saveConfirm) {
+                currentFile.content = updatedContent;
+                commitFileSystem();
+                openWindow(currentActiveDirectoryKey);
+            }
+        }
+    }
+    
+    activeNotepadFileRef = null;
+    closeApp('app-notepad');
+}
+
+// FIXED FUNCTION MAPPING: This now processes individual document logs into the external Notepad frame
 
 function minimizeFileExplorerWindow() {
     const windowEl = document.getElementById('system-window');
     windowEl.classList.add('minimized-state');
+    minimizeApp('system-window');
     playSound('click');
     renderTaskbarTrays();
 }
@@ -364,7 +486,8 @@ function minimizeFileExplorerWindow() {
 function restoreFileExplorerFromTray() {
     const windowEl = document.getElementById('system-window');
     windowEl.classList.remove('minimized-state');
-    focusAppWindow('system-window');
+    restoreApp('system-window');
+    playSound('click');
     renderTaskbarTrays();
 }
 
@@ -373,11 +496,13 @@ function closeFileExplorerWindow() {
     document.getElementById('system-window').classList.remove('minimized-state');
     delete activeRunningApps['system-window'];
     renderTaskbarTrays();
+    closeApp('system-window');
     playSound('clear');
 }
 
 function maximizeFileExplorerWindow() {
     const windowEl = document.getElementById('system-window');
+    playSound('click');
     if (!windowEl) return;
 
     if (windowEl.classList.contains('maximized')) {
@@ -441,16 +566,16 @@ function toggleWindowFromTray(windowId) {
     const winEl = document.getElementById(windowId);
     if (!winEl) return;
 
-    const isCurrentlyMin = winEl.classList.contains('minimized') || winEl.classList.contains('minimized-state');
+    // Standardized window visibility state inspector bounds checks
+    const isCurrentlyMin = winEl.classList.contains('minimized');
 
     if (isCurrentlyMin) {
-        if (windowId === 'system-window') restoreFileExplorerFromTray();
-        else restoreApp(windowId);
+        restoreApp(windowId);
     } else {
-        if (windowId === 'system-window') minimizeFileExplorerWindow();
-        else minimizeApp(windowId);
+        minimizeApp(windowId);
     }
 }
+
 
 // 🧮 CALCULATOR DRIVER ENGINE UTILITIES
 let calcCurrentValue = '0';
@@ -520,6 +645,25 @@ function updateTerminalSuggestions(currentValue) {
 /**
  * Updated Terminal Commands processing routing tree core
  */
+function updateTerminalSuggestions(currentValue) {
+    const suggBox = document.getElementById('term-suggestions');
+    if (!suggBox) return;
+    const query = currentValue.trim().toLowerCase();
+
+    if (!query) {
+        suggBox.innerHTML = "💡 Tip: Start typing a command like 'files', 'create folder', 'mem', or 'disk'...";
+        return;
+    }
+
+    if (query.startsWith('crea') || query.startsWith('mkdir')) {
+        suggBox.innerHTML = "📝 <b>VFS Guide:</b> Type <code>create folder [name]</code> or <code>create file [name]</code> to add items.";
+    } else if (query.startsWith('fil') || query.startsWith('ls')) {
+        suggBox.innerHTML = "📂 <b>VFS Guide:</b> Type <code>files</code> to reveal everything inside the active GUI window path.";
+    } else {
+        suggBox.innerHTML = "🎯 Press <code>Enter</code> to execute the command script.";
+    }
+}
+
 function handleTerminalCommand(e) {
     if (e.key !== 'Enter') return;
     
@@ -531,15 +675,16 @@ function handleTerminalCommand(e) {
     
     let res = `\nCommand '${cmd}' unrecognized. Type 'help' to review basic operators.`;
 
+    const activeDirectory = somaFileSystem[currentActiveDirectoryKey];
+
     if (cmd === 'help') {
-        res = `\n=== SOMA HUMAN OPERATOR SCHEMATICS ===
- -> 'create folder [name]' : Creates a new structural VFS workspace directory
- -> 'files'                : Lists directory structure entries on active drives
- -> 'mem'                  : Examines system RAM volatile heap usage tracking registers
- -> 'npm install hridaya-os': Installs core package layers down into client trees
+        res = `\n=== SOMA OPERATOR SCHEMATICS ===
+ -> 'create folder [name]' : Creates a new folder directory in active GUI window path
+ -> 'create file [name]'   : Generates a plain text file asset in active GUI window path
+ -> 'files'                : Lists directory structure entries inside current active folder path
+ -> 'mem'                  : Examines system RAM volatile heap tracking values
  -> 'disk'                 : Inspect status fields for active device partitions
- -> 'disk-create'          : Format unallocated sectors and mount Local Disk D:
- -> 'clear'                : Flushes the console buffer screen layer clean`;
+ -> 'clear'                : Flushes the console buffer clean`;
     } 
     else if (cmd === 'clear') { 
         out.innerText = ''; 
@@ -547,31 +692,41 @@ function handleTerminalCommand(e) {
         updateTerminalSuggestions('');
         return; 
     } 
-    // Human-readable Directory Creation Logic Handling
+    // Synchronized File/Folder Creation
     else if (cmd === 'create' || cmd === 'mkdir') {
-        const targetType = args[1] ? args[1].toLowerCase() : '';
-        const folderName = args.slice(2).join(' ') || args[1];
+        const subType = args[1] ? args[1].toLowerCase() : '';
+        const nameParam = args.slice(2).join(' ');
 
-        if (!folderName || folderName.toLowerCase() === 'folder') {
-            res = `\nAllocation Error: Please declare a folder naming identifier. Example: 'create folder workspace'`;
-        } else {
-            let finalizedName = (targetType === 'folder') ? args.slice(2).join('_') : args.slice(1).join('_');
-            openVfsDirectories.push(finalizedName.toLowerCase());
-            res = `\nVFS Storage Registry Update: Successfully created and provisioned folder directory '/${finalizedName.toLowerCase()}'.`;
+        if (!nameParam) {
+            res = `\nAllocation Error: Please specify a name parameter. Example: 'create folder ProjectWorkspace'`;
+        } else if (subType === 'folder') {
+            const targetPath = `${currentActiveDirectoryKey}/${nameParam.toLowerCase().replace(/\s+/g, '-')}`;
+            activeDirectory.items.push({
+                icon: '📁', name: nameParam, type: 'folder', target: targetPath, meta: 'Terminal Provisioned Folder'
+            });
+            somaFileSystem[targetPath] = { title: nameParam, items: [] };
+            commitFileSystem();
+            res = `\nSuccess: Folder directory '${nameParam}' created in current location context maps.`;
+        } else if (subType === 'file') {
+            const finalTxtName = nameParam.endsWith('.txt') ? nameParam : `${nameParam}.txt`;
+            activeDirectory.items.push({
+                icon: '📝', name: finalTxtName, type: 'file', content: `Created using Soma Terminal line utilities on ${new Date().toLocaleDateString()}`, meta: 'Plain Text'
+            });
+            commitFileSystem();
+            res = `\nSuccess: Plain text file '${finalTxtName}' written onto active cluster index records.`;
         }
     }
-    else if (cmd === 'files') {
-        res = `\n=== ACTIVE MOUNT DIRECTORY TREE (/) ===\n  +-- C:/`;
-        openVfsDirectories.forEach(folder => {
-            res += `\n  |    +-- /${folder}`;
-        });
-        if (typeof virtualDiskPartitions !== 'undefined' && virtualDiskPartitions.D) {
-            res += `\n  +-- D:/`;
-            virtualDiskPartitions.D.structures.forEach(folder => {
-                res += `\n  |    +-- /${folder}`;
+    // Synchronized Directory File Listing
+    else if (cmd === 'files' || cmd === 'ls' || cmd === 'dir') {
+        res = `\n=== CONTENTS FOR ACTIVE DIRECTORY: (${activeDirectory.title}) ===`;
+        if (activeDirectory.items.length === 0) {
+            res += `\n  (Directory is completely empty)`;
+        } else {
+            activeDirectory.items.forEach(item => {
+                res += `\n  ${item.icon}  [${item.type.toUpperCase()}]  ${item.name}`;
             });
         }
-    } 
+    }
     else if (cmd === 'mem') {
         let openWindowsCount = document.querySelectorAll('.window:not(.hidden)').length;
         let dynamicAppUsage = openWindowsCount * 512; 
@@ -581,73 +736,28 @@ function handleTerminalCommand(e) {
         res = `\n=== VOLATILE MEMORY REGISTERS ENGINE ===
  Allocation Profile  : 16384 MB Virtual RAM
  Core Os Framework   : 4112 MB Reserved Heap Space
- Active App Overheads: ${dynamicAppUsage} MB Layered Allocations [${openWindowsCount} active layout thread loops]
+ Active App Overheads: ${dynamicAppUsage} MB Layered Allocations
  Current Free Sector : ${currentFree} MB Free space registers remaining
- Execution State     : ${percentage}% Loaded. ${percentage >= 80 ? '[CRITICAL LOAD REACHED]' : '[PRISTINE OPERATIONAL CAPACITY]'}`;
-    }
-    else if (cmd === 'npm') {
-        const operationType = args[1] ? args[1].toLowerCase() : '';
-        const packageName = args[2] ? args[2].toLowerCase() : '';
-
-        if (operationType === 'install' && (packageName === 'hridaya-os' || packageName === 'hridaya')) {
-            res = `\nFetching package metadata indexes from npmjs.org...
-Mapping dependencies arrays for 'hridaya-os' layer matrices...
-Installed node_modules/hridaya-os package tree files.
-Success: Operating system expansion layer compiled and loaded securely.`;
-        } else {
-            res = `\nUsage: Type 'npm install hridaya-os' to integrate development extension blocks.`;
-        }
+ Execution State     : ${percentage}% Loaded.`;
     }
     else if (cmd === 'disk') {
         res = `\n=== VIRTUAL DISK ARRANGEMENT CONTROLLER ===
 [Volume C:] Label: SomaSystem | 42GB / 100GB Allocation Clusters Used`;
-        if (typeof virtualDiskPartitions !== 'undefined' && virtualDiskPartitions.D) {
+        if (somaFileSystem['computer/disk-d']) {
             res += `\n[Volume D:] Label: Local Disk D | 0GB / 150GB Allocation Clusters Used`;
         } else {
-            res += `\n[Unallocated Space Register] Found 150GB raw block clusters. Use 'disk-create' to partition fields.`;
+            res += `\n[Unallocated Space Register] Found 150GB raw block clusters.`;
         }
-    }
-    else if (cmd === 'disk-create') {
-        if (typeof virtualDiskPartitions !== 'undefined') {
-            virtualDiskPartitions.D = { label: "Local Disk D", totalGb: 150, usedGb: 0, structures: ["workspace"] };
-        }
-        res = `\nPartition Engine initialized... Formatted 150GB storage array cluster fields. Drive [Local Disk D:] successfully provisioned and mounted into operating trees.`;
     }
 
     out.innerText += `\nsoma ~ $ ${rawInput}${res}\n\n`;
     out.scrollTop = out.scrollHeight;
     inputEl.value = '';
-    updateTerminalSuggestions(''); // Reset hint state back to default
+    updateTerminalSuggestions('');
+    
+    // Instantly trigger open window GUI visual synchronization re-render loop
+    openWindow(currentActiveDirectoryKey);
 }
-
-function executeExplorerItemAction(type) {
-    const menu = document.getElementById('explorer-context-menu');
-    menu.classList.add('hidden');
-
-    if (type === 'open') {
-        if (targetedFileCardAction) {
-            new Function(targetedFileCardAction)();
-        }
-    } 
-    else if (type === 'delete') {
-        if (targetedFileCardIndex !== null && somaFileSystem[activeSpaceKey]) {
-            somaFileSystem[activeSpaceKey].items.splice(targetedFileCardIndex, 1);
-            refreshExplorerWorkspaceView();
-        }
-    } 
-    else if (type === 'new-folder') {
-        triggerCreateFolderGUI();
-    } 
-    else if (type === 'terminal') {
-        openApp('app-terminal');
-        const termOut = document.getElementById('term-out');
-        if (termOut) {
-            termOut.innerText += `\n\nMounted terminal instance context paths at root://SomaOS/${activeSpaceKey}\n`;
-        }
-    }
-    clearExplorerSelections();
-}
-
 /**
  * Simplified Human Manual GUI trigger to create folders without confusing loops
  */
@@ -1250,34 +1360,51 @@ function clearActiveContextSelections() {
  * Custom Context Menu Command Routing Engine
  */
 function handleMenuAction(action) {
-    const contextMenu = document.getElementById('desktop-context-menu');
-    contextMenu.classList.add('hidden');
+    const menu = document.getElementById('desktop-context-menu');
+    if (menu) menu.classList.add('hidden');
 
-    switch (action) {
-        case 'open':
-            if (currentSelectedTargetAction) {
-                // Safely execute the target's original code action
-                new Function(currentSelectedTargetAction)();
+    const activeItems = somaFileSystem[currentActiveDirectoryKey]?.items || [];
+
+    if (action === 'open' && targetedItemName) {
+        const itemObj = activeItems.find(i => i.name === targetedItemName);
+        if (itemObj) {
+            if (itemObj.type === 'folder') openWindow(itemObj.target);
+            else launchAppTextContent(itemObj.name);
+        }
+    } 
+    // 🗑️ WORKING GLOBAL DELETE PIPELINE FOR FOLDERS AND FILES
+    else if (action === 'delete' && targetedItemIndex !== null && targetedItemIndex !== undefined) {
+        const itemToDelete = activeItems[targetedItemIndex];
+        
+        if (itemToDelete) {
+            if (confirm(`Are you sure you want to delete "${itemToDelete.name}"?`)) {
+                // If it is a folder container, delete its child tree records out of storage maps
+                if (itemToDelete.type === 'folder' && somaFileSystem[itemToDelete.target]) {
+                    delete somaFileSystem[itemToDelete.target];
+                }
+                
+                // Remove the targeted item slice index records record cleanly
+                activeItems.splice(targetedItemIndex, 1);
+                
+                commitFileSystem();
+                openWindow(currentActiveDirectoryKey); // Refresh visual layout
             }
-            break;
-        case 'pin':
-            alert("App pin allocation register updated successfully.");
-            break;
-        case 'refresh':
-            const desktop = document.getElementById('desktop');
+        }
+    }
+    else if (action === 'refresh') {
+        const desktop = document.getElementById('desktop');
             desktop.style.opacity = '0.4';
             setTimeout(() => { desktop.style.opacity = '1'; }, 150);
-            break;
-        case 'theme':
-            toggleTheme(); // Call your native core theme switcher method
-            break;
-        case 'terminal':
-            // Custom handler to run code loops or notify system parameters
-            alert("Soma Core Matrix Terminal subsystem initialized.");
-            openApp('app-terminal');
-            break;
     }
-    clearActiveContextSelections();
+    else if (action === 'theme') {
+        toggleTheme();
+    }
+    else if (action === 'terminal') {
+        openApp('app-terminal');
+    }
+
+    targetedItemName = null;
+    targetedItemIndex = null;
 }
 
 // 📅 SOMA CALENDAR APPLICATION MATRIX OBJECTS

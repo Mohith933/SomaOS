@@ -97,7 +97,7 @@ body, html { width: 100%; height: 100%; overflow: hidden; }
 .lock-hint { color: var(--text-muted); font-size: 0.95rem; letter-spacing: 1px; animation: pulse 2.5s infinite ease-in-out; }
 
 .login-card {
-    background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.3);
+    background:none; backdrop-filter: blur(25px);
     padding: 40px 30px; border-radius: 28px; width: 340px; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: var(--shadow); margin: auto; animation: fadeIn 0.4s ease;
 }
 .dark-theme .login-card { background: rgba(36, 24, 26, 0.6); }
@@ -190,8 +190,12 @@ body, html { width: 100%; height: 100%; overflow: hidden; }
     position: absolute; top: 12%; left: 22%; width: 740px; height: 480px;
     background: var(--panel-bg); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.25); border-radius: 24px;
     box-shadow: var(--shadow); display: flex; flex-direction: column; overflow: hidden; color: var(--text-color); z-index: 100;
-    transition: transform 0.3s cubic-bezier(0.1, 0.8, 0.2, 1), opacity 0.25s ease, top 0.3s ease, left 0.3s ease, width 0.3s ease, height 0.3s ease; 
     transform-origin: center bottom;
+    contain: layout style;
+    transition: opacity 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+    
+    /* 🏎️ Tell the browser engine to prepare the GPU rendering pipes beforehand */
+    will-change: transform;
 }
 .window.maximized { 
     top: 20px !important; 
@@ -253,14 +257,85 @@ body, html { width: 100%; height: 100%; overflow: hidden; }
 
 /* 🛠️ INNER APPLICATION UTILITIES */
 .app-container { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 15px; width: 100%; animation: fadeIn 0.3s ease; }
-.human-notepad { width: 100%; height: 220px; background: rgba(255, 255, 255, 0.4); border: 1px solid rgba(0, 0, 0, 0.05); border-radius: 14px; padding: 15px; font-size: 0.95rem; color: var(--text-color); resize: none; outline: none; }
+.human-notepad { width: 100%; height: 350px; background: rgba(255, 255, 255, 0.4); border: 1px solid rgba(0, 0, 0, 0.05); border-radius: 14px; padding: 15px; font-size: 0.95rem; color: var(--text-color); resize: none; outline: none;     scrollbar-width: thin;
+    scrollbar-color: #ffb3c6 #151011;}
+    .notepad-statusbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 10px 20px 10px;
+    font-size: 0.72rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    user-select: none;
+}
 .dark-theme .human-notepad { background: rgba(0, 0, 0, 0.2); }
 .music-player { display: flex; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+#music-progress-fill {
+    height: 100%;
+    width: 0%; /* Dynamic expansion managed by timeline tracker */
+    background: var(--accent-color, #ffb3c6);
+    border-radius: 4px;
+    transition: width 0.1s linear; /* Makes movement butter smooth */
+}
+/* 🎵 INTERACTIVE AUDIO TIMELINE KNOB SLIDER */
+#music-progress-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    outline: none;
+    transition: background 0.2s;
+}
+
+#music-progress-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    cursor: pointer;
+    box-shadow: 0 0 6px rgba(255, 179, 198, 0.6);
+    transition: transform 0.1s ease;
+}
+
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+#music-progress-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.3);
+}
 .player-disc { font-size: 3.5rem; width: 80px; height: 80px; background: var(--accent-color); display: flex; align-items: center; justify-content: center; border-radius: 50%; animation: spin 4s linear infinite; }
-.cli-terminal { height: 100%; }
-.terminal-box { background: #151011; color: #ffb3c6; font-family: 'Courier New', Courier, monospace; padding: 15px; border-radius: 14px; flex-grow: 1; display: flex; flex-direction: column; gap: 10px; box-shadow: inset 0 4px 12px rgba(0,0,0,0.5); min-height: 200px; }
-.terminal-output { flex-grow: 1; overflow-y: auto; font-size: 0.85rem; line-height: 1.4; white-space: pre-wrap; }
-.terminal-input-line { display: flex; gap: 8px; align-items: center; }
+.cli-terminal { height: 100%; overflow: hidden; }
+/* Update your CSS to lock the terminal structure */
+.terminal-box {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Important: Don't let content dictate container height */
+    overflow: hidden;
+    background: #151011;
+    color: #ffb3c6;
+    padding: 15px;
+    border-radius: 0 0 14px 14px; /* Matches window rounded corners */
+    box-shadow: inset 0 4px 12px rgba(0,0,0,0.5);
+
+}
+
+.terminal-output {
+    flex: 1; /* Pushes input/suggestions to the bottom */
+    overflow-y: auto;
+    margin-bottom: 10px;
+    will-change: transform;
+    scrollbar-width: thin;
+    scrollbar-color: #ffb3c6 #151011;
+}
+
+.terminal-suggestion-bar {
+    font-size: 0.7rem;
+    color: #8a7074;
+    padding: 4px 0;
+    margin-bottom: 10px;
+    border-top: 1px solid #2b1c1e;
+    min-height: 20px;
+}
+.terminal-input-line { display: flex; gap: 8px; align-items: center;}
 .terminal-input-line span { color: #ffe5ec; font-weight: bold; font-size: 0.85rem; }
 #cli-input { background: none; border: none; color: #ffffff; font-family: inherit; font-size: 0.85rem; flex-grow: 1; outline: none; }
 .system-metrics { display: flex; align-items: center; text-align: center; padding: 15px; }
@@ -375,7 +450,6 @@ body, html { width: 100%; height: 100%; overflow: hidden; }
     border-radius: 8px; cursor: pointer; color: var(--text-color); border: 1px solid rgba(0,0,0,0.05);
     box-shadow: 0 2px 6px rgba(0,0,0,0.04); transition: all 0.2s;
 }
-.app-pill:hover { background: var(--card-hover); }
 .pill-is-minimized { opacity: 0.5; border-style: dashed; }
 
 
@@ -643,6 +717,30 @@ body, html { width: 100%; height: 100%; overflow: hidden; }
     background: rgba(255,255,255,0.15);
     border-color: #fdcb6e;
 }
+/* 🎬 CUSTOM SOMA CINEMA TIMELINE KNOB */
+#video-progress-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.2);
+    outline: none;
+    transition: background 0.2s;
+}
+
+#video-progress-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #fdcb6e;
+    cursor: pointer;
+    box-shadow: 0 0 6px rgba(253, 203, 110, 0.8);
+    transition: transform 0.1s ease;
+}
+
+#video-progress-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.3);
+}
 
 /* ========================================== */
 /* 🛠️ ADDITIONAL FIXES FOR PREVENTING SCROLLS  */
@@ -652,30 +750,72 @@ body, html { width: 100%; height: 100%; overflow: hidden; }
 }
 
 /* Settings Utility System Configurations */
+/* Core Layout Cleanups */
+.settings-sidebar {
+    width: 170px;
+    background: var(--bg-sidebar, rgba(0, 0, 0, 0.02));
+    border-right: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px;
+}
+
 .settings-nav-btn {
-    background: transparent;
     border: none;
-    text-align: left;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 0.85rem;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: transparent;
     cursor: pointer;
+    text-align: left;
     font-weight: 500;
-    color: var(--text-color);
-    transition: background 0.2s;
+    font-size: 0.85rem;
+    color: var(--card-bg);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s ease;
 }
 
+/* Hover State - Dynamic tint wrapper based on light/dark modes */
 .settings-nav-btn:hover {
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba(0, 0, 0, 0.04);
 }
-
 .dark-theme .settings-nav-btn:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.06);
 }
 
+/* Active Highlight - Uses your system accent cleanly */
 .settings-nav-btn.active {
-    background: var(--accent-color) !important;
+    background: var(--accent-color, #00b894) !important;
     color: white !important;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 184, 148, 0.2);
+}
+
+/* Wallpaper Preset Cards */
+.wp-card {
+    height: 55px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.2s, border-color 0.2s;
+}
+.wp-card:hover {
+    transform: scale(1.04);
+    border-color: var(--accent-color, #00b894);
+}
+
+/* System Metric Info Items */
+.sys-info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    font-size: 0.9rem;
+}
+.dark-theme .sys-info-row {
+    border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
 .wp-card:hover {
@@ -691,6 +831,78 @@ body, html { width: 100%; height: 100%; overflow: hidden; }
 
 .hardware-status i:hover {
     transform: scale(1.1);
+}
+
+/* Settings Pane Animation & Fade-in */
+.settings-pane {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Sidebar Navigation Buttons */
+.settings-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--text-muted, #2d3436);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.settings-nav-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.settings-nav-btn.active {
+  background: var(--accent-color, #00b894);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Wallpaper Preset Cards Hover Effects */
+.wp-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.wp-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-color, #00b894) !important;
+}
+
+/* Scrollbar Styling inside Settings Content Area */
+.settings-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.settings-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.settings-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+}
+
+.settings-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
 }
 
 /* ========================================== */
@@ -767,6 +979,7 @@ body, html { width: 100%; height: 100%; overflow: hidden; }
     box-shadow: 0 20px 50px rgba(255, 179, 198, 0.2);
     text-align: center;
 }
+
 
 .dark-theme .wizard-card {
     background: rgba(36, 24, 26, 0.9);
@@ -966,3 +1179,504 @@ body, html { width: 100%; height: 100%; overflow: hidden; }
     color: #120c0d !important;
     box-shadow: 0 4px 12px rgba(255, 179, 198, 0.2);
 }
+
+/* 🖼️ SOMA LIGHTWEIGHT PHOTO VIEWER STYLES */
+#app-pictures {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(20px);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+/* Force the image container to display layout correctly */
+#pic-viewer-render-target {
+    display: block; /* Force overrides any script conflicts */
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* Prevents stretching or distortion */
+    border-radius: 6px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    animation: imageFadeIn 0.3s ease-out;
+}
+
+/* 🪐 SOMA 2.0 HORIZONTAL RECENT MATRIX GRID */
+.gallery-grid-layout {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.gallery-section-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0 0 16px 0;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.gallery-grid-scroll {
+    display: flex;
+    gap: 14px;
+    width: 100%;
+    overflow-x: auto;
+    padding: 10px 4px;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
+/* Custom Webkit scrollbar tuning */
+.gallery-grid-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+.gallery-grid-scroll::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+}
+.gallery-grid-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 179, 198, 0.2);
+    border-radius: 10px;
+}
+
+/* Card layout nodes */
+.gallery-thumb-card {
+    flex: 0 0 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.gallery-thumb-card img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
+}
+
+.gallery-thumb-card span {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 95px;
+    transition: color 0.3s;
+}
+
+/* Hover Micro-interactions */
+.gallery-thumb-card:hover {
+    transform: translateY(-4px);
+}
+
+.gallery-thumb-card:hover img {
+    border-color: rgba(255, 179, 198, 0.6);
+    box-shadow: 0 8px 18px rgba(255, 179, 198, 0.15);
+}
+
+.gallery-thumb-card:hover span {
+    color: #ffb3c6;
+}
+
+@keyframes imageFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+.breadcrumb-link {
+    cursor: pointer;
+    color: var(--accent-color);
+    text-decoration: underline;
+    transition: opacity 0.2s;
+}
+
+.breadcrumb-link:hover {
+    opacity: 0.7;
+    text-decoration: none;
+}
+#setup-wizard-screen {
+    position: fixed;
+    top: 0; left: 0; 
+    width: 100vw; height: 100vh;
+    background: var(--bg-gradient);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 99999;
+    overflow: hidden;
+    perspective: 1000px;
+    transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* 🎴 Premium Glassmorphic Core Container Card */
+.wizard-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(30px) saturate(120%);
+    -webkit-backdrop-filter: blur(30px) saturate(120%);
+    border: 1px solid var(--card-border);
+    width: 460px; 
+    padding: 40px; 
+    border-radius: 24px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65), 
+                0 0 40px rgba(255, 179, 198, 0.03);
+    color: var(--text-primary);
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    transform: translateZ(0);
+    transition: all 0.4s ease;
+}
+
+/* 🎯 Progress Milestone Dots Track */
+.wizard-progress-dots {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 35px;
+}
+
+.wizard-progress-dots .dot {
+    width: 6px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.wizard-progress-dots .dot.active {
+    width: 24px;
+    background: var(--accent-pink);
+    border-radius: 100px;
+    box-shadow: 0 0 12px var(--accent-glow);
+}
+
+/* 🎛️ Dynamic Step Content Transition Panel */
+.wizard-panel {
+    display: none;
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+}
+
+.wizard-panel.active-panel {
+    display: flex;
+    flex-direction: column;
+    animation: somaPanelIntro 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* 🔮 Premium Typography & Icon Styling */
+.wizard-icon {
+    font-size: 3.8rem;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.1));
+}
+
+.wizard-card h2 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    margin: 0 0 12px 0;
+    background: var(--accent-color);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.wizard-card p {
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+    margin: 0 0 28px 0;
+    padding: 0 10px;
+}
+
+/* ⌨️ Human Forms, Select Elements, & Inputs */
+.wizard-field-group {
+    width: 100%;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.wizard-field-group select, 
+.wizard-field-group input {
+    width: 100%;
+    padding: 14px 18px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-weight: 400;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Force styling fix for system select arrow dropdowns */
+.wizard-field-group select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 16px;
+    padding-right: 45px;
+}
+
+.wizard-field-group select option {
+    background: #1c1214;
+    color: #fff;
+}
+
+/* Glow effects on focus */
+.wizard-field-group select:focus, 
+.wizard-field-group input:focus {
+    border-color: rgba(255, 179, 198, 0.5);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 0 4px rgba(255, 179, 198, 0.1),
+                0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* 🕹️ Button Control Interfaces */
+.wizard-btn-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 80px;
+    width: 100%;
+}
+
+.wizard-next-btn, 
+.wizard-submit-btn, 
+.wizard-back-btn {
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 14px 28px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+    outline: none;
+    box-sizing: border-box;
+}
+
+/* Forward Primary Navigation Glow Buttons */
+.wizard-next-btn, 
+.wizard-submit-btn {
+    background: var(--accent-pink);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--accent-dark);
+    flex-grow: 1;
+    box-shadow: 0 4px 15px rgba(255, 179, 198, 0.2);
+}
+
+.wizard-next-btn:hover, 
+.wizard-submit-btn:hover {
+    background: #ffffff;
+    box-shadow: 0 6px 25px var(--accent-glow);
+    transform: translateY(-2px);
+}
+
+.wizard-next-btn:active, 
+.wizard-submit-btn:active {
+    transform: translateY(0);
+}
+
+/* Muted Inverse Back Buttons */
+.wizard-back-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text-muted);
+}
+
+.wizard-back-btn:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* 🎬 Smooth Micro-Animation Transitions */
+@keyframes somaPanelIntro {
+    0% {
+        opacity: 0;
+        transform: translateY(16px) scale(0.97);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Safe State utility flag if you handle structural toggling via JS classes */
+.wizard-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ============================================================================
+   🪐 SOMA 2.0 PREMIUM SYSTEM DIALOG THEME
+   ============================================================================ */
+
+#soma-alert-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(8, 5, 6, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000000; /* Ensure it floats above every window and wizard */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Activated State */
+#soma-alert-overlay.soma-alert-active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.soma-alert-box {
+    background: rgba(25, 18, 20, 0.85);
+    border: 1px solid rgba(255, 179, 198, 0.18);
+    backdrop-filter: blur(25px);
+    border-radius: 20px;
+    width: 360px;
+    padding: 28px;
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8),
+                0 0 30px rgba(255, 179, 198, 0.05);
+    text-align: center;
+    transform: scale(0.9) translateY(15px);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Apply popup slide action when active */
+#soma-alert-overlay.soma-alert-active .soma-alert-box {
+    transform: scale(1) translateY(0);
+}
+
+/* Subtle background glow effect inside the box */
+.soma-alert-glow-edge {
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 150px; height: 2px;
+    background: linear-gradient(90deg, transparent, #ffb3c6, transparent);
+    box-shadow: 0 0 10px rgba(255, 179, 198, 0.5);
+}
+
+/* Elements design details */
+.soma-alert-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 0 8px rgba(255, 179, 198, 0.3));
+}
+
+.soma-alert-content h3 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+}
+
+.soma-alert-content p {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #b5a2a6;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    margin: 0 0 24px 0;
+    padding: 0 10px;
+}
+
+/* Confirm Action Controller Button */
+.soma-alert-confirm-btn {
+    background: #ffb3c6;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #120c0d;
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: 0 4px 15px rgba(255, 179, 198, 0.15);
+}
+
+.soma-alert-confirm-btn:hover {
+    background: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(255, 179, 198, 0.3);
+}
+
+.soma-alert-confirm-btn:active {
+    transform: translateY(0);
+}
+#soma-canvas {
+    width: 100%; height: 100%;
+    cursor: crosshair;
+    display: block;
+    touch-action: none; /* Prevents scrolling while drawing */
+}
+
+/* Floating Capsule Tool Bar */
+.paint-capsule {
+    position: absolute;
+    bottom: 30px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--sidebar-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 20px;
+    border-radius: 50px;
+    display: flex; align-items: center; gap: 15px;
+    box-shadow: 0 10px 10px rgba(0,0,0,0.1);
+    z-index: 100;
+    transition: transform 0.3s ease;
+}
+
+.paint-capsule:hover { transform: translateX(-50%) translateY(-5px); }
+
+.paint-capsule input[type="color"] {
+    border: none; width: 30px; height: 30px; border-radius: 50%; background: none; cursor: pointer;
+}
+
+.divider { width: 1px; height: 20px; background: rgba(255,255,255,0.1); }
+
+.paint-capsule button {
+    background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer;
+    opacity: 0.7; transition: opacity 0.2s;
+}
+.paint-capsule button:hover { opacity: 1; }
+
+/* Clean the color input appearance */
+#paint-color {
+    -webkit-appearance: none;
+    border: none;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    background: none;
+    padding: 0;
+}
+
+/* Target the internal "swatch" (the color box itself) */
+#paint-color::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+#paint-color::-webkit-color-swatch {
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%; /* Makes it a beautiful circle */
+}
+

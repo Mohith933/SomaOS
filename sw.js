@@ -1,7 +1,6 @@
 const CACHE_NAME = "SomaOS-v2";
 
 const urlsToCache = [
-  "./",
   "index.html",
   "manifest.json",
   "favicon.ico"

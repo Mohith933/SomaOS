@@ -2,7 +2,7 @@
 "name": "Soma OS",
 "short_name": "Soma",
 "description": "Soma OS - Interactive Web Operating System",
-"start_url": "/",
+"start_url": "index.html",
 "scope": "/",
 "display": "standalone",
 "orientation": "any",

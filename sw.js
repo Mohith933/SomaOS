@@ -1,4 +1,4 @@
-const CACHE_NAME = "somaos-v2";
+const CACHE_NAME = "SomaOS-v2";
 
 const urlsToCache = [
   "./",

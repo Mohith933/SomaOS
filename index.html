@@ -61,7 +61,7 @@
         </div>
 
         <div class="wizard-panel" id="panel-keyboard">
-            <div class="wizard-icon">⌨</div>
+            <div class="wizard-icon"><i class="fas fa-keyboard"></i></div>
             <h2>Calibrate Input Expression</h2>
             <p>Configure how your physical hardware translates manual keystroke vectors straight into the dynamic shell matrix.</p>
             <div class="wizard-field-group">
@@ -96,17 +96,28 @@
         </div>
 
         <div class="wizard-panel" id="panel-user">
-            <div class="wizard-icon">🌸</div>
-            <h2>Initialize Identity Node</h2>
-            <p>Map your human handle signature token. This builds your unique root file path directories.</p>
-            <div class="wizard-field-group">
-                <input type="text" id="setup-username-input" placeholder="Type account identity handle..." value="Creator">
-            </div>
-            <div class="wizard-btn-row">
-                <button class="wizard-back-btn" onclick="navigateSoma2Wizard(3)">◀ Back</button>
-                <button class="wizard-submit-btn" onclick="provisionSoma2IdentityNode()">Manifest System Node ✔</button>
-            </div>
+    <div class="wizard-icon">🌸</div>
+    <h2>Initialize Identity Node</h2>
+    <p>Map your human handle signature token. This builds your unique root file path directories.</p>
+    <div class="wizard-field-group">
+        <input type="text" id="setup-username-input" placeholder="Type account identity handle..." value="Mohith">
+    </div>
+    <div class="wizard-field-group" style="margin-top: 15px;">
+        <label style="font-size: 12px; color: #a29bfe; display: block; margin-bottom: 8px;">Select Identity Avatar Icon:</label>
+        <div class="wizard-emoji-selector" style="display: flex; gap: 10px; justify-content: center;">
+            <button type="button" class="wizard-emoji-btn active" onclick="selectWizardEmoji('👨‍💻', this)" style="background: rgba(108, 92, 231, 0.2); border: 1px solid #6c5ce7; font-size: 20px; padding: 8px 12px; border-radius: 8px; cursor: pointer;">👨‍💻</button>
+            <button type="button" class="wizard-emoji-btn" onclick="selectWizardEmoji('⚡', this)" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); font-size: 20px; padding: 8px 12px; border-radius: 8px; cursor: pointer;">⚡</button>
+            <button type="button" class="wizard-emoji-btn" onclick="selectWizardEmoji('🚀', this)" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); font-size: 20px; padding: 8px 12px; border-radius: 8px; cursor: pointer;">🚀</button>
+            <button type="button" class="wizard-emoji-btn" onclick="selectWizardEmoji('✨', this)" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); font-size: 20px; padding: 8px 12px; border-radius: 8px; cursor: pointer;">✨</button>
+            <button type="button" class="wizard-emoji-btn" onclick="selectWizardEmoji('💻', this)" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); font-size: 20px; padding: 8px 12px; border-radius: 8px; cursor: pointer;">💻</button>
         </div>
+        <input type="hidden" id="setup-selected-emoji" value="👨‍💻">
+    </div>
+    <div class="wizard-btn-row" style="margin-top: 20px;">
+        <button class="wizard-back-btn" onclick="navigateSoma2Wizard(3)">◀ Back</button>
+        <button class="wizard-submit-btn" onclick="provisionSoma2IdentityNode()">Manifest System Node ✔</button>
+    </div>
+</div>
     </div>
 </div>
 
@@ -223,6 +234,18 @@
                 <div class="icon-visual">📸</div>
                 <div class="icon-label">Camera</div>
             </div>
+            <div class="desktop-icon" onclick="openApp('app-kanban')">
+    <div class="icon-visual">📋</div>
+    <div class="icon-label">Tasks</div>
+</div>
+<div class="desktop-icon" onclick="openApp('app-soma-store')">
+    <div class="icon-visual">🛍️</div>
+    <div class="icon-label">Store</div>
+</div>
+<div class="desktop-icon" onclick="openApp('app-voice')">
+    <div class="icon-visual">🎙️</div>
+    <div class="icon-label">Voice</div>
+</div>
         </div>
 
         <div id="system-window" class="window hidden" style="top: 10%; left: 10%;">
@@ -401,7 +424,7 @@
                 <canvas id="camera-capture-canvas" style="display: none;" width="640" height="480"></canvas>
                 <div style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px;">
                     <button onclick="takeCameraSnapshot()"
-                        style="background:var(--accent-color); color:var(--text-color); border: none; padding: 8px 16px; font-size: 0.85rem; font-weight: 600; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0, 184, 148, 0.3);">
+                        style="background:var(--accent-color); color:var(--text-color); border: none; padding: 8px 16px; font-size: 0.85rem; font-weight: 600; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                         📸 Snap Photo
                     </button>
                 </div>
@@ -737,6 +760,9 @@
                 </div>
             </div>
 
+
+            
+
             <!-- Tab 3: Installed Apps -->
             <div id="set-tab-apps" class="settings-pane" style="display:none;">
                 <h3 style="margin-top:0; margin-bottom:8px; font-weight: 600; color:var(--text-muted)">Installed Apps</h3>
@@ -786,6 +812,229 @@
             </div>
 
         </div>
+    </div>
+</div>
+
+
+<!-- 🎙️ SOMA HUMAN VOICE ASSISTANT WINDOW -->
+<div id="app-voice" class="window hidden" style="top: 15%; left: 30%; width: 450px; height: 380px;">
+    <div class="window-header" onmousedown="dragStart(event, 'app-voice')">
+        <div class="header-left">
+            <span class="window-dot" style="background: #a29bfe;"></span>
+            <span>Soma Voice Assistant</span>
+        </div>
+        <div class="window-controls">
+            <button class="control-btn min-btn" onclick="minimizeApp('app-voice')">─</button>
+            <button class="control-btn close-btn" onclick="closeApp('app-voice')">✕</button>
+        </div>
+    </div>
+
+    <div class="window-body-container" style="padding: 20px; background: #0f172a; height: calc(100% - 38px); display: flex; flex-direction: column; align-items: center; justify-content: space-between; box-sizing: border-box; text-align: center;">
+        
+        <!-- Voice Orb Indicator -->
+        <div style="margin-top: 10px;">
+            <div id="voice-orb" style="width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(circle, #a29bfe 0%, #6c5ce7 100%); box-shadow: 0 0 20px rgba(108, 92, 231, 0.6); display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto; transition: all 0.3s ease;">
+                🎙️
+            </div>
+            <p id="voice-status" style="margin: 12px 0 0 0; font-size: 0.85rem; color: #a29bfe; font-weight: 600;">Tap "Start Listening" to speak</p>
+        </div>
+
+        <!-- Live Subtitle Display -->
+        <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); width: 100%; border-radius: 10px; padding: 12px; box-sizing: border-box; min-height: 70px; display: flex; align-items: center; justify-content: center;">
+            <span id="voice-transcript" style="font-size: 0.8rem; color: var(--text-color, #e2e8f0); opacity: 0.8; font-style: italic;">"Try saying: 'Open Word', 'Close Chess', or 'Check Usage'"</span>
+        </div>
+
+        <!-- Controls -->
+        <div style="display: flex; gap: 10px; width: 100%;">
+            <button id="voice-listen-btn" onclick="toggleVoiceAssistant()" style="flex: 1; background: #6c5ce7; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;">
+                🎤 Start Listening
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 📌 SOMA KANBAN BOARD: QUICK TASK MANAGER -->
+<div id="app-kanban" class="window hidden" style="top: 18%; left: 28%; width: 500px; height: 380px;">
+    <div class="window-header" onmousedown="dragStart(event, 'app-kanban')">
+        <div class="header-left">
+            <span class="window-dot" style="background: #00b894;"></span>
+            <span>Soma Tasks</span>
+        </div>
+        <div class="window-controls">
+            <button class="control-btn min-btn" onclick="minimizeApp('app-kanban')">─</button>
+            <button class="control-btn close-btn" onclick="closeApp('app-kanban')">✕</button>
+        </div>
+    </div>
+    <div class="window-body-container" style="padding: 15px; display: flex; flex-direction: column; gap: 10px; height: calc(100% - 38px); background: var(--sidebar-bg);">
+        <div style="display: flex; gap: 8px;">
+            <input type="text" id="kanban-task-input" placeholder="Add a new workflow task..." style="flex: 1; padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); background: var(--card-bg); color: var(--text-color); font-size: 0.85rem;">
+            <button onclick="addSomaTask()" style="padding: 8px 16px; background: var(--accent-color); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Add</button>
+        </div>
+        <div id="kanban-task-list" style="flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-top: 5px;">
+            <!-- Dynamic task items will populate here -->
+            <div style="padding: 8px 12px; background: var(--card-bg); border-radius: 6px; font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
+                <span>✨ Initialize Soma OS v2.1 deployment</span>
+                <span style="cursor: pointer; opacity: 0.6;" onclick="this.parentElement.remove()">✕</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 🪐 SOMA APP STORE WINDOW -->
+<div id="app-soma-store" class="window hidden" style="top: 10%; left: 15%; width: 680px; height: 500px;">
+    <div class="window-header" onmousedown="dragStart(event, 'app-soma-store')">
+        <div class="header-left">
+            <span class="window-dot" style="background: #a29bfe;"></span>
+            <span>Soma App Store</span>
+        </div>
+        <div class="window-controls">
+            <button class="control-btn min-btn" onclick="minimizeApp('app-soma-store')">─</button>
+            <button class="control-btn close-btn" onclick="closeApp('app-soma-store')">✕</button>
+        </div>
+    </div>
+
+    <div class="window-body-containers" style="padding: 20px; background: var(--sidebar-bg); height: calc(100% - 38px); overflow-y: auto; color: var(--text-color);">
+        
+        <!-- Store Sub-Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 12px; margin-bottom: 16px;">
+            <div>
+                <h2 style="margin: 0; font-size: 1.1rem; color: #a29bfe;">🪐 Soma Store</h2>
+                <p style="margin: 2px 0 0 0; font-size: 0.75rem; opacity: 0.7;">Explore native applications and web runtime extensions.</p>
+            </div>
+            <span style="background: rgba(108, 92, 231, 0.2); border: 1px solid #6c5ce7; color: #a29bfe; font-size: 10px; padding: 4px 8px; border-radius: 12px; font-weight: bold;">v1.0 Channel</span>
+        </div>
+
+        <!-- Available Apps Section -->
+        <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.6; margin-bottom: 12px;">Available Applications</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-bottom: 24px;">
+            
+            <!-- App Card: 2D Neon Chess -->
+<div class="soma-store-card" onclick="openSomaStoreDetail('chess')">
+    <div style="font-size: 28px; background: rgba(255,255,255,0.05); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 10px;">♟️</div>
+    <div style="flex: 1;">
+        <h4 style="margin: 0; font-size: 0.9rem;">2D Neon Chess</h4>
+        <span style="font-size: 9px; font-weight: bold; background: rgba(0, 206, 201, 0.2); color: #00cec9; padding: 2px 5px; border-radius: 4px;">FREE</span>
+        <p style="margin: 4px 0 0 0; font-size: 0.75rem; opacity: 0.7;">Cybernetic chessboard with local game state saving.</p>
+    </div>
+    <button id="store-btn-chess" style="background: #6c5ce7; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer;" onclick="event.stopPropagation(); launchSomaStoreApp('chess')">Get / Install</button>
+</div>
+            <!-- App Card: Soma Word -->
+<div class="soma-store-card" onclick="openSomaStoreDetail('word')">
+    <div style="font-size: 28px; background: rgba(255,255,255,0.05); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 10px;">📝</div>
+    <div style="flex: 1;">
+        <h4 style="margin: 0; font-size: 0.9rem;">Soma Word Pro</h4>
+        <span style="font-size: 9px; font-weight: bold; background: rgba(0, 206, 201, 0.2); color: #00cec9; padding: 2px 5px; border-radius: 4px;">FREE</span>
+        <p style="margin: 4px 0 0 0; font-size: 0.75rem; opacity: 0.7;">Rich workspace document writer with formatting & local storage.</p>
+    </div>
+    <button id="store-btn-word" style="background: #6c5ce7; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer;" onclick="event.stopPropagation(); launchSomaStoreApp('word')">Get / Install</button>
+</div>
+
+        </div>
+
+        <!-- Developer Portal / Coming Soon -->
+        <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.6; margin-bottom: 12px;">Developer Ecosystem</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px;">
+            <div class="soma-store-card" style="opacity: 0.85;">
+                <div style="font-size: 28px; background: rgba(255,255,255,0.05); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 10px;">🚀</div>
+                <div style="flex: 1;">
+                    <h4 style="margin: 0; font-size: 0.9rem;">Web SDK Pipeline</h4>
+                    <span style="font-size: 9px; font-weight: bold; background: rgba(253, 121, 168, 0.2); color: #fd79a8; padding: 2px 5px; border-radius: 4px;">COMING SOON</span>
+                    <p style="margin: 4px 0 0 0; font-size: 0.75rem; opacity: 0.7;">Third-party HTML/CSS/JS app launcher platform.</p>
+                </div>
+                <button style="background: rgba(255,255,255,0.1); color: var(--text-muted); border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: not-allowed;" disabled>Soon</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal Popup for Details & Features -->
+<div id="store-modal-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 99999;" onclick="closeSomaStoreModal()">
+    <div style="background: var(--card-bg, #0f172a); border: 1px solid rgba(255,255,255,0.15); width: 90%; max-width: 420px; border-radius: 14px; padding: 20px; position: relative; color: var(--text-color);" onclick="event.stopPropagation()">
+        <button style="position: absolute; top: 12px; right: 12px; background: none; border: none; color: var(--text-muted); font-size: 16px; cursor: pointer;" onclick="closeSomaStoreModal()">✕</button>
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px;">
+            <div id="store-modal-icon" style="font-size: 32px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 10px;">♟️</div>
+            <div>
+                <h3 id="store-modal-title" style="margin: 0; font-size: 1rem;">App Title</h3>
+                <span style="font-size: 9px; font-weight: bold; background: rgba(0, 206, 201, 0.2); color: #00cec9; padding: 2px 5px; border-radius: 4px;">FREE APP</span>
+            </div>
+        </div>
+        <div style="font-size: 0.8rem; line-height: 1.5; opacity: 0.9;">
+            <p id="store-modal-desc" style="margin-top: 0;">Description text.</p>
+            <h4 style="margin: 12px 0 6px 0; font-size: 0.8rem; color: #a29bfe;">Features & Use Cases</h4>
+            <ul id="store-modal-uses" style="margin: 0; padding-left: 18px; opacity: 0.8; font-size: 0.75rem;"></ul>
+        </div>
+        <div style="margin-top: 18px; display: flex; justify-content: flex-end;">
+            <button id="store-modal-launch-btn" style="background: #00cec9; color: #0f172a; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer;">Launch App</button>
+        </div>
+    </div>
+</div>
+
+<!-- ♟️ 2D NEON CHESS WINDOW -->
+<div id="app-chess" class="window hidden" style="top: 10%; left: 20%; width: 520px; height: 580px;">
+    <div class="window-header" onmousedown="dragStart(event, 'app-chess')">
+        <div class="header-left">
+            <span class="window-dot" style="background: #00cec9;"></span>
+            <span>Soma Neon Chess v1.0</span>
+        </div>
+        <div class="window-controls">
+            <button class="control-btn min-btn" onclick="minimizeApp('app-chess')">─</button>
+            <button class="control-btn close-btn" onclick="closeApp('app-chess')">✕</button>
+        </div>
+    </div>
+
+    <div class="window-body-container" style="padding: 15px; background: #0f172a; height: calc(100% - 38px); display: flex; flex-direction: column; align-items: center; justify-content: space-between; box-sizing: border-box;">
+        
+        <!-- Status Bar & Actions -->
+        <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; color: #a29bfe; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px;">
+            <span id="chess-status">Turn: White (Player)</span>
+            <button onclick="resetChessGame()" style="background: rgba(108, 92, 231, 0.2); border: 1px solid #6c5ce7; color: #a29bfe; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem;">🔄 Reset Matrix</button>
+        </div>
+
+        <!-- 8x8 Chessboard Grid -->
+        <div id="chess-board" style="width: 400px; height: 400px; display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); border: 2px solid #6c5ce7; border-radius: 8px; box-shadow: 0 0 15px rgba(108, 92, 231, 0.3); overflow: hidden;"></div>
+
+        <!-- Game Info Footer -->
+        <div style="width: 100%; font-size: 0.75rem; color: #64748b; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 6px;">
+            <span>Interactive 2D Cyber-Grid Engine • Local Save Sync</span>
+        </div>
+    </div>
+</div>
+
+<!-- 📝 SOMA WORD PRO EDITOR WINDOW -->
+<div id="app-word" class="window hidden" style="top: 12%; left: 22%; width: 650px; height: 500px;">
+    <div class="window-header" onmousedown="dragStart(event, 'app-word')">
+        <div class="header-left">
+            <span class="window-dot" style="background: #00cec9;"></span>
+            <span>Soma Word Pro</span>
+        </div>
+        <div class="window-controls">
+            <button class="control-btn min-btn" onclick="minimizeApp('app-word')">─</button>
+            <button class="control-btn close-btn" onclick="closeApp('app-word')">✕</button>
+        </div>
+    </div>
+
+    <!-- Word Toolbar -->
+    <div style="background: var(--card-bg); padding: 8px 12px; display: flex; gap: 8px; border-bottom: 1px solid rgba(0,0,0,0.1); align-items: center;">
+        <button onclick="formatWordText('bold')" style="padding: 4px 8px; cursor: pointer; font-weight: bold;">B</button>
+        <button onclick="formatWordText('italic')" style="padding: 4px 8px; cursor: pointer; font-style: italic;">I</button>
+        <button onclick="formatWordText('underline')" style="padding: 4px 8px; cursor: pointer; text-decoration: underline;">U</button>
+        <div style="width: 1px; height: 16px; background: rgba(0,0,0,0.1);"></div>
+        <button onclick="saveWordDocument()" style="background: #00cec9; color: #0f172a; border: none; padding: 4px 10px; border-radius: 4px; font-weight: bold; cursor: pointer;">💾 Save</button>
+    </div>
+
+    <!-- Editable Canvas Area -->
+    <div class="window-body-container" style="padding: 15px; height: calc(100% - 85px); background:rgba(0, 0, 0, 0.2); color:var(--text-color); overflow-y: auto;">
+        <div id="word-editor-canvas" contenteditable="true" style="min-height: 100%; outline: none; font-family: sans-serif; font-size: 14px; line-height: 1.6;" oninput="updateWordStats()">
+            Start typing your document...
+        </div>
+    </div>
+
+    <!-- Word Footer Statusbar -->
+    <div style="background: var(--sidebar-bg); padding: 6px 12px; font-size: 11px; display: flex; justify-content: space-between; border-top: 1px solid rgba(0,0,0,0.05); color: var(--text-color);">
+        <span id="word-stats">Words: 4 | Chars: 28</span>
+        <span id="word-save-status" style="color: #00cec9;">Saved in Local Storage</span>
     </div>
 </div>
 

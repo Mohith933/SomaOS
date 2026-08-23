@@ -81,6 +81,21 @@ function playSound(type) {
     }
 }
 
+let selectedWizardAvatar = '👨‍💻';
+
+function selectWizardEmoji(emoji, btnElement) {
+    selectedWizardAvatar = emoji;
+    document.getElementById('setup-selected-emoji').value = emoji;
+    
+    // Update active visual state across buttons
+    document.querySelectorAll('.wizard-emoji-btn').forEach(b => {
+        b.style.background = 'rgba(255,255,255,0.05)';
+        b.style.borderColor = 'rgba(255,255,255,0.1)';
+    });
+    btnElement.style.background = 'rgba(108, 92, 231, 0.2)';
+    btnElement.style.borderColor = '#6c5ce7';
+}
+
 const bootScreen = document.getElementById('boot-screen');
 const authLayer = document.getElementById('system-auth-layer');
 
@@ -703,7 +718,7 @@ function closeNotepadWithSaveCheck() {
         const currentFile = activeItems.find(i => i.name === activeNotepadFileRef);
 
         if (currentFile && currentFile.content !== updatedContent) {
-            const saveConfirm = confirm(`Do you want to save changes to "${activeNotepadFileRef}" before closing?`);
+            const saveConfirm = confirm(somaAlert(`Do you want to save changes to "${activeNotepadFileRef}" before closing?`));
             if (saveConfirm) {
                 currentFile.content = updatedContent;
                 commitFileSystem();
@@ -789,7 +804,12 @@ function renderTaskbarTrays() {
         'app-calendar' : '📅',
         'app-pictures' : '🖼️',
         'app-camera' : '📸',
-        'app-paint'  : '🎨'
+        'app-paint'  : '🎨',
+        'app-kanban' : '📋',
+        'app-chess'  : '♟️',
+        'app-word'   :'📝',
+        'app-soma-store' : '🛍️',
+        'app-voice':'🎙️'
     };
     
     Object.keys(activeRunningApps).forEach(id => {
@@ -2723,7 +2743,7 @@ function somaAlert(title, message, icon = '⚠️') {
 
     // Assign parameters dynamically
     alertTitle.innerText = title;
-    alertMessage.innerText = message;
+    alertMessage.innerText = message || '';
     if (alertIcon) alertIcon.innerText = icon;
 
     // Trigger visual opening transition
@@ -2847,6 +2867,506 @@ function saveCanvas() {
 initPaint();
 
 
+// ==========================================
+// 📋 KANBAN TASK MATRIX BOARD BUSINESS LOGIC
+// ==========================================
+let kanbanTasks = JSON.parse(localStorage.getItem('soma_kanban_tasks')) || [
+    { id: 1, text: "Build Soma 2.0 Web OS Interface", category: "todo" },
+    { id: 2, text: "Optimize GPU-Accelerated Drag Matrix", category: "inprogress" },
+    { id: 3, text: "Deploy Hridaya CLI Terminal Module", category: "done" }
+];
+
+function commitKanbanTasks() {
+    localStorage.setItem('soma_kanban_tasks', JSON.stringify(kanbanTasks));
+}
+
+function renderKanbanBoard() {
+    const todoList = document.getElementById('kanban-list-todo');
+    const inprogressList = document.getElementById('kanban-list-inprogress');
+    const doneList = document.getElementById('kanban-list-done');
+
+    if (!todoList || !inprogressList || !doneList) return;
+
+    todoList.innerHTML = '';
+    inprogressList.innerHTML = '';
+    doneList.innerHTML = '';
+
+    kanbanTasks.forEach(task => {
+        const cardEl = document.createElement('div');
+        cardEl.className = 'kanban-task-card';
+        cardEl.innerHTML = `
+            <span>${task.text}</span>
+            <div class="kanban-card-actions">
+                ${task.category !== 'todo' ? `<button onclick="moveKanbanTask(${task.id}, -1)">◀</button>` : ''}
+                <button onclick="deleteKanbanTask(${task.id})" style="color:#ff7675;">✕</button>
+                ${task.category !== 'done' ? `<button onclick="moveKanbanTask(${task.id}, 1)">▶</button>` : ''}
+            </div>
+        `;
+
+        if (task.category === 'todo') todoList.appendChild(cardEl);
+        if (task.category === 'inprogress') inprogressList.appendChild(cardEl);
+        if (task.category === 'done') doneList.appendChild(cardEl);
+    });
+}
+
+function createNewKanbanTask() {
+    const inputField = document.getElementById('kanban-new-task-input');
+    if (!inputField || !inputField.value.trim()) return;
+
+    const newTask = {
+        id: Date.now(),
+        text: inputField.value.trim(),
+        category: 'todo'
+    };
+
+    kanbanTasks.push(newTask);
+    commitKanbanTasks();
+    renderKanbanBoard();
+    inputField.value = '';
+    playSound('click');
+}
+
+function moveKanbanTask(taskId, direction) {
+    const categories = ['todo', 'inprogress', 'done'];
+    const task = kanbanTasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    let currentIndex = categories.indexOf(task.category);
+    let newIndex = currentIndex + direction;
+
+    if (newIndex >= 0 && newIndex < categories.length) {
+        task.category = categories[newIndex];
+        commitKanbanTasks();
+        renderKanbanBoard();
+        playSound('click');
+    }
+}
+
+function deleteKanbanTask(taskId) {
+    kanbanTasks = kanbanTasks.filter(t => t.id !== taskId);
+    commitKanbanTasks();
+    renderKanbanBoard();
+    playSound('clear');
+}
+
+
+
+// On System Boot, restore installed apps from LocalStorage
+document.addEventListener('DOMContentLoaded', () => {
+    checkInstalledApps();
+    loadSavedWordDoc();
+    initChessBoard();
+});
+
+// Check installed state for Word and Chess
+function checkInstalledApps() {
+    // Check Word
+    if (localStorage.getItem('soma_app_word_installed') === 'true') {
+        renderDesktopIcon('app-word', 'icon-desktop-word', '📝', 'Soma Word');
+        updateStoreButtonState('word', 'Uninstall');
+    }
+
+    // Check Chess
+    if (localStorage.getItem('soma_app_chess_installed') === 'true') {
+        renderDesktopIcon('app-chess', 'icon-desktop-chess', '♟️', 'Soma Chess');
+        updateStoreButtonState('chess', 'Uninstall');
+    }
+}
+
+function uninstallAppFromDesktop(appKey) {
+    launchSomaStoreApp(appKey); // Triggers the uninstall confirmation flow directly
+}
+
+// Unified Store Launcher & Installer
+// Unified Store Launcher, Installer & Uninstaller
+function launchSomaStoreApp(appKey) {
+    const isInstalled = localStorage.getItem(`soma_app_${appKey}_installed`) === 'true';
+    const btn = document.getElementById(`store-btn-${appKey}`);
+
+    if (!isInstalled) {
+        // --- 1. INSTALLATION FLOW ---
+        if (btn) {
+            btn.innerText = "Installing...";
+            btn.disabled = true;
+            btn.style.opacity = "0.7";
+        }
+
+        setTimeout(() => {
+            // Save state in LocalStorage
+            localStorage.setItem(`soma_app_${appKey}_installed`, 'true');
+            
+            if (appKey === 'word') {
+                renderDesktopIcon('app-word', 'icon-desktop-word', '📝', 'Word');
+                openApp('app-word');
+            } else if (appKey === 'chess') {
+                renderDesktopIcon('app-chess', 'icon-desktop-chess', '♟️', 'Neon-Chess');
+                openApp('app-chess');
+            }
+
+            updateStoreButtonState(appKey, 'Installed');
+        }, 1500); // 1.5s mock install time
+
+    } else {
+        // --- 2. UNINSTALLATION FLOW ---
+        const confirmUninstall = confirm(`Do you want to uninstall ${appKey === 'word' ? 'Soma Word' : 'Soma Chess'}?`);
+        
+        if (confirmUninstall) {
+            // Remove from LocalStorage
+            localStorage.removeItem(`soma_app_${appKey}_installed`);
+            
+            // Remove game state/docs if needed (Optional)
+            if (appKey === 'chess') localStorage.removeItem('soma_chess_board_state');
+
+            // Close window if open
+            const targetWindowId = appKey === 'word' ? 'app-word' : 'app-chess';
+            closeApp(targetWindowId);
+
+            // Remove Desktop Icon
+            removeDesktopIcon(appKey === 'word' ? 'icon-desktop-word' : 'icon-desktop-chess');
+
+            // Reset Store Button
+            updateStoreButtonState(appKey, 'Get / Install');
+        }
+    }
+}
+
+// Helper to remove icon from Desktop Grid
+function removeDesktopIcon(iconId) {
+    const icon = document.getElementById(iconId);
+    if (icon) {
+        icon.remove();
+    }
+}
+
+// Helper for Button Labels & Styles
+function updateStoreButtonState(appKey, text) {
+    const btn = document.getElementById(`store-btn-${appKey}`);
+    if (!btn) return;
+
+    btn.innerText = text;
+    btn.disabled = false;
+    btn.style.opacity = "1";
+
+    // Style button according to status (Red for Uninstall on hover/active state)
+    if (text === 'Installed' || text === 'Uninstall') {
+        btn.style.background = "#ff7675"; // Coral Red for uninstall
+        btn.innerText = "Uninstall";
+    } else {
+        btn.style.background = "#6c5ce7"; // Purple for install
+        btn.innerText = "Get / Install";
+    }
+}
+
+// Reusable Desktop Icon Renderer
+function renderDesktopIcon(appId, iconId, emoji, label) {
+    if (document.getElementById(iconId)) return; // Prevent duplicate icons
+
+    const grid = document.querySelector('.icon-grid');
+    if (!grid) return;
+
+    const iconDiv = document.createElement('div');
+    iconDiv.className = 'desktop-icon';
+    iconDiv.id = iconId;
+    iconDiv.onclick = () => openApp(appId);
+    iconDiv.innerHTML = `
+        <div class="icon-visual">${emoji}</div>
+        <div class="icon-label">${label}</div>
+    `;
+    grid.appendChild(iconDiv);
+}
+
+// Helper for Store UI buttons
+function updateStoreButtonState(appKey, text) {
+    const btn = document.getElementById(`store-btn-${appKey}`);
+    if (btn) btn.innerText = text;
+}
+
+
+/* ===================================================
+   ♟️ 2D NEON CHESS ENGINE LOGIC
+   =================================================== */
+
+const initialChessBoard = [
+    ["r", "n", "b", "q", "k", "b", "n", "r"],
+    ["p", "p", "p", "p", "p", "p", "p", "p"],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["P", "P", "P", "P", "P", "P", "P", "P"],
+    ["R", "N", "B", "Q", "K", "B", "N", "R"]
+];
+
+const chessPiecesMap = {
+    'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚', 'p': '♟', // Black
+    'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔', 'P': '♙'  // White
+};
+
+let currentBoardState = [];
+let selectedSquare = null;
+let currentTurn = 'W'; // 'W' for White, 'B' for Black
+
+function initChessBoard() {
+    const savedState = localStorage.getItem('soma_chess_board_state');
+    const savedTurn = localStorage.getItem('soma_chess_turn');
+
+    currentBoardState = savedState ? JSON.parse(savedState) : JSON.parse(JSON.stringify(initialChessBoard));
+    currentTurn = savedTurn || 'W';
+
+    renderChessGrid();
+}
+
+function renderChessGrid() {
+    const boardContainer = document.getElementById('chess-board');
+    if (!boardContainer) return;
+
+    boardContainer.innerHTML = '';
+    document.getElementById('chess-status').innerText = `Turn: ${currentTurn === 'W' ? 'White' : 'Black'}`;
+
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+            const square = document.createElement('div');
+            const isLight = (r + c) % 2 === 0;
+            square.className = `chess-square ${isLight ? 'light' : 'dark'}`;
+            square.dataset.row = r;
+            square.dataset.col = c;
+
+            const pieceCode = currentBoardState[r][c];
+            if (pieceCode) {
+                const pieceSpan = document.createElement('span');
+                pieceSpan.className = 'chess-piece';
+                pieceSpan.innerText = chessPiecesMap[pieceCode] || '';
+                // Colorize White vs Black pieces for Neon contrast
+                pieceSpan.style.color = pieceCode === pieceCode.toUpperCase() ? '#00cec9' : '#fd79a8';
+                square.appendChild(pieceSpan);
+            }
+
+            square.onclick = () => handleChessSquareClick(r, c);
+            boardContainer.appendChild(square);
+        }
+    }
+}
+
+function handleChessSquareClick(row, col) {
+    const piece = currentBoardState[row][col];
+
+    if (selectedSquare) {
+        const [prevR, prevC] = selectedSquare;
+
+        // Move piece if clicking a new square
+        if (prevR !== row || prevC !== col) {
+            currentBoardState[row][col] = currentBoardState[prevR][prevC];
+            currentBoardState[prevR][prevC] = "";
+            currentTurn = currentTurn === 'W' ? 'B' : 'W';
+
+            // Save match state in LocalStorage
+            localStorage.setItem('soma_chess_board_state', JSON.stringify(currentBoardState));
+            localStorage.setItem('soma_chess_turn', currentTurn);
+        }
+
+        selectedSquare = null;
+        renderChessGrid();
+    } else {
+        // Select piece if it belongs to current player turn
+        if (piece) {
+            const isWhitePiece = piece === piece.toUpperCase();
+            if ((currentTurn === 'W' && isWhitePiece) || (currentTurn === 'B' && !isWhitePiece)) {
+                selectedSquare = [row, col];
+                highlightSelectedSquare(row, col);
+            }
+        }
+    }
+}
+
+function highlightSelectedSquare(row, col) {
+    renderChessGrid();
+    const squares = document.querySelectorAll('.chess-square');
+    squares.forEach(sq => {
+        if (parseInt(sq.dataset.row) === row && parseInt(sq.dataset.col) === col) {
+            sq.classList.add('selected');
+        }
+    });
+}
+
+function resetChessGame() {
+    currentBoardState = JSON.parse(JSON.stringify(initialChessBoard));
+    currentTurn = 'W';
+    localStorage.removeItem('soma_chess_board_state');
+    localStorage.removeItem('soma_chess_turn');
+    selectedSquare = null;
+    renderChessGrid();
+}
+
+/* ===================================================
+   🎙️ HUMAN-LIKE SOMA VOICE ASSISTANT ENGINE
+   =================================================== */
+
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null;
+let isListening = false;
+
+// Initialize Web Speech API
+if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+        isListening = true;
+        updateVoiceOrb(true, "Listening... Speak your command.");
+    };
+
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript.toLowerCase();
+        document.getElementById('voice-transcript').innerText = `"${transcript}"`;
+        processVoiceCommand(transcript);
+    };
+
+    recognition.onerror = () => {
+        isListening = false;
+        updateVoiceOrb(false, "Didn't hear that clearly. Try again!");
+    };
+
+    recognition.onend = () => {
+        isListening = false;
+        updateVoiceOrb(false, "Tap 'Start Listening' to speak");
+    };
+}
+
+function toggleVoiceAssistant() {
+    if (!SpeechRecognition) {
+        speakResponse("Sorry, voice recognition is not supported in this browser.");
+        return;
+    }
+
+    if (isListening) {
+        recognition.stop();
+    } else {
+        recognition.start();
+    }
+}
+
+function updateVoiceOrb(active, statusText) {
+    const orb = document.getElementById('voice-orb');
+    const status = document.getElementById('voice-status');
+    const btn = document.getElementById('voice-listen-btn');
+
+    if (status) status.innerText = statusText;
+
+    if (active) {
+        if (orb) {
+            orb.style.boxShadow = "0 0 35px #00cec9, 0 0 15px #6c5ce7";
+            orb.style.transform = "scale(1.1)";
+        }
+        if (btn) btn.innerText = "🛑 Stop Listening";
+    } else {
+        if (orb) {
+            orb.style.boxShadow = "0 0 20px rgba(108, 92, 231, 0.6)";
+            orb.style.transform = "scale(1)";
+        }
+        if (btn) btn.innerText = "🎤 Start Listening";
+    }
+}
+
+/* --- NATURAL HUMAN SPEECH SYNTHESIS (TTS) --- */
+function speakResponse(text) {
+    if (!('speechSynthesis' in window)) return;
+
+    window.speechSynthesis.cancel(); // Stop ongoing speech
+    const utterance = new SpeechSynthesisUtterance(text);
+    const voices = window.speechSynthesis.getVoices();
+
+    // Select natural sounding female/male human voice if available
+    const humanVoice = voices.find(v => v.lang.includes('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha')));
+    if (humanVoice) utterance.voice = humanVoice;
+
+    utterance.pitch = 1.0;
+    utterance.rate = 1.0;
+    window.speechSynthesis.speak(utterance);
+}
+
+/* --- COMMAND PARSER --- */
+function processVoiceCommand(cmd) {
+    // 1. OPEN APPS
+    if (cmd.includes("open") || cmd.includes("launch") || cmd.includes("start")) {
+        if (cmd.includes("word") || cmd.includes("notepad") || cmd.includes("editor")) {
+            if (localStorage.getItem('soma_app_word_installed') === 'true') {
+                openApp('app-word');
+                speakResponse("Opening Soma Word Pro for you.");
+            } else {
+                speakResponse("Soma Word is not installed. You can get it from the Soma Store.");
+            }
+        } 
+        else if (cmd.includes("chess") || cmd.includes("game")) {
+            if (localStorage.getItem('soma_app_chess_installed') === 'true') {
+                openApp('app-chess');
+                speakResponse("Launching 2D Neon Chess.");
+            } else {
+                speakResponse("Soma Chess is not installed. Please download it from the Soma Store.");
+            }
+        } 
+        else if (cmd.includes("store") || cmd.includes("shop")) {
+            openApp('app-soma-store');
+            speakResponse("Opening Soma App Store.");
+        } 
+        else if (cmd.includes("snake")) {
+            openApp('app-game');
+            speakResponse("Opening Snake game.");
+        } 
+        else {
+            speakResponse("I couldn't find that app on your system.");
+        }
+    } 
+    
+    // 2. CLOSE APPS
+    else if (cmd.includes("close") || cmd.includes("exit") || cmd.includes("shut")) {
+        if (cmd.includes("word") || cmd.includes("editor")) {
+            closeApp('app-word');
+            speakResponse("Closed Soma Word.");
+        } else if (cmd.includes("chess")) {
+            closeApp('app-chess');
+            speakResponse("Closed Neon Chess.");
+        } else if (cmd.includes("store")) {
+            closeApp('app-soma-store');
+            speakResponse("Closed Soma Store.");
+        } else if (cmd.includes("voice")) {
+            speakResponse("Closing voice assistant.");
+            setTimeout(() => closeApp('app-voice'), 1000);
+        } else {
+            speakResponse("Which app would you like me to close?");
+        }
+    } 
+    
+    // 3. CHECK USAGE / INSTALLED APPS STATUS
+    else if (cmd.includes("usage") || cmd.includes("check") || cmd.includes("installed") || cmd.includes("status")) {
+        const isWord = localStorage.getItem('soma_app_word_installed') === 'true';
+        const isChess = localStorage.getItem('soma_app_chess_installed') === 'true';
+        
+        let report = "Here is your system usage check. ";
+        let count = 0;
+        
+        if (isWord) { count++; }
+        if (isChess) { count++; }
+
+        report += `You have ${count} custom store apps installed: `;
+        report += `${isWord ? 'Soma Word Pro' : ''} ${isWord && isChess ? 'and ' : ''}${isChess ? '2D Neon Chess.' : ''}`;
+        
+        if (count === 0) report = "Your system has no custom store apps installed right now.";
+
+        speakResponse(report);
+    } 
+    
+    // 4. UNKNOWN COMMAND RECOVERY
+    else {
+        speakResponse("I didn't quite catch that. You can tell me to open Word, launch Chess, close Store, or check usage.");
+    }
+}
+
+// Pre-load voices on startup
+if ('speechSynthesis' in window) {
+    window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+}
 // ── SERVICE WORKER ──
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("sw.js").catch(() => {});

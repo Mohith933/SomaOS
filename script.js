@@ -4,6 +4,9 @@ let topZIndexCounter = 100;
 let dragElementTarget = null;
 let offX = 0, offY = 0;
 let explorerPreMaximizeBounds = { top: '', left: '', width: '', height: '' };
+// 🌐 GLOBAL CONTEXT MENU STATE
+let targetedItemName = null;
+let targetedItemIndex = null;
 
 // mock placeholder sound engine tool to prevent script failure checks
 function playSound(type) {
@@ -81,20 +84,7 @@ function playSound(type) {
     }
 }
 
-let selectedWizardAvatar = '👨‍💻';
 
-function selectWizardEmoji(emoji, btnElement) {
-    selectedWizardAvatar = emoji;
-    document.getElementById('setup-selected-emoji').value = emoji;
-    
-    // Update active visual state across buttons
-    document.querySelectorAll('.wizard-emoji-btn').forEach(b => {
-        b.style.background = 'rgba(255,255,255,0.05)';
-        b.style.borderColor = 'rgba(255,255,255,0.1)';
-    });
-    btnElement.style.background = 'rgba(108, 92, 231, 0.2)';
-    btnElement.style.borderColor = '#6c5ce7';
-}
 
 const bootScreen = document.getElementById('boot-screen');
 const authLayer = document.getElementById('system-auth-layer');
@@ -809,7 +799,9 @@ function renderTaskbarTrays() {
         'app-chess'  : '♟️',
         'app-word'   :'📝',
         'app-soma-store' : '🛍️',
-        'app-voice':'🎙️'
+        'app-voice':'🎙️',
+        'app-control':'🎛️',
+        'app-explore':'🧭'
     };
     
     Object.keys(activeRunningApps).forEach(id => {
@@ -2078,6 +2070,20 @@ function executeBiosSequencePipeline() {
 // ==========================================
 // 🌸 STAGE 2: IDENTITY SIGNUP CONTROLS (OOBE)
 // ==========================================
+let selectedWizardAvatar = '👨‍💻';
+
+function selectWizardEmoji(emoji, btnElement) {
+    selectedWizardAvatar = emoji;
+    document.getElementById('setup-selected-emoji').value = emoji;
+    
+    // Update active visual state across buttons
+    document.querySelectorAll('.start-avatar').forEach(b => {
+        b.style.background = 'rgba(255,255,255,0.05)';
+        b.style.borderColor = 'rgba(255,255,255,0.1)';
+    });
+    btnElement.style.background = 'rgba(108, 92, 231, 0.2)';
+    btnElement.style.borderColor = '#6c5ce7';
+}
 // ============================================================================
 // 🪐 SOMA 2.0 HUMAN-CENTRIC STATE ENGINE LOGIC
 // ============================================================================
@@ -2306,54 +2312,65 @@ function lockSystemAuth() {
         lockBattery.style.color = sysBattery.style.color;
     }
 }
-// 📑 ADAPTIVE CONTEXT MENU EVENT MECHANICS
-let currentSelectedTargetAction = null;
+
+// 🔄 Smooth Refresh Function
+function refreshDesktop() {
     const desktop = document.getElementById('desktop');
-    const contextMenu = document.getElementById('desktop-context-menu');
-    const itemActionsGroup = document.getElementById('menu-group-item-actions');
+    if (desktop) {
+        desktop.style.opacity = '0.4';
+        setTimeout(() => { 
+            desktop.style.opacity = '1'; 
+        }, 150);
+    }
+}
 
-    // Handle Right-Click
-    desktop.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
+// ⌨️ Keyboard Shortcut Listener for F5 or Ctrl+R
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'F5' || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'r')) {
+        e.preventDefault(); // Stop entire browser page reload
+        refreshDesktop();   // Smooth Soma OS desktop refresh
+    }
+});
 
-        // 1. Remove previous active items selections highlights
-        clearActiveContextSelections();
-        currentSelectedTargetAction = null;
+const desktop = document.getElementById('desktop');
+const itemActionsGroup = document.getElementById('menu-group-item-actions');
 
-        // 2. Identify if an item was right-clicked or empty wallpaper space
-        const targetElement = e.target.closest('.desktop-icon, .file-card');
+// Handle Right-Click
+desktop.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
 
-        if (targetElement) {
-            // An item was targeted! Show Open/Pin options and highlight it
-            itemActionsGroup.classList.remove('hidden');
-            targetElement.classList.add('active-selected');
-            currentSelectedTargetAction = targetElement.getAttribute('onclick');
-        } else {
-            // Empty desktop space targeted! Hide file actions
-            itemActionsGroup.classList.add('hidden');
+    // 1. Remove previous active items selections highlights
+    clearActiveContextSelections();
+    targetedItemName = null;
+    targetedItemIndex = null;
+
+    // 2. Identify if an item was right-clicked or empty wallpaper space
+    const targetElement = e.target.closest('.desktop-icon, .file-card');
+
+    if (targetElement) {
+        // An item was targeted! Show Open/Delete options and highlight it
+        itemActionsGroup.classList.remove('hidden');
+        targetElement.classList.add('active-selected');
+
+        // 🎯 FIX: Read item attributes directly from the right-clicked element!
+        targetedItemName = targetElement.getAttribute('data-name') || targetElement.querySelector('.icon-label')?.innerText?.trim();
+        
+        // Convert index attribute to a number if it exists
+        const rawIndex = targetElement.getAttribute('data-index');
+        targetedItemIndex = rawIndex !== null ? parseInt(rawIndex, 10) : null;
+
+        // Fallback index search in active directory array if data-index is missing
+        if (targetedItemIndex === null && targetedItemName && typeof somaFileSystem !== 'undefined' && currentActiveDirectoryKey) {
+            const activeItems = somaFileSystem[currentActiveDirectoryKey]?.items || [];
+            targetedItemIndex = activeItems.findIndex(i => i.name === targetedItemName);
+            if (targetedItemIndex === -1) targetedItemIndex = null;
         }
 
-        // 3. Keep menu layout safely inside browser window viewing coordinates
-        let posX = e.clientX;
-        let posY = e.clientY;
-        const menuWidth = 230;
-        const menuHeight = targetElement ? 210 : 130; // Adaptive height boundary check
-
-        if (posX + menuWidth > window.innerWidth) posX -= menuWidth;
-        if (posY + menuHeight > window.innerHeight) posY -= menuHeight;
-
-        contextMenu.style.left = `${posX}px`;
-        contextMenu.style.top = `${posY}px`;
-        contextMenu.classList.remove('hidden');
-    });
-
-    // Close the menu when clicking elsewhere
-    document.addEventListener('click', (e) => {
-        if (!contextMenu.contains(e.target)) {
-            contextMenu.classList.add('hidden');
-            clearActiveContextSelections();
-        }
-    });
+    } else {
+        // Empty desktop space targeted! Hide file actions
+        itemActionsGroup.classList.add('hidden');
+    }
+});
 
 function clearActiveContextSelections() {
     document.querySelectorAll('.active-selected').forEach(element => {
@@ -2364,53 +2381,7 @@ function clearActiveContextSelections() {
 /**
  * Custom Context Menu Command Routing Engine
  */
-function handleMenuAction(action) {
-    const menu = document.getElementById('desktop-context-menu');
-    if (menu) menu.classList.add('hidden');
 
-    const activeItems = somaFileSystem[currentActiveDirectoryKey]?.items || [];
-
-    if (action === 'open' && targetedItemName) {
-        const itemObj = activeItems.find(i => i.name === targetedItemName);
-        if (itemObj) {
-            if (itemObj.type === 'folder') openWindow(itemObj.target);
-            else launchAppTextContent(itemObj.name);
-        }
-    } 
-    // 🗑️ WORKING GLOBAL DELETE PIPELINE FOR FOLDERS AND FILES
-    else if (action === 'delete' && targetedItemIndex !== null && targetedItemIndex !== undefined) {
-        const itemToDelete = activeItems[targetedItemIndex];
-        
-        if (itemToDelete) {
-            if (confirm(`Are you sure you want to delete "${itemToDelete.name}"?`)) {
-                // If it is a folder container, delete its child tree records out of storage maps
-                if (itemToDelete.type === 'folder' && somaFileSystem[itemToDelete.target]) {
-                    delete somaFileSystem[itemToDelete.target];
-                }
-                
-                // Remove the targeted item slice index records record cleanly
-                activeItems.splice(targetedItemIndex, 1);
-                
-                commitFileSystem();
-                openWindow(currentActiveDirectoryKey); // Refresh visual layout
-            }
-        }
-    }
-    else if (action === 'refresh') {
-        const desktop = document.getElementById('desktop');
-            desktop.style.opacity = '0.4';
-            setTimeout(() => { desktop.style.opacity = '1'; }, 150);
-    }
-    else if (action === 'theme') {
-        toggleTheme();
-    }
-    else if (action === 'terminal') {
-        openApp('app-terminal');
-    }
-
-    targetedItemName = null;
-    targetedItemIndex = null;
-}
 
 // 📅 SOMA CALENDAR APPLICATION MATRIX OBJECTS
 let calendarActiveDateInstance = new Date();
@@ -2971,17 +2942,28 @@ function checkInstalledApps() {
         renderDesktopIcon('app-chess', 'icon-desktop-chess', '♟️', 'Soma Chess');
         updateStoreButtonState('chess', 'Uninstall');
     }
+
+    if (localStorage.getItem('soma_app_pomodoro_installed') === 'true') {
+        renderDesktopIcon('app-pomodoro', 'icon-desktop-pomodoro', '⏱️', 'Focus Timer');
+        updateStoreButtonState('pomodoro', 'Uninstall');
+    }
+
+    if (localStorage.getItem('soma_app_breathe_installed') === 'true') {
+        renderDesktopIcon('app-breathe', 'icon-desktop-breathe', '🧘', 'Soma Breathe');
+        updateStoreButtonState('breathe', 'Uninstall');
+    }
+    
 }
 
 function uninstallAppFromDesktop(appKey) {
     launchSomaStoreApp(appKey); // Triggers the uninstall confirmation flow directly
 }
 
-// Unified Store Launcher & Installer
 // Unified Store Launcher, Installer & Uninstaller
 function launchSomaStoreApp(appKey) {
     const isInstalled = localStorage.getItem(`soma_app_${appKey}_installed`) === 'true';
     const btn = document.getElementById(`store-btn-${appKey}`);
+    const appName = somaAppNames[appKey] || 'App';
 
     if (!isInstalled) {
         // --- 1. INSTALLATION FLOW ---
@@ -2994,35 +2976,38 @@ function launchSomaStoreApp(appKey) {
         setTimeout(() => {
             // Save state in LocalStorage
             localStorage.setItem(`soma_app_${appKey}_installed`, 'true');
-            
+
+            // Render Desktop Icon & Open App dynamically
             if (appKey === 'word') {
-                renderDesktopIcon('app-word', 'icon-desktop-word', '📝', 'Word');
-                openApp('app-word');
+                renderDesktopIcon('app-word', 'icon-desktop-word', '📝', 'Soma Word');
             } else if (appKey === 'chess') {
-                renderDesktopIcon('app-chess', 'icon-desktop-chess', '♟️', 'Neon-Chess');
-                openApp('app-chess');
+                renderDesktopIcon('app-chess', 'icon-desktop-chess', '♟️', 'Neon Chess');
+            } else if (appKey === 'pomodoro') {
+                renderDesktopIcon('app-pomodoro', 'icon-desktop-pomodoro', '⏱️', 'Focus Timer');
+            } else if (appKey === 'breathe') {
+                renderDesktopIcon('app-breathe', 'icon-desktop-breathe', '🧘', 'Soma Breathe');
             }
 
-            updateStoreButtonState(appKey, 'Installed');
+            openApp(`app-${appKey}`);
+            updateStoreButtonState(appKey, 'Uninstall');
         }, 1500); // 1.5s mock install time
 
     } else {
         // --- 2. UNINSTALLATION FLOW ---
-        const confirmUninstall = confirm(`Do you want to uninstall ${appKey === 'word' ? 'Soma Word' : 'Soma Chess'}?`);
-        
+        const confirmUninstall = confirm(`Do you want to uninstall ${appName}?`);
+
         if (confirmUninstall) {
             // Remove from LocalStorage
             localStorage.removeItem(`soma_app_${appKey}_installed`);
-            
-            // Remove game state/docs if needed (Optional)
+
+            // Optional app-specific cleanup
             if (appKey === 'chess') localStorage.removeItem('soma_chess_board_state');
 
             // Close window if open
-            const targetWindowId = appKey === 'word' ? 'app-word' : 'app-chess';
-            closeApp(targetWindowId);
+            closeApp(`app-${appKey}`);
 
             // Remove Desktop Icon
-            removeDesktopIcon(appKey === 'word' ? 'icon-desktop-word' : 'icon-desktop-chess');
+            removeDesktopIcon(`icon-desktop-${appKey}`);
 
             // Reset Store Button
             updateStoreButtonState(appKey, 'Get / Install');
@@ -3269,97 +3254,156 @@ function updateVoiceOrb(active, statusText) {
     }
 }
 
-/* --- NATURAL HUMAN SPEECH SYNTHESIS (TTS) --- */
-function speakResponse(text) {
-    if (!('speechSynthesis' in window)) return;
-
-    window.speechSynthesis.cancel(); // Stop ongoing speech
-    const utterance = new SpeechSynthesisUtterance(text);
-    const voices = window.speechSynthesis.getVoices();
-
-    // Select natural sounding female/male human voice if available
-    const humanVoice = voices.find(v => v.lang.includes('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha')));
-    if (humanVoice) utterance.voice = humanVoice;
-
-    utterance.pitch = 1.0;
-    utterance.rate = 1.0;
-    window.speechSynthesis.speak(utterance);
+/* --- HELPER: GET CURRENT TARGET / ACTIVE WINDOW --- */
+function getActiveOrTargetWindow() {
+    // 1. Try finding explicitly focused/active window
+    let active = document.querySelector('.window.active-window') || document.querySelector('.window:not(.hidden)');
+    return active;
 }
 
 /* --- COMMAND PARSER --- */
 function processVoiceCommand(cmd) {
-    // 1. OPEN APPS
-    if (cmd.includes("open") || cmd.includes("launch") || cmd.includes("start")) {
-        if (cmd.includes("word") || cmd.includes("notepad") || cmd.includes("editor")) {
+    // 1. OPEN APPS / WINDOWS
+    if (cmd.includes("open") || cmd.includes("launch") || cmd.includes("start") || cmd.includes("show")) {
+        if (cmd.includes("notes") || cmd.includes("my space") || cmd.includes("space")) {
+            openWindow('my-space');
+            speakResponse("Opening My Space.");
+        } 
+        else if (cmd.includes("notepad") || cmd.includes("note")) {
+            openApp('app-notepad');
+            speakResponse("Opening Notepad.");
+        } 
+        else if (cmd.includes("terminal") || cmd.includes("command") || cmd.includes("console")) {
+            openApp('app-terminal');
+            speakResponse("Opening Terminal.");
+        } 
+        else if (cmd.includes("calculator") || cmd.includes("calc")) {
+            openApp('app-calculator');
+            speakResponse("Opening Calculator.");
+        } 
+        else if (cmd.includes("calendar")) {
+            openApp('app-calendar');
+            if (typeof initSomaCalendar === 'function') initSomaCalendar();
+            speakResponse("Opening Calendar.");
+        } 
+        else if (cmd.includes("clock") || cmd.includes("time") || cmd.includes("world clock")) {
+            openApp('app-clock');
+            speakResponse("Opening World Clock.");
+        } 
+        else if (cmd.includes("photos") || cmd.includes("pictures") || cmd.includes("gallery")) {
+            openApp('app-pictures');
+            speakResponse("Opening Photos.");
+        } 
+        else if (cmd.includes("music") || cmd.includes("player") || cmd.includes("song")) {
+            openApp('app-music');
+            speakResponse("Opening Music Player.");
+        } 
+        else if (cmd.includes("video") || cmd.includes("movie") || cmd.includes("cinema")) {
+            openApp('app-video');
+            speakResponse("Opening Video Player.");
+        } 
+        else if (cmd.includes("mini game") || cmd.includes("snake") || cmd.includes("game")) {
+            if (cmd.includes("chess")) {
+                if (localStorage.getItem('soma_app_chess_installed') === 'true') {
+                    openApp('app-chess');
+                    speakResponse("Launching 2D Neon Chess.");
+                } else {
+                    speakResponse("Soma Chess is not installed. Download it from the Store.");
+                }
+            } else {
+                openApp('app-game');
+                speakResponse("Opening Mini Game.");
+            }
+        } 
+        else if (cmd.includes("settings") || cmd.includes("preferences")) {
+            openApp('app-settings');
+            speakResponse("Opening Settings.");
+        } 
+        else if (cmd.includes("paint") || cmd.includes("draw") || cmd.includes("canvas")) {
+            openApp('app-paint');
+            speakResponse("Opening Paint.");
+        } 
+        else if (cmd.includes("camera") || cmd.includes("photo shoot")) {
+            if (typeof openCameraApp === 'function') openCameraApp('app-camera');
+            else openApp('app-camera');
+            speakResponse("Opening Camera.");
+        } 
+        else if (cmd.includes("tasks") || cmd.includes("kanban") || cmd.includes("todo")) {
+            openApp('app-kanban');
+            speakResponse("Opening Tasks.");
+        } 
+        else if (cmd.includes("store") || cmd.includes("shop") || cmd.includes("market")) {
+            openApp('app-soma-store');
+            speakResponse("Opening Soma Store.");
+        } 
+        else if (cmd.includes("voice") || cmd.includes("assistant")) {
+            openApp('app-voice');
+            speakResponse("Voice Assistant active.");
+        } 
+        else if (cmd.includes("word") || cmd.includes("editor")) {
             if (localStorage.getItem('soma_app_word_installed') === 'true') {
                 openApp('app-word');
-                speakResponse("Opening Soma Word Pro for you.");
+                speakResponse("Opening Soma Word Pro.");
             } else {
-                speakResponse("Soma Word is not installed. You can get it from the Soma Store.");
+                speakResponse("Soma Word is not installed.");
             }
-        } 
-        else if (cmd.includes("chess") || cmd.includes("game")) {
-            if (localStorage.getItem('soma_app_chess_installed') === 'true') {
-                openApp('app-chess');
-                speakResponse("Launching 2D Neon Chess.");
-            } else {
-                speakResponse("Soma Chess is not installed. Please download it from the Soma Store.");
-            }
-        } 
-        else if (cmd.includes("store") || cmd.includes("shop")) {
-            openApp('app-soma-store');
-            speakResponse("Opening Soma App Store.");
-        } 
-        else if (cmd.includes("snake")) {
-            openApp('app-game');
-            speakResponse("Opening Snake game.");
         } 
         else {
             speakResponse("I couldn't find that app on your system.");
         }
     } 
-    
-    // 2. CLOSE APPS
+
+    // 3. CLOSE APPS / WINDOWS
     else if (cmd.includes("close") || cmd.includes("exit") || cmd.includes("shut")) {
-        if (cmd.includes("word") || cmd.includes("editor")) {
-            closeApp('app-word');
-            speakResponse("Closed Soma Word.");
-        } else if (cmd.includes("chess")) {
-            closeApp('app-chess');
-            speakResponse("Closed Neon Chess.");
-        } else if (cmd.includes("store")) {
-            closeApp('app-soma-store');
-            speakResponse("Closed Soma Store.");
-        } else if (cmd.includes("voice")) {
+        if (cmd.includes("notes") || cmd.includes("my space")) closeApp('my-space');
+        else if (cmd.includes("notepad")) closeApp('app-notepad');
+        else if (cmd.includes("terminal")) closeApp('app-terminal');
+        else if (cmd.includes("calculator")) closeApp('app-calculator');
+        else if (cmd.includes("calendar")) closeApp('app-calendar');
+        else if (cmd.includes("clock")) closeApp('app-clock');
+        else if (cmd.includes("photos") || cmd.includes("pictures")) closeApp('app-pictures');
+        else if (cmd.includes("music")) closeApp('app-music');
+        else if (cmd.includes("video")) closeApp('app-video');
+        else if (cmd.includes("game") || cmd.includes("mini game")) closeApp('app-game');
+        else if (cmd.includes("chess")) closeApp('app-chess');
+        else if (cmd.includes("settings")) closeApp('app-settings');
+        else if (cmd.includes("paint")) closeApp('app-paint');
+        else if (cmd.includes("camera")) closeApp('app-camera');
+        else if (cmd.includes("tasks") || cmd.includes("kanban")) closeApp('app-kanban');
+        else if (cmd.includes("store")) closeApp('app-soma-store');
+        else if (cmd.includes("word")) closeApp('app-word');
+        else if (cmd.includes("voice") || cmd.includes("assistant")) {
             speakResponse("Closing voice assistant.");
-            setTimeout(() => closeApp('app-voice'), 1000);
+            setTimeout(() => closeApp('app-voice'), 800);
         } else {
-            speakResponse("Which app would you like me to close?");
+            // Fallback: Close the active focused window if no app name specified
+            const activeWin = getActiveOrTargetWindow();
+            if (activeWin) {
+                activeWin.classList.add('hidden');
+                speakResponse("Window closed.");
+            } else {
+                speakResponse("Which app would you like me to close?");
+            }
         }
     } 
-    
-    // 3. CHECK USAGE / INSTALLED APPS STATUS
+
+    // 4. CHECK USAGE / INSTALLED APPS STATUS
     else if (cmd.includes("usage") || cmd.includes("check") || cmd.includes("installed") || cmd.includes("status")) {
         const isWord = localStorage.getItem('soma_app_word_installed') === 'true';
         const isChess = localStorage.getItem('soma_app_chess_installed') === 'true';
         
-        let report = "Here is your system usage check. ";
+        let report = "System status check complete. ";
         let count = 0;
-        
-        if (isWord) { count++; }
-        if (isChess) { count++; }
+        if (isWord) count++;
+        if (isChess) count++;
 
-        report += `You have ${count} custom store apps installed: `;
-        report += `${isWord ? 'Soma Word Pro' : ''} ${isWord && isChess ? 'and ' : ''}${isChess ? '2D Neon Chess.' : ''}`;
-        
-        if (count === 0) report = "Your system has no custom store apps installed right now.";
-
+        report += `You have ${count} custom store apps installed. `;
         speakResponse(report);
     } 
-    
-    // 4. UNKNOWN COMMAND RECOVERY
+
+    // 5. UNKNOWN COMMAND RECOVERY
     else {
-        speakResponse("I didn't quite catch that. You can tell me to open Word, launch Chess, close Store, or check usage.");
+        speakResponse("Command not recognized. Try saying open Notepad, move left, maximize, or close Store.");
     }
 }
 
@@ -3367,6 +3411,68 @@ function processVoiceCommand(cmd) {
 if ('speechSynthesis' in window) {
     window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
 }
+
+/* ===================================================
+   🎛️ SOMA CONTROL CENTER LOGIC
+   =================================================== */
+
+let isFocusMode = false;
+let isCyberGlow = true;
+
+// 1. Focus Mode Toggle (Hides taskbar distraction / darkens desktop background)
+function toggleFocusMode() {
+    isFocusMode = !isFocusMode;
+    const box = document.getElementById('toggle-focus-box');
+    const text = document.getElementById('focus-status-text');
+
+    if (isFocusMode) {
+        if (box) box.style.background = "rgba(0, 206, 201, 0.2)";
+        if (box) box.style.borderColor = "#00cec9";
+        if (text) text.innerText = "Enabled (Focused)";
+        document.body.classList.add('soma-focus-active');
+    } else {
+        if (box) box.style.background = "rgba(255,255,255,0.05)";
+        if (box) box.style.borderColor = "rgba(255,255,255,0.1)";
+        if (text) text.innerText = "Disabled";
+        document.body.classList.remove('soma-focus-active');
+    }
+}
+
+// 2. Cyber Glow Theme Effect Toggle
+function toggleCyberGlow() {
+    isCyberGlow = !isCyberGlow;
+    const box = document.getElementById('toggle-theme-box');
+    const text = document.getElementById('glow-status-text');
+
+    if (isCyberGlow) {
+        if (box) box.style.background = "rgba(108, 92, 231, 0.2)";
+        if (box) box.style.borderColor = "#6c5ce7";
+        if (text) text.innerText = "Active";
+        document.documentElement.style.setProperty('--glow-opacity', '1');
+    } else {
+        if (box) box.style.background = "rgba(255,255,255,0.05)";
+        if (box) box.style.borderColor = "rgba(255,255,255,0.1)";
+        if (text) text.innerText = "Disabled";
+        document.documentElement.style.setProperty('--glow-opacity', '0.2');
+    }
+}
+
+// 3. Audio Level Control
+function adjustSystemVolume(val) {
+    if (typeof speakResponse === 'function' && val === "0") {
+        speakResponse("Muted system sounds.");
+    }
+}
+
+// 4. Reset OS Local Storage safely
+function clearSomaStorage() {
+    if (confirm("Are you sure you want to reset local storage? This will reset app installs and saved text.")) {
+        localStorage.clear();
+        alert("Soma OS Local Storage reset. Reloading system...");
+        location.reload();
+    }
+}
+
 // ── SERVICE WORKER ──
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("sw.js").catch(() => {});

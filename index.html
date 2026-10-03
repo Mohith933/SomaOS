@@ -1,31 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Soma OS</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#ffe5ec">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffe5ec">
 </head>
 
 <body class="light-theme">
 
     <div id="soma-alert-overlay" class="soma-alert-hidden">
-    <div class="soma-alert-box">
-        <div class="soma-alert-glow-edge"></div>
-        <div class="soma-alert-icon" id="soma-alert-icon-target">⚠️</div>
-        <div class="soma-alert-content">
-            <h3 id="soma-alert-title">System Alert</h3>
-            <p id="soma-alert-message">Parameters initialized successfully.</p>
-        </div>
-        <div class="soma-alert-action-row">
-            <button class="soma-alert-confirm-btn" onclick="closeSomaAlert()">Acknowledge</button>
+        <div class="soma-alert-box">
+            <div class="soma-alert-glow-edge"></div>
+            <div class="soma-alert-icon" id="soma-alert-icon-target">⚠️</div>
+            <div class="soma-alert-content">
+                <h3 id="soma-alert-title">System Alert</h3>
+                <p id="soma-alert-message">Parameters initialized successfully.</p>
+            </div>
+            <div class="soma-alert-action-row">
+                <button class="soma-alert-confirm-btn" onclick="closeSomaAlert()">Acknowledge</button>
+            </div>
         </div>
     </div>
-</div>
 
     <div id="bios-screen">
         <div class="bios-header">SOMA INSIDE CORE MODULE BIOS v4.02.26</div>
@@ -34,92 +35,103 @@
         <div class="bios-footer" id="bios-footer-hint">Running initialization pipeline...</div>
     </div>
 
-    
+
 
     <div id="setup-wizard-screen" class="wizard-hidden">
-    <div class="wizard-card">
-        <div class="wizard-progress-dots">
-            <span class="dot active" id="dot-step-1"></span>
-            <span class="dot" id="dot-step-2"></span>
-            <span class="dot" id="dot-step-3"></span>
-            <span class="dot" id="dot-step-4"></span>
-        </div>
+        <div class="wizard-card">
+            <div class="wizard-progress-dots">
+                <span class="dot active" id="dot-step-1"></span>
+                <span class="dot" id="dot-step-2"></span>
+                <span class="dot" id="dot-step-3"></span>
+                <span class="dot" id="dot-step-4"></span>
+            </div>
 
-        <div class="wizard-panel active-panel" id="panel-location">
-            <div class="wizard-icon">🌍</div>
-            <h2>Synchronize Space & Time</h2>
-            <p>Align Soma's internal clock cycles, regional rhythms, and localized formatting vectors to your current coordinate space.</p>
-            <div class="wizard-field-group">
-                <select id="setup-location-input">
-                    <option value="India" selected>India Matrix (IST)</option>
-                    <option value="United States">Americas Coordinates (EST/PST)</option>
-                    <option value="United Kingdom">Euro Meridian Space (GMT)</option>
-                    <option value="Japan">Asia Pacific Sector (JST)</option>
-                </select>
+            <div class="wizard-panel active-panel" id="panel-location">
+                <div class="wizard-icon">🌍</div>
+                <h2>Synchronize Space & Time</h2>
+                <p>Align Soma's internal clock cycles, regional rhythms, and localized formatting vectors to your
+                    current coordinate space.</p>
+                <div class="wizard-field-group">
+                    <select id="setup-location-input">
+                        <option value="India" selected>India Matrix (IST)</option>
+                        <option value="United States">Americas Coordinates (EST/PST)</option>
+                        <option value="United Kingdom">Euro Meridian Space (GMT)</option>
+                        <option value="Japan">Asia Pacific Sector (JST)</option>
+                    </select>
+                </div>
+                <button class="wizard-next-btn" onclick="navigateSoma2Wizard(2)">Align Parameters ➔</button>
             </div>
-            <button class="wizard-next-btn" onclick="navigateSoma2Wizard(2)">Align Parameters ➔</button>
-        </div>
 
-        <div class="wizard-panel" id="panel-keyboard">
-            <div class="wizard-icon"><i class="fas fa-keyboard"></i></div>
-            <h2>Calibrate Input Expression</h2>
-            <p>Configure how your physical hardware translates manual keystroke vectors straight into the dynamic shell matrix.</p>
-            <div class="wizard-field-group">
-                <select id="setup-keyboard-input">
-                    <option value="US-English" selected>Standard QWERTY Layout</option>
-                    <option value="UK-English">ISO International Alignment</option>
-                    <option value="Devanagari">Regional Script Matrix</option>
-                </select>
+            <div class="wizard-panel" id="panel-keyboard">
+                <div class="wizard-icon"><i class="fas fa-keyboard"></i></div>
+                <h2>Calibrate Input Expression</h2>
+                <p>Configure how your physical hardware translates manual keystroke vectors straight into the dynamic
+                    shell matrix.</p>
+                <div class="wizard-field-group">
+                    <select id="setup-keyboard-input">
+                        <option value="US-English" selected>Standard QWERTY Layout</option>
+                        <option value="UK-English">ISO International Alignment</option>
+                        <option value="Devanagari">Regional Script Matrix</option>
+                    </select>
+                </div>
+                <div class="wizard-btn-row">
+                    <button class="wizard-back-btn" onclick="navigateSoma2Wizard(1)">◀ Back</button>
+                    <button class="wizard-next-btn" onclick="navigateSoma2Wizard(3)">Calibrate Layout ➔</button>
+                </div>
             </div>
-            <div class="wizard-btn-row">
-                <button class="wizard-back-btn" onclick="navigateSoma2Wizard(1)">◀ Back</button>
-                <button class="wizard-next-btn" onclick="navigateSoma2Wizard(3)">Calibrate Layout ➔</button>
-            </div>
-        </div>
 
-        <div class="wizard-panel" id="panel-wifi">
-            <div class="wizard-icon"><i class="fas fa-wifi"></i></div>
-            <h2>Establish Network Harmony</h2>
-            <p>Bridge your local operating shell instance with external data pipelines to initialize safe web gateway assets.</p>
-            <div class="wizard-field-group">
-                <select id="setup-wifi-input" onchange="evaluateNetworkInterfaceView()">
-                    <option value="Soma_Secure_Core" selected>Soma Core Gateway (Encrypted)</option>
-                    <option value="Local_Home_Gateway">External Network Mode (WPA2)</option>
-                    <option value="Bypass_Offline">Run Isolated Workspace (Offline)</option>
-                </select>
-                <input type="password" id="setup-wifi-password" placeholder="Provide security link keyphrase...">
+            <div class="wizard-panel" id="panel-wifi">
+                <div class="wizard-icon"><i class="fas fa-wifi"></i></div>
+                <h2>Establish Network Harmony</h2>
+                <p>Bridge your local operating shell instance with external data pipelines to initialize safe web
+                    gateway assets.</p>
+                <div class="wizard-field-group">
+                    <select id="setup-wifi-input" onchange="evaluateNetworkInterfaceView()">
+                        <option value="Soma_Secure_Core" selected>Soma Core Gateway (Encrypted)</option>
+                        <option value="Local_Home_Gateway">External Network Mode (WPA2)</option>
+                        <option value="Bypass_Offline">Run Isolated Workspace (Offline)</option>
+                    </select>
+                    <input type="password" id="setup-wifi-password" placeholder="Provide security link keyphrase...">
+                </div>
+                <div class="wizard-btn-row">
+                    <button class="wizard-back-btn" onclick="navigateSoma2Wizard(2)">◀ Back</button>
+                    <button class="wizard-next-btn" onclick="navigateSoma2Wizard(4)">Bridge Connection ➔</button>
+                </div>
             </div>
-            <div class="wizard-btn-row">
-                <button class="wizard-back-btn" onclick="navigateSoma2Wizard(2)">◀ Back</button>
-                <button class="wizard-next-btn" onclick="navigateSoma2Wizard(4)">Bridge Connection ➔</button>
-            </div>
-        </div>
 
-        <div class="wizard-panel" id="panel-user">
-    <div class="wizard-icon">🌸</div>
-    <h2>Initialize Identity Node</h2>
-    <p>Map your human handle signature token. This builds your unique root file path directories.</p>
-    <div class="wizard-field-group">
-        <input type="text" id="setup-username-input" placeholder="Type account identity handle..." value="Mohith">
-    </div>
-    <div class="wizard-field-group" style="margin-top: 15px;">
-        <label style="font-size: 12px; color: #a29bfe; display: block; margin-bottom: 8px;">Select Identity Avatar Icon:</label>
-        <div class="wizard-emoji-selector" style="display: flex; gap: 10px; justify-content: center;">
-            <button type="button" class="wizard-emoji-btn active" onclick="selectWizardEmoji('👨‍💻', this)" style="background: rgba(108, 92, 231, 0.2); border: 1px solid #6c5ce7; font-size: 20px; padding: 8px 12px; border-radius: 8px; cursor: pointer;">👨‍💻</button>
-            <button type="button" class="wizard-emoji-btn" onclick="selectWizardEmoji('⚡', this)" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); font-size: 20px; padding: 8px 12px; border-radius: 8px; cursor: pointer;">⚡</button>
-            <button type="button" class="wizard-emoji-btn" onclick="selectWizardEmoji('🚀', this)" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); font-size: 20px; padding: 8px 12px; border-radius: 8px; cursor: pointer;">🚀</button>
-            <button type="button" class="wizard-emoji-btn" onclick="selectWizardEmoji('✨', this)" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); font-size: 20px; padding: 8px 12px; border-radius: 8px; cursor: pointer;">✨</button>
-            <button type="button" class="wizard-emoji-btn" onclick="selectWizardEmoji('💻', this)" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); font-size: 20px; padding: 8px 12px; border-radius: 8px; cursor: pointer;">💻</button>
+            <div class="wizard-panel" id="panel-user">
+                <div class="wizard-icon">🌸</div>
+                <h2>Initialize Identity Node</h2>
+                <p>Map your human handle signature token. This builds your unique root file path directories.</p>
+                <div class="wizard-field-group">
+                    <input type="text" id="setup-username-input" placeholder="Type account identity handle..."
+                        value="Mohith">
+                </div>
+                <div class="wizard-field-group" style="margin-top: 15px;">
+                    <label style="font-size: 12px; color: #a29bfe; display: block; margin-bottom: 8px;">Select Identity
+                        Avatar Icon:</label>
+                    <div class="wizard-emoji-selector" style="display: flex; gap: 10px; justify-content: center;">
+                        <button type="button" class="wizard-emoji-btn active" onclick="selectWizardEmoji('👨‍💻', this)"
+                            style="background: rgba(108, 92, 231, 0.2); border: 1px solid #6c5ce7; font-size: 20px; padding: 8px 12px; border-radius: 8px; cursor: pointer;">👨‍💻</button>
+                        <button type="button" class="wizard-emoji-btn" onclick="selectWizardEmoji('⚡', this)"
+                            style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); font-size: 20px; padding: 8px 12px; border-radius: 8px; cursor: pointer;">⚡</button>
+                        <button type="button" class="wizard-emoji-btn" onclick="selectWizardEmoji('🚀', this)"
+                            style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); font-size: 20px; padding: 8px 12px; border-radius: 8px; cursor: pointer;">🚀</button>
+                        <button type="button" class="wizard-emoji-btn" onclick="selectWizardEmoji('✨', this)"
+                            style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); font-size: 20px; padding: 8px 12px; border-radius: 8px; cursor: pointer;">✨</button>
+                        <button type="button" class="wizard-emoji-btn" onclick="selectWizardEmoji('💻', this)"
+                            style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); font-size: 20px; padding: 8px 12px; border-radius: 8px; cursor: pointer;">💻</button>
+                    </div>
+                    <input type="hidden" id="setup-selected-emoji" value="👨‍💻">
+                </div>
+                <div class="wizard-btn-row" style="margin-top: 20px;">
+                    <button class="wizard-back-btn" onclick="navigateSoma2Wizard(3)">◀ Back</button>
+                    <button class="wizard-submit-btn" onclick="provisionSoma2IdentityNode()">Manifest System Node
+                        ✔</button>
+                </div>
+            </div>
         </div>
-        <input type="hidden" id="setup-selected-emoji" value="👨‍💻">
     </div>
-    <div class="wizard-btn-row" style="margin-top: 20px;">
-        <button class="wizard-back-btn" onclick="navigateSoma2Wizard(3)">◀ Back</button>
-        <button class="wizard-submit-btn" onclick="provisionSoma2IdentityNode()">Manifest System Node ✔</button>
-    </div>
-</div>
-    </div>
-</div>
 
     <div id="boot-screen">
         <div class="boot-logo">🌙</div>
@@ -159,30 +171,9 @@
     </div>
 
     <div id="desktop">
-        <div id="desktop-context-menu" class="context-menu hidden">
-            <div id="menu-group-item-actions">
-                <div class="menu-item bold-item" onclick="handleMenuAction('open')">
-                    <span class="menu-icon">📂</span> Open
-                </div>
-                <div class="menu-item" onclick="handleMenuAction('pin')">
-                    <span class="menu-icon">📌</span> Pin to Start
-                </div>
-                <hr class="menu-divider" />
-            </div>
-
-            <div class="menu-item" onclick="handleMenuAction('refresh')">
-                <span class="menu-icon">🔄</span> Refresh
-            </div>
-            <div class="menu-item" onclick="handleMenuAction('theme')">
-                <span class="menu-icon">🌓</span> Personalize Theme
-            </div>
-            <div class="menu-item" onclick="handleMenuAction('terminal')">
-                <span class="menu-icon">🖳</span> Open in Terminal
-            </div>
-        </div>
 
         <div class="icon-grid">
-            <div class="desktop-icon" onclick="openWindow('my-space')">
+            <div class="desktop-icon" data-name="My Notes" data-index="0" onclick="openWindow('my-space')">
                 <div class="icon-visual">📂</div>
                 <div class="icon-label">My Space</div>
             </div>
@@ -235,866 +226,1115 @@
                 <div class="icon-label">Camera</div>
             </div>
             <div class="desktop-icon" onclick="openApp('app-kanban')">
-    <div class="icon-visual">📋</div>
-    <div class="icon-label">Tasks</div>
-</div>
-<div class="desktop-icon" onclick="openApp('app-soma-store')">
-    <div class="icon-visual">🛍️</div>
-    <div class="icon-label">Store</div>
-</div>
-<div class="desktop-icon" onclick="openApp('app-voice')">
-    <div class="icon-visual">🎙️</div>
-    <div class="icon-label">Voice</div>
-</div>
-        </div>
-
-        <div id="system-window" class="window hidden" style="top: 10%; left: 10%;">
-            <div class="window-header" onmousedown="dragStart(event, 'system-window')">
-                <div class="header-left">
-                    <span class="window-dot" style="background-color: var(--accent-color);"></span>
-                    <span id="window-title">My Space</span>
-                </div>
-                <!-- Locate the File Explorer control buttons in your HTML and update them to look like this: -->
-                <div class="window-controls">
-                    <button class="control-btn min-btn" onclick="minimizeApp('system-window')">─</button>
-                    <button class="control-btn max-btn" onclick="maximizeFileExplorerWindow()">🗖</button>
-                    <button class="control-btn close-btn" onclick="closeFileExplorerWindow()">✕</button>
-                </div>
+                <div class="icon-visual">📋</div>
+                <div class="icon-label">Tasks</div>
             </div>
-
-            <div class="window-action-bar" style="display: flex; justify-content: space-between; align-items: center;">
-                <div class="breadcrumbs" id="window-breadcrumbs">My Space</div>
-                <div class="gui-explorer-actions" id="explorer-action-buttons" style="display: flex; gap: 4px; background: rgba(0,0,0,0.03); padding: 2px; border-radius: 6px;">
-    <button class="action-bar-btn view-toggle-btn" onclick="openApp('app-terminal')" style="padding: 4px 8px; font-size: 0.8rem; cursor: pointer; border: none; background: transparent; border-radius: 4px; color: var(--text-color);" title="Detailed List View">
-        🕊️ CMD
-    </button>
-</div>
+            <div class="desktop-icon" onclick="openApp('app-soma-store')">
+                <div class="icon-visual">🛍️</div>
+                <div class="icon-label">Store</div>
             </div>
-
-            <div class="window-body-container">
-                <div class="explorer-sidebar">
-                    <div class="sidebar-item active" id="sb-my-space" onclick="openWindow('my-space')">🌸 My Space</div>
-                    <div class="sidebar-item" id="sb-computer" onclick="openWindow('computer')">💻 Computer</div>
-                    <div class="sidebar-item" id="sb-recycle-bin" onclick="openWindow('recycle-bin')">🗑️ Recycle Bin
-                    </div>
-                </div>
-
-                <div class="explorer-view" id="explorer-grid"></div>
+            <div class="desktop-icon" onclick="openApp('app-voice')">
+                <div class="icon-visual">🎙️</div>
+                <div class="icon-label">Voice</div>
             </div>
-        </div>
-
-
-        <!-- 🪐 SOMA PAINT 2.1: PREMIUM ZEN CANVAS -->
-<div id="app-paint" class="window hidden" style="top: 10%; left: 15%; width: 700px; height: 500px; overflow: hidden;">
-    <div class="window-header" onmousedown="dragStart(event, 'app-paint')">
-        <div class="header-left">
-            <span class="window-dot" style="background: #a29bfe;"></span>
-            <span id="paint-title">Soma Paint - Canvas_01</span>
-        </div>
-        <div class="window-controls">
-            <button class="control-btn min-btn" onclick="minimizeApp('app-paint')">─</button>
-            <button class="control-btn close-btn" onclick="closeApp('app-paint')">✕</button>
         </div>
     </div>
-    
-    <div class="window-body" style="position: relative; padding: 0; background:var(--sidebar-bg); height: calc(100% - 38px);">
-        <!-- Zen Floating Capsule -->
-        <div class="paint-capsule">
-            <input type="color" id="paint-color" value="#a29bfe" title="Brush Color">
-            <div class="divider"></div>
-            <input type="range" id="paint-size" min="1" max="50" value="4" title="Brush Size">
-            <div class="divider"></div>
-            <button onclick="clearCanvas()" title="Clear Matrix">🧹</button>
-            <button onclick="saveCanvas()" title="Export">💾</button>
+
+    <div id="system-window" class="window hidden" style="top: 10%; left: 10%;">
+        <div class="window-header" onmousedown="dragStart(event, 'system-window')">
+            <div class="header-left">
+                <span class="window-dot" style="background-color: var(--accent-color);"></span>
+                <span id="window-title">My Space</span>
+            </div>
+            <!-- Locate the File Explorer control buttons in your HTML and update them to look like this: -->
+            <div class="window-controls">
+                <button class="control-btn min-btn" onclick="minimizeApp('system-window')">─</button>
+                <button class="control-btn max-btn" onclick="maximizeFileExplorerWindow()">🗖</button>
+                <button class="control-btn close-btn" onclick="closeFileExplorerWindow()">✕</button>
+            </div>
         </div>
-        
-        <canvas id="soma-canvas"></canvas>
+
+        <div class="window-action-bar" style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="breadcrumbs" id="window-breadcrumbs">My Space</div>
+            <div class="gui-explorer-actions" id="explorer-action-buttons"
+                style="display: flex; gap: 4px; background: rgba(0,0,0,0.03); padding: 2px; border-radius: 6px;">
+                <button class="action-bar-btn view-toggle-btn" onclick="openApp('app-terminal')"
+                    style="padding: 4px 8px; font-size: 0.8rem; cursor: pointer; border: none; background: transparent; border-radius: 4px; color: var(--text-color);"
+                    title="Detailed List View">
+                    🕊️ CMD
+                </button>
+            </div>
+        </div>
+
+        <div class="window-body-container">
+            <div class="explorer-sidebar">
+                <div class="sidebar-item active" id="sb-my-space" onclick="openWindow('my-space')">🌸 My Space</div>
+                <div class="sidebar-item" id="sb-computer" onclick="openWindow('computer')">💻 Computer</div>
+                <div class="sidebar-item" id="sb-recycle-bin" onclick="openWindow('recycle-bin')">🗑️ Recycle Bin
+                </div>
+            </div>
+
+            <div class="explorer-view" id="explorer-grid"></div>
+        </div>
     </div>
-</div>
-        <div id="app-calendar" class="window hidden" style="top: 15%; left: 35%; width: 340px; height: 420px;">
-            <div class="window-header" onmousedown="dragStart(event, 'app-calendar')">
-                <div class="header-left">
-                    <span class="window-dot" style="background: #ffb3c6;"></span>
-                    <span>Calendar</span>
-                </div>
-                <div class="window-controls">
-                    <button class="control-btn min-btn" onclick="minimizeApp('app-calendar')">─</button>
-                    <button class="control-btn close-btn" onclick="closeApp('app-calendar')">✕</button>
-                </div>
+
+
+    <!-- 🪐 SOMA PAINT 2.1: PREMIUM ZEN CANVAS -->
+    <div id="app-paint" class="window hidden"
+        style="top: 10%; left: 15%; width: 700px; height: 500px; overflow: hidden;">
+        <div class="window-header" onmousedown="dragStart(event, 'app-paint')">
+            <div class="header-left">
+                <span class="window-dot" style="background: #a29bfe;"></span>
+                <span id="paint-title">Soma Paint - Canvas_01</span>
             </div>
-            <div class="window-body-container"
-                style="padding: 14px; background: var(--panel-bg); display: flex; flex-direction: column; gap: 12px; height: calc(100% - 38px);">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 id="cal-month-title" style="margin: 0; font-size: 1.1rem; color: var(--text-color);">June 2026
-                    </h3>
-                    <div>
-                        <button class="gui-action-pill" style="margin:0; padding: 4px 8px;"
-                            onclick="shiftSomaMonth(-1)">◀</button>
-                        <button class="gui-action-pill" style="margin:0 0 0 4px; padding: 4px 8px;"
-                            onclick="shiftSomaMonth(1)">▶</button>
-                    </div>
-                </div>
-
-                <div
-                    style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); opacity: 0.8;">
-                    <div>Su</div>
-                    <div>Mo</div>
-                    <div>Tu</div>
-                    <div>We</div>
-                    <div>Th</div>
-                    <div>Fr</div>
-                    <div>Sa</div>
-                </div>
-
-                <div id="cal-days-grid"
-                    style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; flex-grow: 1; align-content: start;">
-                </div>
+            <div class="window-controls">
+                <button class="control-btn min-btn" onclick="minimizeApp('app-paint')">─</button>
+                <button class="control-btn close-btn" onclick="closeApp('app-paint')">✕</button>
             </div>
         </div>
 
-        <div id="app-notepad" class="window hidden" style="top: 15%; left: 30%; width: 600px; height: 460px;"
-            onmousedown="focusAppWindow('app-notepad')">
-            <div class="window-header" onmousedown="dragStart(event, 'app-notepad')">
-                <div class="header-left">
-                    <span class="window-dot" style="background: #ffb3c6;"></span>
-                    <span>Notepad Editor</span>
-                </div>
-                <div class="window-controls">
-                    <button class="control-btn min-btn" onclick="minimizeApp('app-notepad')">─</button>
-                    <div class="window-control close-btn" onclick="closeNotepadWithSaveCheck()">✕</div>
+        <div class="window-body"
+            style="position: relative; padding: 0; background:var(--sidebar-bg); height: calc(100% - 38px);">
+            <!-- Zen Floating Capsule -->
+            <div class="paint-capsule">
+                <input type="color" id="paint-color" value="#a29bfe" title="Brush Color">
+                <div class="divider"></div>
+                <input type="range" id="paint-size" min="1" max="50" value="4" title="Brush Size">
+                <div class="divider"></div>
+                <button onclick="clearCanvas()" title="Clear Matrix">🧹</button>
+                <button onclick="saveCanvas()" title="Export">💾</button>
+            </div>
+
+            <canvas id="soma-canvas"></canvas>
+        </div>
+    </div>
+    <div id="app-calendar" class="window hidden" style="top: 15%; left: 35%; width: 340px; height: 420px;">
+        <div class="window-header" onmousedown="dragStart(event, 'app-calendar')">
+            <div class="header-left">
+                <span class="window-dot" style="background: #ffb3c6;"></span>
+                <span>Calendar</span>
+            </div>
+            <div class="window-controls">
+                <button class="control-btn min-btn" onclick="minimizeApp('app-calendar')">─</button>
+                <button class="control-btn close-btn" onclick="closeApp('app-calendar')">✕</button>
+            </div>
+        </div>
+        <div class="window-body-container"
+            style="padding: 14px; background: var(--panel-bg); display: flex; flex-direction: column; gap: 12px; height: calc(100% - 38px);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 id="cal-month-title" style="margin: 0; font-size: 1.1rem; color: var(--text-color);">June 2026
+                </h3>
+                <div>
+                    <button class="gui-action-pill" style="margin:0; padding: 4px 8px;"
+                        onclick="shiftSomaMonth(-1)">◀</button>
+                    <button class="gui-action-pill" style="margin:0 0 0 4px; padding: 4px 8px;"
+                        onclick="shiftSomaMonth(1)">▶</button>
                 </div>
             </div>
-            <div class="window-body-container" style="padding: 10px;">
-                <textarea id="notepad-text-editor" class="human-notepad" placeholder="Write workspace canvas details here..."></textarea>
+
+            <div
+                style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); opacity: 0.8;">
+                <div>Su</div>
+                <div>Mo</div>
+                <div>Tu</div>
+                <div>We</div>
+                <div>Th</div>
+                <div>Fr</div>
+                <div>Sa</div>
             </div>
-            <div class="notepad-statusbar">
+
+            <div id="cal-days-grid"
+                style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; flex-grow: 1; align-content: start;">
+            </div>
+        </div>
+    </div>
+
+    <div id="app-notepad" class="window hidden" style="top: 15%; left: 30%; width: 600px; height: 460px;"
+        onmousedown="focusAppWindow('app-notepad')">
+        <div class="window-header" onmousedown="dragStart(event, 'app-notepad')">
+            <div class="header-left">
+                <span class="window-dot" style="background: #ffb3c6;"></span>
+                <span>Notepad Editor</span>
+            </div>
+            <div class="window-controls">
+                <button class="control-btn min-btn" onclick="minimizeApp('app-notepad')">─</button>
+                <div class="window-control close-btn" onclick="closeNotepadWithSaveCheck()">✕</div>
+            </div>
+        </div>
+        <div class="window-body-container" style="padding: 10px;">
+            <textarea id="notepad-text-editor" class="human-notepad"
+                placeholder="Write workspace canvas details here..."></textarea>
+        </div>
+        <div class="notepad-statusbar">
             <span id="notepad-char-count">0 chars | 0 words</span>
             <span id="notepad-file-status">Unsaved Draft</span>
         </div>
-        </div>
+    </div>
 
-        <div id="app-terminal" class="window hidden" style="top: 25%; left: 20%; width: 560px; height: 360px;">
-            <div class="window-header" onmousedown="dragStart(event, 'app-terminal')">
-                <div class="header-left">
-                    <span class="window-dot" style="background: #2b1c1e;"></span>
-                    <span>Soma CMD</span>
+    <div id="app-terminal" class="window hidden" style="top: 25%; left: 20%; width: 560px; height: 360px;">
+        <div class="window-header" onmousedown="dragStart(event, 'app-terminal')">
+            <div class="header-left">
+                <span class="window-dot" style="background: #2b1c1e;"></span>
+                <span>Soma CMD</span>
+            </div>
+            <div class="window-controls">
+                <button class="control-btn min-btn" onclick="minimizeApp('app-terminal')">─</button>
+                <button class="control-btn close-btn" onclick="closeApp('app-terminal')">✕</button>
+            </div>
+        </div>
+        <div class="window-body-container cli-terminal" style="padding: 0; height: calc(100% - 30px); display: flex;">
+            <div class="terminal-box">
+                <div class="terminal-output" id="term-out">
+                    Soma OS MicroKernel Client v1.0... Type 'help' to see human operational parameters.
                 </div>
-                <div class="window-controls">
-                    <button class="control-btn min-btn" onclick="minimizeApp('app-terminal')">─</button>
-                    <button class="control-btn close-btn" onclick="closeApp('app-terminal')">✕</button>
+                <div id="term-suggestions" class="terminal-suggestion-bar">
+                    💡 Tip: Start typing...
+                </div>
+                <div class="terminal-input-line">
+                    <span>soma ~ $</span>
+                    <input type="text" id="cli-input" onkeydown="handleTerminalCommand(event)"
+                        oninput="updateTerminalSuggestions(this.value)" autocomplete="off" spellcheck="false"
+                        autofocus />
                 </div>
             </div>
-            <div class="window-body-container cli-terminal" 
-     style="padding: 0; height: calc(100% - 30px); display: flex;">
-    <div class="terminal-box">
-        <div class="terminal-output" id="term-out">
-            Soma OS MicroKernel Client v1.0... Type 'help' to see human operational parameters.
-        </div>
-        <div id="term-suggestions" class="terminal-suggestion-bar">
-            💡 Tip: Start typing...
-        </div>
-        <div class="terminal-input-line">
-            <span>soma ~ $</span>
-            <input type="text" id="cli-input" 
-                   onkeydown="handleTerminalCommand(event)" 
-                   oninput="updateTerminalSuggestions(this.value)" 
-                   autocomplete="off" spellcheck="false" autofocus />
         </div>
     </div>
-</div>
+
+    <div id="app-camera" class="window hidden" style="top: 15%; left: 30%; width: 500px; height: 500px;"
+        onmousedown="dragStart(event, 'app-camera')">
+        <div class="window-header"
+            style="display: flex; justify-content: space-between; align-items: center; background:rgba(255,255,255,0.05); padding: 15px 15px; cursor: move; border-bottom: 1px solid rgba(255,255,255,0.05); user-select: none; ">
+            <div class="header-left">
+                <span class="window-dot" style="background: #2b1c1e;"></span>
+                <span>Camera</span>
+            </div>
+            <div class="window-controls">
+                <button class="control-btn min-btn" onclick="minimizeApp('app-camera')">─</button>
+                <button class="control-btn close-btn" onclick="closeCameraApp('app-camera')">✕</button>
+            </div>
+        </div>
+        <div class="camera-body"
+            style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; gap: 12px; background:var(--sidebar-bg);">
+            <video id="camera-stream-preview" autoplay playsinline
+                style="width: 100%; height: 360px; background:#000; border-radius: 6px; object-fit: cover; border: 1px solid rgba(255,255,255,0.05);"></video>
+            <canvas id="camera-capture-canvas" style="display: none;" width="640" height="480"></canvas>
+            <div style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px;">
+                <button onclick="takeCameraSnapshot()"
+                    style="background:var(--accent-color); color:var(--text-color); border: none; padding: 8px 16px; font-size: 0.85rem; font-weight: 600; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    📸 Snap Photo
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div id="app-calculator" class="window hidden" style="top: 20%; left: 55%; width: 260px; height: 360px;">
+        <div class="window-header" onmousedown="dragStart(event, 'app-calculator')">
+            <div class="header-left">
+                <span class="window-dot" style="background: #ff85a2;"></span>
+                <span>Calculator</span>
+            </div>
+            <div class="window-controls">
+                <button class="control-btn min-btn" onclick="minimizeApp('app-calculator')">─</button>
+                <button class="control-btn close-btn" onclick="closeApp('app-calculator')">✕</button>
+            </div>
+        </div>
+        <div class="window-body-container calc-layout" style="flex-direction: column; padding: 12px;">
+            <input type="text" id="calc-screen" readonly value="0" />
+            <div class="calc-buttons-grid">
+                <button class="calc-btn" onclick="calcClear()">C</button>
+                <button class="calc-btn" onclick="calcInput('/')">/</button>
+                <button class="calc-btn" onclick="calcInput('*')">*</button>
+                <button class="calc-btn" onclick="calcInput('-')">-</button>
+                <button class="calc-btn" onclick="calcInput('7')">7</button>
+                <button class="calc-btn" onclick="calcInput('8')">8</button>
+                <button class="calc-btn" onclick="calcInput('9')">9</button>
+                <button class="calc-btn" onclick="calcInput('+')">+</button>
+                <button class="calc-btn" onclick="calcInput('4')">4</button>
+                <button class="calc-btn" onclick="calcInput('5')">5</button>
+                <button class="calc-btn" onclick="calcInput('6')">6</button>
+                <button class="calc-btn action-pink" onclick="calcEvaluate()"
+                    style="grid-row: span 2; height: 100%;">=</button>
+                <button class="calc-btn" onclick="calcInput('1')">1</button>
+                <button class="calc-btn" onclick="calcInput('2')">2</button>
+                <button class="calc-btn" onclick="calcInput('3')">3</button>
+                <button class="calc-btn" onclick="calcInput('0')" style="grid-column: span 2;">0</button>
+                <button class="calc-btn" onclick="calcInput('.')">.</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-clock" class="window hidden" style="top: 35%; left: 45%; width: 300px; height: 220px;">
+        <div class="window-header" onmousedown="dragStart(event, 'app-clock')">
+            <div class="header-left">
+                <span class="window-dot" style="background: #8a7074;"></span>
+                <span>World Clock</span>
+            </div>
+            <div class="window-controls">
+                <button class="control-btn min-btn" onclick="minimizeApp('app-clock')">─</button>
+                <button class="control-btn close-btn" onclick="closeApp('app-clock')">✕</button>
+            </div>
+        </div>
+        <div class="window-body-container"
+            style="padding: 20px; text-align: center; flex-direction: column; justify-content: center; gap: 8px;">
+            <div class="clock-widget-title">Local Core Node Time</div>
+            <div id="app-clock-display" style="font-size: 2.2rem; font-weight: 700;">00:00:00</div>
+            <div id="app-clock-date" style="font-size: 0.9rem; opacity: 0.7;">Loading System Date...</div>
+        </div>
+    </div>
+
+    <div id="app-pictures" class="window hidden" style="width: 520px; height: 380px; top: 15%; left: 25%;">
+        <div class="window-header" onmousedown="dragStart(event, 'app-pictures')">
+            <div class="header-left">
+                <span class="window-dot" style="background-color: var(--accent-color);"></span>
+                <span id="window-title">Photos</span>
+            </div>
+            <div class="window-controls">
+                <button class="control-btn min-btn" onclick="minimizeApp('app-pictures')">─</button>
+                <button class="control-btn close-btn" onclick="closeApp('app-pictures')">✕</button>
+            </div>
         </div>
 
-        <div id="app-camera" class="window hidden" style="top: 15%; left: 30%; width: 500px; height: 500px;"
-            onmousedown="dragStart(event, 'app-camera')">
-            <div class="window-header"
-                style="display: flex; justify-content: space-between; align-items: center; background:rgba(255,255,255,0.05); padding: 15px 15px; cursor: move; border-bottom: 1px solid rgba(255,255,255,0.05); user-select: none; ">
-                <div class="header-left">
-                    <span class="window-dot" style="background: #2b1c1e;"></span>
-                    <span>Camera</span>
+        <div class="window-body"
+            style="background:var(--sidebar-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; height: calc(100% - 93px); box-sizing: border-box; overflow: hidden; position: relative;">
+
+            <div id="photo-gallery-grid" class="gallery-grid-layout">
+                <h3 class="gallery-section-title">Recent Environment Snaps</h3>
+                <div class="gallery-grid-scroll">
+                    <div class="gallery-thumb-card"
+                        onclick="loadSelectedPhotoAsset('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800')">
+                        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=150"
+                            alt="Landscape Node">
+                        <span style="color:var(--text-muted)">Valley Matrix</span>
+                    </div>
+                    <div class="gallery-thumb-card"
+                        onclick="loadSelectedPhotoAsset('https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=800')">
+                        <img src="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=150"
+                            alt="Abstract Node">
+                        <span style="color:var(--text-muted)">Vapor Neon</span>
+                    </div>
+                    <div class="gallery-thumb-card"
+                        onclick="loadSelectedPhotoAsset('https://images.unsplash.com/photo-1518770660439-4636190af475?w=800')">
+                        <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=150"
+                            alt="Cyber Grid Node">
+                        <span style="color:var(--text-muted)">Hardware Core</span>
+                    </div>
+                    <div class="gallery-thumb-card"
+                        onclick="loadSelectedPhotoAsset('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800')">
+                        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=150"
+                            alt="Data Network Node">
+                        <span style="color:var(--text-muted)">Deep Space Link</span>
+                    </div>
                 </div>
-                <div class="window-controls">
-                    <button class="control-btn min-btn" onclick="minimizeApp('app-camera')">─</button>
-                    <button class="control-btn close-btn" onclick="closeCameraApp('app-camera')">✕</button>
+
+                <div id="photo-status-msg" style="margin-top: 15px;">
+                    <span id="manual-trigger" onclick="triggerManualPhotoLoad()"
+                        style="font-size: 0.75rem; color: var(--text-muted); cursor: pointer; text-decoration: underline; opacity: 0.85;">
+                        Import custom network image stream
+                    </span>
                 </div>
             </div>
-            <div class="camera-body"
-                style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; gap: 12px; background:var(--sidebar-bg);">
-                <video id="camera-stream-preview" autoplay playsinline
-                    style="width: 100%; height: 360px; background:#000; border-radius: 6px; object-fit: cover; border: 1px solid rgba(255,255,255,0.05);"></video>
-                <canvas id="camera-capture-canvas" style="display: none;" width="640" height="480"></canvas>
-                <div style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px;">
-                    <button onclick="takeCameraSnapshot()"
-                        style="background:var(--accent-color); color:var(--text-color); border: none; padding: 8px 16px; font-size: 0.85rem; font-weight: 600; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                        📸 Snap Photo
+
+            <img id="pic-viewer-render-target" src="" alt="Active View"
+                style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; display: none; transition: transform 0.2s ease;">
+        </div>
+
+        <div class="photo-controls-bar" id="photo-toolbar-matrix"
+            style="background: var(--sidebar-bg);; backdrop-filter: blur(15px); height: 48px; display: none; align-items: center; justify-content: center; gap: 16px; border-top: 1px solid rgba(255,255,255,0.06);">
+            <button class="photo-tool-btn" onclick="adjustPhotoScale(0.1)"
+                style="background: none; border: none; color:var(--text-muted); cursor: pointer; font-size: 0.95rem; padding: 6px 10px;">🔍➕</button>
+            <button class="photo-tool-btn" onclick="adjustPhotoScale(-0.1)"
+                style="background: none; border: none; color:var(--text-muted); cursor: pointer; font-size: 0.95rem; padding: 6px 10px;">🔍➖</button>
+            <button class="photo-tool-btn" onclick="rotatePhotoDeg()"
+                style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.95rem; padding: 6px 10px;">🔄
+                Rotate</button>
+            <button class="photo-tool-btn reset-btn" onclick="resetPhotoViewer()"
+                style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 179, 198, 0.2); border-radius: 8px; color: var(--text-muted); cursor: pointer; font-size: 0.85rem; padding: 6px 12px; font-weight: 500; transition: all 0.2s;">🧹
+                Clear Matrix</button>
+        </div>
+    </div>
+    <div id="app-music" class="window hidden" style="top: 20%; left: 25%; width: 340px; height: 380px;">
+        <div class="window-header" onmousedown="dragStart(event, 'app-music')">
+            <div class="header-left">
+                <span class="window-dot" style="background: #a29bfe;"></span>
+                <span>Soma Audio Suite</span>
+            </div>
+            <div class="window-controls">
+                <button class="control-btn min-btn" onclick="minimizeApp('app-music')">─</button>
+                <button class="control-btn close-btn" onclick="closeApp('app-music')">✕</button>
+            </div>
+        </div>
+        <div class="window-body-container audio-player-layout"
+            style="padding: 15px; flex-direction: column; justify-content: space-between;">
+            <div class="audio-track-card" style="text-align: center; margin-top: 10px;">
+                <div class="track-vinyl" id="music-vinyl">🌙</div>
+                <div class="track-title" id="music-track-name"
+                    style="font-weight: 700; margin-top: 10px; color: var(--text-color);">Ambient Chill
+                </div>
+                <div class="track-artist" style="font-size: 0.8rem; color: var(--text-muted);">Soma Core Node Node
+                </div>
+            </div>
+            <div class="audio-progress-container"
+                style="width: 100%; display: flex; flex-direction: column; gap: 4px; padding: 0 10px;">
+
+                <div class="music-time-row"
+                    style="display: flex; justify-content: space-between; width: 100%; font-family: monospace; font-size: 0.75rem; color: var(--text-muted, #888);">
+                    <span id="music-time-current">00:00</span>
+                    <span id="music-time-duration">00:00</span>
+                </div>
+
+                <div style="width: 100%; display: flex; align-items: center;">
+                    <input type="range" id="music-progress-slider" min="0" max="100" value="0" step="0.1"
+                        oninput="musicSliderUserSeek(this.value)"
+                        style="width: 100%; cursor: pointer; accent-color: var(--accent-color, #ffb3c6); height: 5px; border-radius: 3px; background: rgba(0,0,0,0.05); margin: 0;">
+                </div>
+            </div>
+            <div class="audio-controls-row"
+                style="display: flex; justify-content: center; gap: 20px; align-items: center; margin-bottom: 10px;">
+                <button class="media-btn" onclick="changeMusicTrack(-1)"
+                    style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-color);">⏮</button>
+                <button class="media-btn main-play" id="music-play-trigger" onclick="toggleMusicPlayback()"
+                    style="background: var(--accent-color); border: none; font-size: 1.4rem; cursor: pointer; color: white; width: 50px; height: 50px; border-radius: 50%;">▶</button>
+                <button class="media-btn" onclick="changeMusicTrack(1)"
+                    style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-color);">⏭</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-video" class="window hidden" style="top: 15%; left: 40%; width: 580px; height: 380px;">
+        <div class="window-header" onmousedown="dragStart(event, 'app-video')">
+            <div class="header-left">
+                <span class="window-dot" style="background: #fdcb6e;"></span>
+                <span class="header-title">Soma Cinema</span>
+            </div>
+            <div class="window-controls">
+                <button class="control-btn min-btn" onclick="minimizeApp('app-video')">─</button>
+                <button class="control-btn close-btn" onclick="closeApp('app-video')">✕</button>
+            </div>
+        </div>
+        <div class="window-body-container video-player-layout"
+            style="padding: 0; flex-direction: column;background: var(--card-bg);height: calc(100% - 38px); display: flex;">
+
+            <div class="video-display-canvas" id="video-screen"
+                style="flex-grow: 1; display: flex; align-items: center; justify-content: center; color: #fff; position: relative; overflow: hidden;background: var(--sidebar-bg);">
+
+                <video id="video-player-render-target"
+                    style="width: 100%; height: 100%; object-fit: contain; display: none;"></video>
+
+                <div class="video-overlay-text" id="video-status-msg"
+                    style="font-family: sans-serif; font-size: 0.9rem; text-align: center; color:var(--text-muted); position: absolute;">
+                    <i class="fas fa-film"
+                        style="font-size: 2.5rem; margin-bottom: 10px; color: #fdcb6e; display: block;"></i>
+                    Soma Cinema Ready<br><span style="font-size: 0.75rem; color: var(--text-muted);">Double-click a
+                        video file or load a track</span>
+                </div>
+            </div>
+
+            <div class="video-controls-strip"
+                style="background: var(--sidebar-bg); padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+
+                <div class="video-time-row"
+                    style="display: flex; justify-content: space-between; width: 100%; font-family: monospace; font-size: 0.75rem; color:var(--text-color); padding: 0 4px;">
+                    <span id="video-time-current">00:00</span>
+                    <span id="video-time-duration">00:00</span>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 15px; width: 100%;">
+                    <button class="video-control-btn" id="video-play-btn" onclick="toggleVideoPlayback()"
+                        style="background: none; border: none;color: var(--text-color); font-size: 1rem; cursor: pointer; display: flex; align-items: center;">
+                        <i class="fas fa-play" id="video-play-icon"></i>
+                    </button>
+
+                    <div style="flex-grow: 1; display: flex; align-items: center;">
+                        <input type="range" id="video-progress-slider" min="0" max="100" value="0" step="0.1"
+                            oninput="videoSliderUserSeek(this.value)"
+                            style="width: 100%; cursor: pointer; accent-color: #fdcb6e; height: 5px; border-radius: 3px; background: var(--card-hover);">
+                    </div>
+
+                    <button class="video-control-btn" onclick="resetVideoPlayer()"
+                        style="background: none; border: none;     color: var(--text-color); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center;">
+                        <i class="fas fa-redo"></i>
                     </button>
                 </div>
             </div>
         </div>
-
-
-
-        <div id="app-calculator" class="window hidden" style="top: 20%; left: 55%; width: 260px; height: 360px;">
-            <div class="window-header" onmousedown="dragStart(event, 'app-calculator')">
-                <div class="header-left">
-                    <span class="window-dot" style="background: #ff85a2;"></span>
-                    <span>Calculator</span>
-                </div>
-                <div class="window-controls">
-                    <button class="control-btn min-btn" onclick="minimizeApp('app-calculator')">─</button>
-                    <button class="control-btn close-btn" onclick="closeApp('app-calculator')">✕</button>
-                </div>
-            </div>
-            <div class="window-body-container calc-layout" style="flex-direction: column; padding: 12px;">
-                <input type="text" id="calc-screen" readonly value="0" />
-                <div class="calc-buttons-grid">
-                    <button class="calc-btn" onclick="calcClear()">C</button>
-                    <button class="calc-btn" onclick="calcInput('/')">/</button>
-                    <button class="calc-btn" onclick="calcInput('*')">*</button>
-                    <button class="calc-btn" onclick="calcInput('-')">-</button>
-                    <button class="calc-btn" onclick="calcInput('7')">7</button>
-                    <button class="calc-btn" onclick="calcInput('8')">8</button>
-                    <button class="calc-btn" onclick="calcInput('9')">9</button>
-                    <button class="calc-btn" onclick="calcInput('+')">+</button>
-                    <button class="calc-btn" onclick="calcInput('4')">4</button>
-                    <button class="calc-btn" onclick="calcInput('5')">5</button>
-                    <button class="calc-btn" onclick="calcInput('6')">6</button>
-                    <button class="calc-btn action-pink" onclick="calcEvaluate()"
-                        style="grid-row: span 2; height: 100%;">=</button>
-                    <button class="calc-btn" onclick="calcInput('1')">1</button>
-                    <button class="calc-btn" onclick="calcInput('2')">2</button>
-                    <button class="calc-btn" onclick="calcInput('3')">3</button>
-                    <button class="calc-btn" onclick="calcInput('0')" style="grid-column: span 2;">0</button>
-                    <button class="calc-btn" onclick="calcInput('.')">.</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="app-clock" class="window hidden" style="top: 35%; left: 45%; width: 300px; height: 220px;">
-            <div class="window-header" onmousedown="dragStart(event, 'app-clock')">
-                <div class="header-left">
-                    <span class="window-dot" style="background: #8a7074;"></span>
-                    <span>World Clock</span>
-                </div>
-                <div class="window-controls">
-                    <button class="control-btn min-btn" onclick="minimizeApp('app-clock')">─</button>
-                    <button class="control-btn close-btn" onclick="closeApp('app-clock')">✕</button>
-                </div>
-            </div>
-            <div class="window-body-container"
-                style="padding: 20px; text-align: center; flex-direction: column; justify-content: center; gap: 8px;">
-                <div class="clock-widget-title">Local Core Node Time</div>
-                <div id="app-clock-display" style="font-size: 2.2rem; font-weight: 700;">00:00:00</div>
-                <div id="app-clock-date" style="font-size: 0.9rem; opacity: 0.7;">Loading System Date...</div>
-            </div>
-        </div>
-
-        <div id="app-pictures" class="window hidden" style="width: 520px; height: 380px; top: 15%; left: 25%;">
-    <div class="window-header" onmousedown="dragStart(event, 'app-pictures')">
-        <div class="header-left">
-            <span class="window-dot" style="background-color: var(--accent-color);"></span>
-            <span id="window-title">Photos</span>
-        </div>
-        <div class="window-controls">
-            <button class="control-btn min-btn" onclick="minimizeApp('app-pictures')">─</button>
-            <button class="control-btn close-btn" onclick="closeApp('app-pictures')">✕</button>
-        </div>
     </div>
-    
-    <div class="window-body" style="background:var(--sidebar-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; height: calc(100% - 93px); box-sizing: border-box; overflow: hidden; position: relative;">
-        
-        <div id="photo-gallery-grid" class="gallery-grid-layout">
-            <h3 class="gallery-section-title">Recent Environment Snaps</h3>
-            <div class="gallery-grid-scroll">
-                <div class="gallery-thumb-card" onclick="loadSelectedPhotoAsset('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800')">
-                    <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=150" alt="Landscape Node">
-                    <span style="color:var(--text-muted)">Valley Matrix</span>
-                </div>
-                <div class="gallery-thumb-card" onclick="loadSelectedPhotoAsset('https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=800')">
-                    <img src="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=150" alt="Abstract Node">
-                    <span style="color:var(--text-muted)">Vapor Neon</span>
-                </div>
-                <div class="gallery-thumb-card" onclick="loadSelectedPhotoAsset('https://images.unsplash.com/photo-1518770660439-4636190af475?w=800')">
-                    <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=150" alt="Cyber Grid Node">
-                    <span style="color:var(--text-muted)">Hardware Core</span>
-                </div>
-                <div class="gallery-thumb-card" onclick="loadSelectedPhotoAsset('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800')">
-                    <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=150" alt="Data Network Node">
-                    <span style="color:var(--text-muted)">Deep Space Link</span>
-                </div>
+
+    <div id="app-game" class="window hidden" style="top: 25%; left: 30%; width: 340px; height: 470px;">
+        <div class="window-header" onmousedown="dragStart(event, 'app-game')">
+            <div class="header-left">
+                <span class="window-dot" style="background: #00b894;"></span>
+                <span>Retro Snake Arcade v1.0</span>
             </div>
-            
-            <div id="photo-status-msg" style="margin-top: 15px;">
-                <span id="manual-trigger" onclick="triggerManualPhotoLoad()" style="font-size: 0.75rem; color: var(--text-muted); cursor: pointer; text-decoration: underline; opacity: 0.85;">
-                    Import custom network image stream
-                </span>
+            <div class="window-controls">
+                <button class="control-btn min-btn" onclick="minimizeApp('app-game')">─</button>
+                <button class="control-btn close-btn" onclick="closeApp('app-game')">✕</button>
             </div>
         </div>
-        
-        <img id="pic-viewer-render-target" src="" alt="Active View"
-             style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; display: none; transition: transform 0.2s ease;">
-    </div>
-    
-    <div class="photo-controls-bar" id="photo-toolbar-matrix" style="background: var(--sidebar-bg);; backdrop-filter: blur(15px); height: 48px; display: none; align-items: center; justify-content: center; gap: 16px; border-top: 1px solid rgba(255,255,255,0.06);">
-        <button class="photo-tool-btn" onclick="adjustPhotoScale(0.1)" style="background: none; border: none; color:var(--text-muted); cursor: pointer; font-size: 0.95rem; padding: 6px 10px;">🔍➕</button>
-        <button class="photo-tool-btn" onclick="adjustPhotoScale(-0.1)" style="background: none; border: none; color:var(--text-muted); cursor: pointer; font-size: 0.95rem; padding: 6px 10px;">🔍➖</button>
-        <button class="photo-tool-btn" onclick="rotatePhotoDeg()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.95rem; padding: 6px 10px;">🔄 Rotate</button>
-        <button class="photo-tool-btn reset-btn" onclick="resetPhotoViewer()" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 179, 198, 0.2); border-radius: 8px; color: var(--text-muted); cursor: pointer; font-size: 0.85rem; padding: 6px 12px; font-weight: 500; transition: all 0.2s;">🧹 Clear Matrix</button>
-    </div>
-</div>
-        <div id="app-music" class="window hidden" style="top: 20%; left: 25%; width: 340px; height: 380px;">
-            <div class="window-header" onmousedown="dragStart(event, 'app-music')">
-                <div class="header-left">
-                    <span class="window-dot" style="background: #a29bfe;"></span>
-                    <span>Soma Audio Suite</span>
-                </div>
-                <div class="window-controls">
-                    <button class="control-btn min-btn" onclick="minimizeApp('app-music')">─</button>
-                    <button class="control-btn close-btn" onclick="closeApp('app-music')">✕</button>
-                </div>
+        <div class="window-body-container game-container-layout"
+            style="padding: 12px; flex-direction: column; align-items: center; justify-content: space-between;">
+            <div class="game-score-board"
+                style="display: flex; justify-content: space-between; width: 100%; font-weight: 700; font-family: monospace; color: var(--text-color); margin-bottom: 5px;">
+                <span>SCORE: <span id="snake-score">0</span></span>
+                <span>HIGH: <span id="snake-highscore">0</span></span>
             </div>
-            <div class="window-body-container audio-player-layout"
-                style="padding: 15px; flex-direction: column; justify-content: space-between;">
-                <div class="audio-track-card" style="text-align: center; margin-top: 10px;">
-                    <div class="track-vinyl" id="music-vinyl">🌙</div>
-                    <div class="track-title" id="music-track-name"
-                        style="font-weight: 700; margin-top: 10px; color: var(--text-color);">Ambient Chill
-                    </div>
-                    <div class="track-artist" style="font-size: 0.8rem; color: var(--text-muted);">Soma Core Node Node
-                    </div>
-                </div>
-                <div class="audio-progress-container"
-                    style="width: 100%; display: flex; flex-direction: column; gap: 4px; padding: 0 10px;">
-
-                    <div class="music-time-row"
-                        style="display: flex; justify-content: space-between; width: 100%; font-family: monospace; font-size: 0.75rem; color: var(--text-muted, #888);">
-                        <span id="music-time-current">00:00</span>
-                        <span id="music-time-duration">00:00</span>
-                    </div>
-
-                    <div style="width: 100%; display: flex; align-items: center;">
-                        <input type="range" id="music-progress-slider" min="0" max="100" value="0" step="0.1"
-                            oninput="musicSliderUserSeek(this.value)"
-                            style="width: 100%; cursor: pointer; accent-color: var(--accent-color, #ffb3c6); height: 5px; border-radius: 3px; background: rgba(0,0,0,0.05); margin: 0;">
-                    </div>
-                </div>
-                <div class="audio-controls-row"
-                    style="display: flex; justify-content: center; gap: 20px; align-items: center; margin-bottom: 10px;">
-                    <button class="media-btn" onclick="changeMusicTrack(-1)"
-                        style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-color);">⏮</button>
-                    <button class="media-btn main-play" id="music-play-trigger" onclick="toggleMusicPlayback()"
-                        style="background: var(--accent-color); border: none; font-size: 1.4rem; cursor: pointer; color: white; width: 50px; height: 50px; border-radius: 50%;">▶</button>
-                    <button class="media-btn" onclick="changeMusicTrack(1)"
-                        style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-color);">⏭</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="app-video" class="window hidden" style="top: 15%; left: 40%; width: 580px; height: 380px;">
-            <div class="window-header" onmousedown="dragStart(event, 'app-video')">
-                <div class="header-left">
-                    <span class="window-dot" style="background: #fdcb6e;"></span>
-                    <span class="header-title">Soma Cinema</span>
-                </div>
-                <div class="window-controls">
-                    <button class="control-btn min-btn" onclick="minimizeApp('app-video')">─</button>
-                    <button class="control-btn close-btn" onclick="closeApp('app-video')">✕</button>
-                </div>
-            </div>
-            <div class="window-body-container video-player-layout"
-                style="padding: 0; flex-direction: column;background: var(--card-bg);height: calc(100% - 38px); display: flex;">
-
-                <div class="video-display-canvas" id="video-screen"
-                    style="flex-grow: 1; display: flex; align-items: center; justify-content: center; color: #fff; position: relative; overflow: hidden;background: var(--sidebar-bg);">
-
-                    <video id="video-player-render-target"
-                        style="width: 100%; height: 100%; object-fit: contain; display: none;"></video>
-
-                    <div class="video-overlay-text" id="video-status-msg"
-                        style="font-family: sans-serif; font-size: 0.9rem; text-align: center; color:var(--text-muted); position: absolute;">
-                        <i class="fas fa-film"
-                            style="font-size: 2.5rem; margin-bottom: 10px; color: #fdcb6e; display: block;"></i>
-                        Soma Cinema Ready<br><span style="font-size: 0.75rem; color: var(--text-muted);">Double-click a
-                            video file or load a track</span>
-                    </div>
-                </div>
-
-                <div class="video-controls-strip"
-                    style="background: var(--sidebar-bg); padding: 12px; display: flex; flex-direction: column; gap: 8px;">
-
-                    <div class="video-time-row"
-                        style="display: flex; justify-content: space-between; width: 100%; font-family: monospace; font-size: 0.75rem; color:var(--text-color); padding: 0 4px;">
-                        <span id="video-time-current">00:00</span>
-                        <span id="video-time-duration">00:00</span>
-                    </div>
-
-                    <div style="display: flex; align-items: center; gap: 15px; width: 100%;">
-                        <button class="video-control-btn" id="video-play-btn" onclick="toggleVideoPlayback()"
-                            style="background: none; border: none;color: var(--text-color); font-size: 1rem; cursor: pointer; display: flex; align-items: center;">
-                            <i class="fas fa-play" id="video-play-icon"></i>
-                        </button>
-
-                        <div style="flex-grow: 1; display: flex; align-items: center;">
-                            <input type="range" id="video-progress-slider" min="0" max="100" value="0" step="0.1"
-                                oninput="videoSliderUserSeek(this.value)"
-                                style="width: 100%; cursor: pointer; accent-color: #fdcb6e; height: 5px; border-radius: 3px; background: var(--card-hover);">
-                        </div>
-
-                        <button class="video-control-btn" onclick="resetVideoPlayer()"
-                            style="background: none; border: none;     color: var(--text-color); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center;">
-                            <i class="fas fa-redo"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="app-game" class="window hidden" style="top: 25%; left: 30%; width: 340px; height: 470px;">
-            <div class="window-header" onmousedown="dragStart(event, 'app-game')">
-                <div class="header-left">
-                    <span class="window-dot" style="background: #00b894;"></span>
-                    <span>Retro Snake Arcade v1.0</span>
-                </div>
-                <div class="window-controls">
-                    <button class="control-btn min-btn" onclick="minimizeApp('app-game')">─</button>
-                    <button class="control-btn close-btn" onclick="closeApp('app-game')">✕</button>
-                </div>
-            </div>
-            <div class="window-body-container game-container-layout"
-                style="padding: 12px; flex-direction: column; align-items: center; justify-content: space-between;">
-                <div class="game-score-board"
-                    style="display: flex; justify-content: space-between; width: 100%; font-weight: 700; font-family: monospace; color: var(--text-color); margin-bottom: 5px;">
-                    <span>SCORE: <span id="snake-score">0</span></span>
-                    <span>HIGH: <span id="snake-highscore">0</span></span>
-                </div>
-                <canvas id="snakeCanvas" width="300" height="300"
-                    style="background: #1e1e24; border-radius: 8px; border: 2px solid rgba(0,0,0,0.1); box-shadow: inset 0 4px 12px rgba(0,0,0,0.5); font-smooth: never;"></canvas>
-                <button class="game-action-btn" id="snake-start-btn" onclick="initializeSnakeGame()"
-                    style="width: 100%; background: #00b894; color: white; font-weight: 700; padding: 8px; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; font-family: inherit;">🎮
-                    Start Engine Matrix</button>
-            </div>
-        </div>
-
-        <div id="app-settings" class="window hidden"
-    style="top: 12%; left: 35%; width: 620px; height: 450px; background:var(--sidebar-bg); color: var(--text-color); box-shadow: 0 8px 32px rgba(0,0,0,0.15); border-radius: 20px; overflow: hidden; display: flex; flex-direction: column;">
-    <div class="window-header" onmousedown="dragStart(event, 'app-settings')">
-        <div class="header-left">
-            <span class="window-dot" style="background: #74b9ff; color: var(--text-muted);"></span>
-            <span style="color:var(--text-muted);">Settings & Preferences</span>
-        </div>
-        <div class="window-controls">
-            <button class="control-btn min-btn" onclick="minimizeApp('app-settings')">─</button>
-            <button class="control-btn close-btn" onclick="closeApp('app-settings')">✕</button>
+            <canvas id="snakeCanvas" width="300" height="300"
+                style="background: #1e1e24; border-radius: 8px; border: 2px solid rgba(0,0,0,0.1); box-shadow: inset 0 4px 12px rgba(0,0,0,0.5); font-smooth: never;"></canvas>
+            <button class="game-action-btn" id="snake-start-btn" onclick="initializeSnakeGame()"
+                style="width: 100%; background: #00b894; color: white; font-weight: 700; padding: 8px; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; font-family: inherit;">🎮
+                Start Engine Matrix</button>
         </div>
     </div>
 
-    <div class="window-body-container settings-layout"
-        style="display: flex; padding: 0; height: calc(100% - 30px); width: 100%;">
-        
-        <!-- Clean Sidebar Navigation -->
-        <div class="settings-sidebar"
-            style="width: 160px; background: var(--bg-sidebar, rgba(0,0,0,0.02)); border-right: 1px solid var(--border-color, rgba(0,0,0,0.08)); display: flex; flex-direction: column; gap: 6px; padding: 12px; flex-shrink: 0;">
-            <button class="settings-nav-btn active" onclick="switchSettingsTab('personalize', this)">🎨 Look & Feel</button>
-            <button class="settings-nav-btn" onclick="switchSettingsTab('system', this)">💻 About Device</button>
-            <button class="settings-nav-btn" onclick="switchSettingsTab('apps', this)">📱 Installed Apps</button>
+    <div id="app-settings" class="window hidden"
+        style="top: 12%; left: 35%; width: 620px; height: 450px; background:var(--sidebar-bg); color: var(--text-color); box-shadow: 0 8px 32px rgba(0,0,0,0.15); border-radius: 20px; overflow: hidden; display: flex; flex-direction: column;">
+        <div class="window-header" onmousedown="dragStart(event, 'app-settings')">
+            <div class="header-left">
+                <span class="window-dot" style="background: #74b9ff; color: var(--text-muted);"></span>
+                <span style="color:var(--text-muted);">Settings & Preferences</span>
+            </div>
+            <div class="window-controls">
+                <button class="control-btn min-btn" onclick="minimizeApp('app-settings')">─</button>
+                <button class="control-btn close-btn" onclick="closeApp('app-settings')">✕</button>
+            </div>
         </div>
 
-        <!-- Main Settings Dashboard Viewport -->
-        <div class="settings-content" style="flex-grow: 1; padding: 22px; overflow-y: auto;">
+        <div class="window-body-container settings-layout"
+            style="display: flex; padding: 0; height: calc(100% - 30px); width: 100%;">
 
-            <!-- Tab 1: Look & Feel (Personalization) -->
-            <div id="set-tab-personalize" class="settings-pane">
-                <h3 style="margin-top:0; margin-bottom:18px; font-weight: 600; color:var(--text-muted)">Look & Feel</h3>
-                
-                <label style="display:block; margin-bottom:10px; font-size:0.85rem; font-weight:600; color:var(--text-muted);">Choose Desktop Wallpaper</label>
-                <div class="wallpaper-presets" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px;">
-                    <div class="wp-card"
-                        onclick="changeWallpaper('linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)')"
-                        style="height:55px; background:linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius:8px; cursor:pointer; border:2px solid transparent; transition: transform 0.2s;"
-                        title="Soft Ice">
-                    </div>
-                    <div class="wp-card"
-                        onclick="changeWallpaper('linear-gradient(135deg, #ffdee9 0%, #b5fffc 100%)')"
-                        style="height:55px; background:linear-gradient(135deg, #ffdee9 0%, #b5fffc 100%); border-radius:8px; cursor:pointer; border:2px solid transparent; transition: transform 0.2s;"
-                        title="Sunset Pastel">
-                    </div>
-                    <div class="wp-card" 
-                        onclick="changeWallpaper('#1e1e24')"
-                        style="height:55px; background:#1e1e24; border-radius:8px; cursor:pointer; border:2px solid transparent; transition: transform 0.2s;"
-                        title="Midnight Black">
-                    </div>
-                </div>
-
-                <label style="display:block; margin-bottom:10px; font-size:0.85rem; font-weight:600; color:var(--text-muted);">Appearance Mode</label>
-                <button onclick="toggleTheme()"
-                    style="padding: 10px 18px; background: var(--accent-color, #00b894); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight:600; font-size: 0.85rem; box-shadow: 0 4px 12px rgba(0,184,148,0.2);">
-                    Switch Light / Dark Theme
-                </button>
+            <!-- Clean Sidebar Navigation -->
+            <div class="settings-sidebar"
+                style="width: 160px; background: var(--bg-sidebar, rgba(0,0,0,0.02)); border-right: 1px solid var(--border-color, rgba(0,0,0,0.08)); display: flex; flex-direction: column; gap: 6px; padding: 12px; flex-shrink: 0;">
+                <button class="settings-nav-btn active" onclick="switchSettingsTab('personalize', this)">🎨 Look &
+                    Feel</button>
+                <button class="settings-nav-btn" onclick="switchSettingsTab('system', this)">💻 About Device</button>
+                <button class="settings-nav-btn" onclick="switchSettingsTab('apps', this)">📱 Installed Apps</button>
             </div>
 
-            <!-- Tab 2: About Device (System Info) -->
-            <div id="set-tab-system" class="settings-pane" style="display:none;">
-                <h3 style="margin-top:0; margin-bottom:18px; font-weight: 600;color:var(--text-muted)">About Device</h3>
-                
-                <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 0; border-bottom:1px solid rgba(0,0,0,0.06);">
-                    <div>
-                        <div style="font-weight:600;color: var(--text-muted);">Operating System</div>
-                        <div style="font-size:0.8rem; color:var(--text-muted);">Your personal web desktop workspace</div>
+            <!-- Main Settings Dashboard Viewport -->
+            <div class="settings-content" style="flex-grow: 1; padding: 22px; overflow-y: auto;">
+
+                <!-- Tab 1: Look & Feel (Personalization) -->
+                <div id="set-tab-personalize" class="settings-pane">
+                    <h3 style="margin-top:0; margin-bottom:18px; font-weight: 600; color:var(--text-muted)">Look & Feel
+                    </h3>
+
+                    <label
+                        style="display:block; margin-bottom:10px; font-size:0.85rem; font-weight:600; color:var(--text-muted);">Choose
+                        Desktop Wallpaper</label>
+                    <div class="wallpaper-presets"
+                        style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px;">
+                        <div class="wp-card"
+                            onclick="changeWallpaper('linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)')"
+                            style="height:55px; background:linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius:8px; cursor:pointer; border:2px solid transparent; transition: transform 0.2s;"
+                            title="Soft Ice">
+                        </div>
+                        <div class="wp-card"
+                            onclick="changeWallpaper('linear-gradient(135deg, #ffdee9 0%, #b5fffc 100%)')"
+                            style="height:55px; background:linear-gradient(135deg, #ffdee9 0%, #b5fffc 100%); border-radius:8px; cursor:pointer; border:2px solid transparent; transition: transform 0.2s;"
+                            title="Sunset Pastel">
+                        </div>
+                        <div class="wp-card" onclick="changeWallpaper('#1e1e24')"
+                            style="height:55px; background:#1e1e24; border-radius:8px; cursor:pointer; border:2px solid transparent; transition: transform 0.2s;"
+                            title="Midnight Black">
+                        </div>
                     </div>
-                    <div style="font-weight:600; color: var(--text-muted);">Soma OS</div>
+
+                    <label
+                        style="display:block; margin-bottom:10px; font-size:0.85rem; font-weight:600; color:var(--text-muted);">Appearance
+                        Mode</label>
+                    <button onclick="toggleTheme()"
+                        style="padding: 10px 18px; background: var(--accent-color, #00b894); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight:600; font-size: 0.85rem; box-shadow: 0 4px 12px rgba(0,184,148,0.2);">
+                        Switch Light / Dark Theme
+                    </button>
                 </div>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 0; border-bottom:1px solid rgba(0,0,0,0.06);">
-                    <div>
-                        <div style="font-weight:600; color:var(--text-muted)">Terminal Driver</div>
-                        <div style="font-size:0.8rem; color:var(--text-muted);">Handles user commands & actions</div>
+                <!-- Tab 2: About Device (System Info) -->
+                <div id="set-tab-system" class="settings-pane" style="display:none;">
+                    <h3 style="margin-top:0; margin-bottom:18px; font-weight: 600;color:var(--text-muted)">About Device
+                    </h3>
+
+                    <div
+                        style="display:flex; justify-content:space-between; align-items:center; padding: 12px 0; border-bottom:1px solid rgba(0,0,0,0.06);">
+                        <div>
+                            <div style="font-weight:600;color: var(--text-muted);">Operating System</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">Your personal web desktop workspace
+                            </div>
+                        </div>
+                        <div style="font-weight:600; color: var(--text-muted);">Soma OS</div>
                     </div>
-                    <div style="font-family: monospace; font-weight:600; color:var(--accent-color, #00b894);">Hridaya CLI Engine</div>
+
+                    <div
+                        style="display:flex; justify-content:space-between; align-items:center; padding: 12px 0; border-bottom:1px solid rgba(0,0,0,0.06);">
+                        <div>
+                            <div style="font-weight:600; color:var(--text-muted)">Terminal Driver</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">Handles user commands & actions
+                            </div>
+                        </div>
+                        <div style="font-family: monospace; font-weight:600; color:var(--accent-color, #00b894);">
+                            Hridaya CLI Engine</div>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 0;">
+                        <div>
+                            <div style="font-weight:600;color: var(--text-muted);">System Version</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">Current installed release</div>
+                        </div>
+                        <div style="font-family: monospace; color: var(--text-muted);">v2.1 (Stable)</div>
+                    </div>
                 </div>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 0;">
-                    <div>
-                        <div style="font-weight:600;color: var(--text-muted);">System Version</div>
-                        <div style="font-size:0.8rem; color:var(--text-muted);">Current installed release</div>
+
+
+
+                <!-- Tab 3: Installed Apps -->
+                <div id="set-tab-apps" class="settings-pane" style="display:none;">
+                    <h3 style="margin-top:0; margin-bottom:8px; font-weight: 600; color:var(--text-muted)">Installed
+                        Apps</h3>
+                    <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:18px;">Applications available in
+                        your Soma workspace:</p>
+
+                    <div style="display:flex; flex-direction:column; gap:10px;">
+                        <div
+                            style="display:flex; align-items:center; gap:12px; padding:10px; background:rgba(0,0,0,0.02); border-radius:8px; border: 1px solid rgba(0,0,0,0.04);">
+                            <span style="font-size:1.4rem;">🎵</span>
+                            <div>
+                                <strong style="font-size:0.85rem;color:var(--text-muted)">Soma Audio Player</strong><br>
+                                <span style="font-size:0.75rem; color:var(--text-muted);">Play background tracks and
+                                    sound effects.</span>
+                            </div>
+                        </div>
+
+                        <div
+                            style="display:flex; align-items:center; gap:12px; padding:10px; background:rgba(0,0,0,0.02); border-radius:8px; border: 1px solid rgba(0,0,0,0.04);">
+                            <span style="font-size:1.4rem;">🎬</span>
+                            <div>
+                                <strong style="font-size:0.85rem;color: var(--text-muted);">Soma Cinema</strong><br>
+                                <span style="font-size:0.75rem; color:var(--text-muted);">Watch videos and stream custom
+                                    media links.</span>
+                            </div>
+                        </div>
+
+                        <div
+                            style="display:flex; align-items:center; gap:12px; padding:10px; background:rgba(0,0,0,0.02); border-radius:8px; border: 1px solid rgba(0,0,0,0.04);">
+                            <span style="font-size:1.4rem;">🎨</span>
+                            <div>
+                                <strong style="font-size:0.85rem;color: var(--text-muted);">Soma Paint</strong><br>
+                                <span style="font-size:0.75rem; color:var(--text-muted);">Simple canvas tool for quick
+                                    drawing and sketching.</span>
+                            </div>
+                        </div>
+
+                        <div
+                            style="display:flex; align-items:center; gap:12px; padding:10px; background:rgba(0,0,0,0.02); border-radius:8px; border: 1px solid rgba(0,0,0,0.04);">
+                            <span style="font-size:1.4rem;">📝</span>
+                            <div>
+                                <strong style="font-size:0.85rem;color: var(--text-muted);">Notepad Editor</strong><br>
+                                <span style="font-size:0.75rem; color:var(--text-muted);">Create, open, and save text
+                                    notes.</span>
+                            </div>
+                        </div>
+
+                        <div
+                            style="display:flex; align-items:center; gap:12px; padding:10px; background:rgba(0,0,0,0.02); border-radius:8px; border: 1px solid rgba(0,0,0,0.04);">
+                            <span style="font-size:1.4rem;color: var(--text-muted);">🕹️</span>
+                            <div>
+                                <strong style="font-size:0.85rem;">Retro Snake Arcade</strong><br>
+                                <span style="font-size:0.75rem; color:var(--text-muted);">Classic mini-game for quick
+                                    breaks.</span>
+                            </div>
+                        </div>
                     </div>
-                    <div style="font-family: monospace; color: var(--text-muted);">v2.1 (Stable)</div>
                 </div>
+
             </div>
-
-
-            
-
-            <!-- Tab 3: Installed Apps -->
-            <div id="set-tab-apps" class="settings-pane" style="display:none;">
-                <h3 style="margin-top:0; margin-bottom:8px; font-weight: 600; color:var(--text-muted)">Installed Apps</h3>
-                <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:18px;">Applications available in your Soma workspace:</p>
-                
-                <div style="display:flex; flex-direction:column; gap:10px;">
-                    <div style="display:flex; align-items:center; gap:12px; padding:10px; background:rgba(0,0,0,0.02); border-radius:8px; border: 1px solid rgba(0,0,0,0.04);">
-                        <span style="font-size:1.4rem;">🎵</span>
-                        <div>
-                            <strong style="font-size:0.85rem;color:var(--text-muted)">Soma Audio Player</strong><br>
-                            <span style="font-size:0.75rem; color:var(--text-muted);">Play background tracks and sound effects.</span>
-                        </div>
-                    </div>
-
-                    <div style="display:flex; align-items:center; gap:12px; padding:10px; background:rgba(0,0,0,0.02); border-radius:8px; border: 1px solid rgba(0,0,0,0.04);">
-                        <span style="font-size:1.4rem;">🎬</span>
-                        <div>
-                            <strong style="font-size:0.85rem;color: var(--text-muted);">Soma Cinema</strong><br>
-                            <span style="font-size:0.75rem; color:var(--text-muted);">Watch videos and stream custom media links.</span>
-                        </div>
-                    </div>
-
-                    <div style="display:flex; align-items:center; gap:12px; padding:10px; background:rgba(0,0,0,0.02); border-radius:8px; border: 1px solid rgba(0,0,0,0.04);">
-                        <span style="font-size:1.4rem;">🎨</span>
-                        <div>
-                            <strong style="font-size:0.85rem;color: var(--text-muted);">Soma Paint</strong><br>
-                            <span style="font-size:0.75rem; color:var(--text-muted);">Simple canvas tool for quick drawing and sketching.</span>
-                        </div>
-                    </div>
-
-                    <div style="display:flex; align-items:center; gap:12px; padding:10px; background:rgba(0,0,0,0.02); border-radius:8px; border: 1px solid rgba(0,0,0,0.04);">
-                        <span style="font-size:1.4rem;">📝</span>
-                        <div>
-                            <strong style="font-size:0.85rem;color: var(--text-muted);">Notepad Editor</strong><br>
-                            <span style="font-size:0.75rem; color:var(--text-muted);">Create, open, and save text notes.</span>
-                        </div>
-                    </div>
-
-                    <div style="display:flex; align-items:center; gap:12px; padding:10px; background:rgba(0,0,0,0.02); border-radius:8px; border: 1px solid rgba(0,0,0,0.04);">
-                        <span style="font-size:1.4rem;color: var(--text-muted);">🕹️</span>
-                        <div>
-                            <strong style="font-size:0.85rem;">Retro Snake Arcade</strong><br>
-                            <span style="font-size:0.75rem; color:var(--text-muted);">Classic mini-game for quick breaks.</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
-</div>
 
 
-<!-- 🎙️ SOMA HUMAN VOICE ASSISTANT WINDOW -->
-<div id="app-voice" class="window hidden" style="top: 15%; left: 30%; width: 450px; height: 380px;">
+    <!-- 🎙️ SOMA HUMAN VOICE ASSISTANT WINDOW (REDESIGNED) -->
+<div id="app-voice" class="window hidden" style="   top: 15%;
+    left: 30%;
+    width: 420px;
+    height: 480px;
+    background:var(--card-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--card-hover);
+    border-radius: 16px !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(108, 92, 231, 0.2);
+    overflow: hidden;">
+    <!-- Window Titlebar Header -->
     <div class="window-header" onmousedown="dragStart(event, 'app-voice')">
         <div class="header-left">
-            <span class="window-dot" style="background: #a29bfe;"></span>
-            <span>Soma Voice Assistant</span>
+            <span class="status-dot-pulse"></span>
+            <span class="header-title">Soma AI Assistant</span>
+            <span class="ai-badge">v2.0</span>
         </div>
         <div class="window-controls">
-            <button class="control-btn min-btn" onclick="minimizeApp('app-voice')">─</button>
-            <button class="control-btn close-btn" onclick="closeApp('app-voice')">✕</button>
+            <button class="control-btn min-btn" onclick="minimizeApp('app-voice')" title="Minimize">─</button>
+            <button class="control-btn close-btn" onclick="closeApp('app-voice')" title="Close">✕</button>
         </div>
     </div>
 
-    <div class="window-body-container" style="padding: 20px; background: #0f172a; height: calc(100% - 38px); display: flex; flex-direction: column; align-items: center; justify-content: space-between; box-sizing: border-box; text-align: center;">
+    <!-- Main Container Body -->
+    <div class="voice-body-container">
         
-        <!-- Voice Orb Indicator -->
-        <div style="margin-top: 10px;">
-            <div id="voice-orb" style="width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(circle, #a29bfe 0%, #6c5ce7 100%); box-shadow: 0 0 20px rgba(108, 92, 231, 0.6); display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto; transition: all 0.3s ease;">
-                🎙️
+        <!-- Orb Visualizer Section -->
+        <div class="orb-container">
+            <div id="voice-pulse-ring-1" class="pulse-ring"></div>
+            <div id="voice-pulse-ring-2" class="pulse-ring"></div>
+            
+            <div id="voice-orb" class="glow-orb">
+                <span class="orb-icon">🎙️</span>
             </div>
-            <p id="voice-status" style="margin: 12px 0 0 0; font-size: 0.85rem; color: #a29bfe; font-weight: 600;">Tap "Start Listening" to speak</p>
         </div>
 
-        <!-- Live Subtitle Display -->
-        <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); width: 100%; border-radius: 10px; padding: 12px; box-sizing: border-box; min-height: 70px; display: flex; align-items: center; justify-content: center;">
-            <span id="voice-transcript" style="font-size: 0.8rem; color: var(--text-color, #e2e8f0); opacity: 0.8; font-style: italic;">"Try saying: 'Open Word', 'Close Chess', or 'Check Usage'"</span>
+        <!-- Status & Feedback Section -->
+        <div class="status-section">
+            <p id="voice-status" class="voice-status-text">Ready for your prompt</p>
+            
+            <!-- Live Audio Waveform Animation -->
+            <div id="voice-waveform" class="waveform-container hidden">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
         </div>
 
-        <!-- Controls -->
-        <div style="display: flex; gap: 10px; width: 100%;">
-            <button id="voice-listen-btn" onclick="toggleVoiceAssistant()" style="flex: 1; background: #6c5ce7; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s;">
-                🎤 Start Listening
+        <!-- Live Subtitle Display Box -->
+        <div class="transcript-card">
+            <span id="voice-transcript" class="transcript-text">
+                "Listening for: 'Open Terminal' or 'Check Usage'..."
+            </span>
+        </div>
+
+        <!-- Quick Action Command Chips -->
+        <div class="quick-chips">
+            <button class="chip" onclick="processVoiceCommand('open notepad')">📝 Open Note</button>
+            <button class="chip" onclick="processVoiceCommand('open terminal')">🕊️ Terminal</button>
+        </div>
+
+        <!-- Control Action Footer -->
+        <div class="voice-footer">
+            <button id="voice-listen-btn" class="primary-listen-btn" onclick="toggleVoiceAssistant()">
+                <span class="btn-icon">🎤</span>
+                <span class="btn-text">Start Listening</span>
             </button>
         </div>
     </div>
 </div>
-
-<!-- 📌 SOMA KANBAN BOARD: QUICK TASK MANAGER -->
-<div id="app-kanban" class="window hidden" style="top: 18%; left: 28%; width: 500px; height: 380px;">
-    <div class="window-header" onmousedown="dragStart(event, 'app-kanban')">
-        <div class="header-left">
-            <span class="window-dot" style="background: #00b894;"></span>
-            <span>Soma Tasks</span>
+    <!-- 📌 SOMA KANBAN BOARD: QUICK TASK MANAGER -->
+    <div id="app-kanban" class="window hidden" style="top: 18%; left: 28%; width: 500px; height: 380px;">
+        <div class="window-header" onmousedown="dragStart(event, 'app-kanban')">
+            <div class="header-left">
+                <span class="window-dot" style="background: #00b894;"></span>
+                <span>Soma Tasks</span>
+            </div>
+            <div class="window-controls">
+                <button class="control-btn min-btn" onclick="minimizeApp('app-kanban')">─</button>
+                <button class="control-btn close-btn" onclick="closeApp('app-kanban')">✕</button>
+            </div>
         </div>
-        <div class="window-controls">
-            <button class="control-btn min-btn" onclick="minimizeApp('app-kanban')">─</button>
-            <button class="control-btn close-btn" onclick="closeApp('app-kanban')">✕</button>
-        </div>
-    </div>
-    <div class="window-body-container" style="padding: 15px; display: flex; flex-direction: column; gap: 10px; height: calc(100% - 38px); background: var(--sidebar-bg);">
-        <div style="display: flex; gap: 8px;">
-            <input type="text" id="kanban-task-input" placeholder="Add a new workflow task..." style="flex: 1; padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); background: var(--card-bg); color: var(--text-color); font-size: 0.85rem;">
-            <button onclick="addSomaTask()" style="padding: 8px 16px; background: var(--accent-color); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Add</button>
-        </div>
-        <div id="kanban-task-list" style="flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-top: 5px;">
-            <!-- Dynamic task items will populate here -->
-            <div style="padding: 8px 12px; background: var(--card-bg); border-radius: 6px; font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
-                <span>✨ Initialize Soma OS v2.1 deployment</span>
-                <span style="cursor: pointer; opacity: 0.6;" onclick="this.parentElement.remove()">✕</span>
+        <div class="window-body-container"
+            style="padding: 15px; display: flex; flex-direction: column; gap: 10px; height: calc(100% - 38px); background: var(--sidebar-bg);">
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="kanban-task-input" placeholder="Add a new workflow task..."
+                    style="flex: 1; padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); background: var(--card-bg); color: var(--text-color); font-size: 0.85rem;">
+                <button onclick="addSomaTask()"
+                    style="padding: 8px 16px; background: var(--accent-color); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Add</button>
+            </div>
+            <div id="kanban-task-list"
+                style="flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-top: 5px;">
+                <!-- Dynamic task items will populate here -->
+                <div
+                    style="padding: 8px 12px; background: var(--card-bg); border-radius: 6px; font-size: 0.85rem; border: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
+                    <span>✨ Initialize Soma OS v2.1 deployment</span>
+                    <span style="cursor: pointer; opacity: 0.6;" onclick="this.parentElement.remove()">✕</span>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
-<!-- 🪐 SOMA APP STORE WINDOW -->
-<div id="app-soma-store" class="window hidden" style="top: 10%; left: 15%; width: 680px; height: 500px;">
-    <div class="window-header" onmousedown="dragStart(event, 'app-soma-store')">
-        <div class="header-left">
-            <span class="window-dot" style="background: #a29bfe;"></span>
-            <span>Soma App Store</span>
+    <!-- 🪐 SOMA APP STORE WINDOW -->
+    <div id="app-soma-store" class="window hidden" style="top: 10%; left: 15%; width: 680px; height: 500px;">
+        <div class="window-header" onmousedown="dragStart(event, 'app-soma-store')">
+            <div class="header-left">
+                <span class="window-dot" style="background: #a29bfe;"></span>
+                <span>Soma App Store</span>
+            </div>
+            <div class="window-controls">
+                <button class="control-btn min-btn" onclick="minimizeApp('app-soma-store')">─</button>
+                <button class="control-btn close-btn" onclick="closeApp('app-soma-store')">✕</button>
+            </div>
         </div>
-        <div class="window-controls">
-            <button class="control-btn min-btn" onclick="minimizeApp('app-soma-store')">─</button>
-            <button class="control-btn close-btn" onclick="closeApp('app-soma-store')">✕</button>
+
+        <div class="window-body-containers"
+            style="padding: 20px; background: var(--sidebar-bg); height: calc(100% - 38px); overflow-y: auto; color: var(--text-color);">
+
+            <!-- Store Sub-Header -->
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 12px; margin-bottom: 16px;">
+                <div>
+                    <h2 style="margin: 0; font-size: 1.1rem; color: #a29bfe;">🪐 Soma Store</h2>
+                    <p style="margin: 2px 0 0 0; font-size: 0.75rem; opacity: 0.7;">Explore native applications and web
+                        runtime extensions.</p>
+                </div>
+                <span
+                    style="background: rgba(108, 92, 231, 0.2); border: 1px solid #6c5ce7; color: #a29bfe; font-size: 10px; padding: 4px 8px; border-radius: 12px; font-weight: bold;">v1.0
+                    Channel</span>
+            </div>
+
+            <!-- Available Apps Section -->
+            <div
+                style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.6; margin-bottom: 12px;">
+                Available Applications</div>
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-bottom: 24px;">
+
+                <!-- App Card: 2D Neon Chess -->
+                <div class="soma-store-card" onclick="openSomaStoreDetail('chess')">
+                    <div
+                        style="font-size: 28px; background: rgba(255,255,255,0.05); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 10px;">
+                        ♟️</div>
+                    <div style="flex: 1;">
+                        <h4 style="margin: 0; font-size: 0.9rem;">2D Neon Chess</h4>
+                        <span
+                            style="font-size: 9px; font-weight: bold; background: rgba(0, 206, 201, 0.2); color: #00cec9; padding: 2px 5px; border-radius: 4px;">FREE</span>
+                        <p style="margin: 4px 0 0 0; font-size: 0.75rem; opacity: 0.7;">Cybernetic chessboard with local
+                            game state saving.</p>
+                    </div>
+                    <button id="store-btn-chess"
+                        style="background: #6c5ce7; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer;"
+                        onclick="event.stopPropagation(); launchSomaStoreApp('chess')">Get / Install</button>
+                </div>
+                <!-- App Card: Soma Word -->
+                <div class="soma-store-card" onclick="openSomaStoreDetail('word')">
+                    <div
+                        style="font-size: 28px; background: rgba(255,255,255,0.05); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 10px;">
+                        📝</div>
+                    <div style="flex: 1;">
+                        <h4 style="margin: 0; font-size: 0.9rem;">Soma Word Pro</h4>
+                        <span
+                            style="font-size: 9px; font-weight: bold; background: rgba(0, 206, 201, 0.2); color: #00cec9; padding: 2px 5px; border-radius: 4px;">FREE</span>
+                        <p style="margin: 4px 0 0 0; font-size: 0.75rem; opacity: 0.7;">Rich workspace document writer
+                            with formatting & local storage.</p>
+                    </div>
+                    <button id="store-btn-word"
+                        style="background: #6c5ce7; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer;"
+                        onclick="event.stopPropagation(); launchSomaStoreApp('word')">Get / Install</button>
+                </div>
+
+                <!-- App Card: Focus Timer -->
+                <div class="soma-store-card" onclick="openSomaStoreDetail('pomodoro')">
+                    <div
+                        style="font-size: 28px; background: rgba(255,255,255,0.05); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 10px;">
+                        ⏱️</div>
+                    <div style="flex: 1;">
+                        <h4 style="margin: 0; font-size: 0.9rem;">Focus Timer</h4>
+                        <span
+                            style="font-size: 9px; font-weight: bold; background: rgba(0, 206, 201, 0.2); color: #00cec9; padding: 2px 5px; border-radius: 4px;">FREE</span>
+                        <p style="margin: 4px 0 0 0; font-size: 0.75rem; opacity: 0.7;">Pomodoro productivity and break
+                            tracker.</p>
+                    </div>
+                    <button id="store-btn-pomodoro"
+                        style="background: #6c5ce7; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer;"
+                        onclick="event.stopPropagation(); launchSomaStoreApp('pomodoro')">Get / Install</button>
+                </div>
+
+                <!-- App Card: Soma Breathe -->
+                <div class="soma-store-card" onclick="openSomaStoreDetail('breathe')">
+                    <div
+                        style="font-size: 28px; background: rgba(255,255,255,0.05); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 10px;">
+                        🧘</div>
+                    <div style="flex: 1;">
+                        <h4 style="margin: 0; font-size: 0.9rem;">Soma Breathe</h4>
+                        <span
+                            style="font-size: 9px; font-weight: bold; background: rgba(0, 206, 201, 0.2); color: #00cec9; padding: 2px 5px; border-radius: 4px;">FREE</span>
+                        <p style="margin: 4px 0 0 0; font-size: 0.75rem; opacity: 0.7;">Guided mindfulness & box
+                            breathing visualizer.</p>
+                    </div>
+                    <button id="store-btn-breathe"
+                        style="background: #6c5ce7; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer;"
+                        onclick="event.stopPropagation(); launchSomaStoreApp('breathe')">Get / Install</button>
+                </div>
+            </div>
+
+            <!-- Developer Portal / Coming Soon -->
+            <div
+                style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.6; margin-bottom: 12px;">
+                Developer Ecosystem</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px;">
+                <div class="soma-store-card" style="opacity: 0.85;">
+                    <div
+                        style="font-size: 28px; background: rgba(255,255,255,0.05); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 10px;">
+                        🚀</div>
+                    <div style="flex: 1;">
+                        <h4 style="margin: 0; font-size: 0.9rem;">Web SDK Pipeline</h4>
+                        <span
+                            style="font-size: 9px; font-weight: bold; background: rgba(253, 121, 168, 0.2); color: #fd79a8; padding: 2px 5px; border-radius: 4px;">COMING
+                            SOON</span>
+                        <p style="margin: 4px 0 0 0; font-size: 0.75rem; opacity: 0.7;">Third-party HTML/CSS/JS app
+                            launcher platform.</p>
+                    </div>
+                    <button
+                        style="background: rgba(255,255,255,0.1); color: var(--text-muted); border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: not-allowed;"
+                        disabled>Soon</button>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <div class="window-body-containers" style="padding: 20px; background: var(--sidebar-bg); height: calc(100% - 38px); overflow-y: auto; color: var(--text-color);">
-        
-        <!-- Store Sub-Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 12px; margin-bottom: 16px;">
+    <!-- Modal Popup for Details & Features -->
+    <div id="store-modal-overlay"
+        style="position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 99999;"
+        onclick="closeSomaStoreModal()">
+        <div style="background: var(--card-bg, #0f172a); border: 1px solid rgba(255,255,255,0.15); width: 90%; max-width: 420px; border-radius: 14px; padding: 20px; position: relative; color: var(--text-color);"
+            onclick="event.stopPropagation()">
+            <button
+                style="position: absolute; top: 12px; right: 12px; background: none; border: none; color: var(--text-muted); font-size: 16px; cursor: pointer;"
+                onclick="closeSomaStoreModal()">✕</button>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px;">
+                <div id="store-modal-icon"
+                    style="font-size: 32px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 10px;">♟️
+                </div>
+                <div>
+                    <h3 id="store-modal-title" style="margin: 0; font-size: 1rem;">App Title</h3>
+                    <span
+                        style="font-size: 9px; font-weight: bold; background: rgba(0, 206, 201, 0.2); color: #00cec9; padding: 2px 5px; border-radius: 4px;">FREE
+                        APP</span>
+                </div>
+            </div>
+            <div style="font-size: 0.8rem; line-height: 1.5; opacity: 0.9;">
+                <p id="store-modal-desc" style="margin-top: 0;">Description text.</p>
+                <h4 style="margin: 12px 0 6px 0; font-size: 0.8rem; color: #a29bfe;">Features & Use Cases</h4>
+                <ul id="store-modal-uses" style="margin: 0; padding-left: 18px; opacity: 0.8; font-size: 0.75rem;"></ul>
+            </div>
+            <div style="margin-top: 18px; display: flex; justify-content: flex-end;">
+                <button id="store-modal-launch-btn"
+                    style="background: #00cec9; color: #0f172a; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer;">Launch
+                    App</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ♟️ 2D NEON CHESS WINDOW -->
+    <div id="app-chess" class="window hidden" style="top: 10%; left: 20%; width: 520px; height: 580px;">
+        <div class="window-header" onmousedown="dragStart(event, 'app-chess')">
+            <div class="header-left">
+                <span class="window-dot" style="background: #00cec9;"></span>
+                <span>Soma Neon Chess v1.0</span>
+            </div>
+            <div class="window-controls">
+                <button class="control-btn min-btn" onclick="minimizeApp('app-chess')">─</button>
+                <button class="control-btn close-btn" onclick="closeApp('app-chess')">✕</button>
+            </div>
+        </div>
+
+        <div class="window-body-container"
+            style="padding: 15px; background: #0f172a; height: calc(100% - 38px); display: flex; flex-direction: column; align-items: center; justify-content: space-between; box-sizing: border-box;">
+
+            <!-- Status Bar & Actions -->
+            <div
+                style="width: 100%; display: flex; justify-content: space-between; align-items: center; color: #a29bfe; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px;">
+                <span id="chess-status">Turn: White (Player)</span>
+                <button onclick="resetChessGame()"
+                    style="background: rgba(108, 92, 231, 0.2); border: 1px solid #6c5ce7; color: #a29bfe; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem;">🔄
+                    Reset Matrix</button>
+            </div>
+
+            <!-- 8x8 Chessboard Grid -->
+            <div id="chess-board"
+                style="width: 400px; height: 400px; display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); border: 2px solid #6c5ce7; border-radius: 8px; box-shadow: 0 0 15px rgba(108, 92, 231, 0.3); overflow: hidden;">
+            </div>
+
+            <!-- Game Info Footer -->
+            <div
+                style="width: 100%; font-size: 0.75rem; color: #64748b; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 6px;">
+                <span>Interactive 2D Cyber-Grid Engine • Local Save Sync</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📝 SOMA WORD PRO EDITOR WINDOW -->
+    <div id="app-word" class="window hidden" style="top: 12%; left: 22%; width: 650px; height: 500px;">
+        <div class="window-header" onmousedown="dragStart(event, 'app-word')">
+            <div class="header-left">
+                <span class="window-dot" style="background: #00cec9;"></span>
+                <span>Soma Word Pro</span>
+            </div>
+            <div class="window-controls">
+                <button class="control-btn min-btn" onclick="minimizeApp('app-word')">─</button>
+                <button class="control-btn close-btn" onclick="closeApp('app-word')">✕</button>
+            </div>
+        </div>
+
+        <!-- Word Toolbar -->
+        <div
+            style="background: var(--card-bg); padding: 8px 12px; display: flex; gap: 8px; border-bottom: 1px solid rgba(0,0,0,0.1); align-items: center;">
+            <button onclick="formatWordText('bold')"
+                style="padding: 4px 8px; cursor: pointer; font-weight: bold;">B</button>
+            <button onclick="formatWordText('italic')"
+                style="padding: 4px 8px; cursor: pointer; font-style: italic;">I</button>
+            <button onclick="formatWordText('underline')"
+                style="padding: 4px 8px; cursor: pointer; text-decoration: underline;">U</button>
+            <div style="width: 1px; height: 16px; background: rgba(0,0,0,0.1);"></div>
+            <button onclick="saveWordDocument()"
+                style="background: #00cec9; color: #0f172a; border: none; padding: 4px 10px; border-radius: 4px; font-weight: bold; cursor: pointer;">💾
+                Save</button>
+        </div>
+
+        <!-- Editable Canvas Area -->
+        <div class="window-body-container"
+            style="padding: 15px; height: calc(100% - 85px); background:rgba(0, 0, 0, 0.2); color:var(--text-color); overflow-y: auto;">
+            <div id="word-editor-canvas" contenteditable="true"
+                style="min-height: 100%; outline: none; font-family: sans-serif; font-size: 14px; line-height: 1.6;"
+                oninput="updateWordStats()">
+                Start typing your document...
+            </div>
+        </div>
+
+        <!-- Word Footer Statusbar -->
+        <div
+            style="background: var(--sidebar-bg); padding: 6px 12px; font-size: 11px; display: flex; justify-content: space-between; border-top: 1px solid rgba(0,0,0,0.05); color: var(--text-color);">
+            <span id="word-stats">Words: 4 | Chars: 28</span>
+            <span id="word-save-status" style="color: #00cec9;">Saved in Local Storage</span>
+        </div>
+    </div>
+
+    <!-- ⏱️ FOCUS TIMER / POMODORO WINDOW -->
+    <div id="app-pomodoro" class="window hidden" style="top: 15%; left: 25%; width: 380px; height: 340px;">
+        <div class="window-header" onmousedown="dragStart(event, 'app-pomodoro')">
+            <div class="header-left">
+                <span class="window-dot" style="background: #ff7675;"></span>
+                <span>Focus Timer</span>
+            </div>
+            <div class="window-controls">
+                <button class="control-btn min-btn" onclick="minimizeApp('app-pomodoro')">─</button>
+                <button class="control-btn close-btn" onclick="closeApp('app-pomodoro')">✕</button>
+            </div>
+        </div>
+
+        <div class="window-body-container"
+            style="padding: 20px; background: #0f172a; height: calc(100% - 38px); display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; box-sizing: border-box; color: #fff;">
             <div>
-                <h2 style="margin: 0; font-size: 1.1rem; color: #a29bfe;">🪐 Soma Store</h2>
-                <p style="margin: 2px 0 0 0; font-size: 0.75rem; opacity: 0.7;">Explore native applications and web runtime extensions.</p>
+                <span id="pomo-mode"
+                    style="font-size: 0.75rem; text-transform: uppercase; tracking: 1px; color: #fd79a8; font-weight: bold;">Focus
+                    Session</span>
+                <div id="pomo-timer-display"
+                    style="font-size: 3.2rem; font-weight: 800; margin: 10px 0; color: #00cec9; font-family: monospace;">
+                    25:00</div>
             </div>
-            <span style="background: rgba(108, 92, 231, 0.2); border: 1px solid #6c5ce7; color: #a29bfe; font-size: 10px; padding: 4px 8px; border-radius: 12px; font-weight: bold;">v1.0 Channel</span>
+
+            <div style="display: flex; gap: 8px; width: 100%;">
+                <button id="pomo-toggle-btn" onclick="togglePomodoroTimer()"
+                    style="flex: 1; background: #6c5ce7; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer;">Start
+                    Focus</button>
+                <button onclick="resetPomodoroTimer()"
+                    style="background: rgba(255,255,255,0.1); color: #ccc; border: none; padding: 10px 14px; border-radius: 6px; cursor: pointer;">Reset</button>
+            </div>
+
+            <div style="font-size: 0.75rem; opacity: 0.6;">Automated 25m Focus / 5m Break Intervals</div>
         </div>
-
-        <!-- Available Apps Section -->
-        <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.6; margin-bottom: 12px;">Available Applications</div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-bottom: 24px;">
-            
-            <!-- App Card: 2D Neon Chess -->
-<div class="soma-store-card" onclick="openSomaStoreDetail('chess')">
-    <div style="font-size: 28px; background: rgba(255,255,255,0.05); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 10px;">♟️</div>
-    <div style="flex: 1;">
-        <h4 style="margin: 0; font-size: 0.9rem;">2D Neon Chess</h4>
-        <span style="font-size: 9px; font-weight: bold; background: rgba(0, 206, 201, 0.2); color: #00cec9; padding: 2px 5px; border-radius: 4px;">FREE</span>
-        <p style="margin: 4px 0 0 0; font-size: 0.75rem; opacity: 0.7;">Cybernetic chessboard with local game state saving.</p>
     </div>
-    <button id="store-btn-chess" style="background: #6c5ce7; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer;" onclick="event.stopPropagation(); launchSomaStoreApp('chess')">Get / Install</button>
-</div>
-            <!-- App Card: Soma Word -->
-<div class="soma-store-card" onclick="openSomaStoreDetail('word')">
-    <div style="font-size: 28px; background: rgba(255,255,255,0.05); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 10px;">📝</div>
-    <div style="flex: 1;">
-        <h4 style="margin: 0; font-size: 0.9rem;">Soma Word Pro</h4>
-        <span style="font-size: 9px; font-weight: bold; background: rgba(0, 206, 201, 0.2); color: #00cec9; padding: 2px 5px; border-radius: 4px;">FREE</span>
-        <p style="margin: 4px 0 0 0; font-size: 0.75rem; opacity: 0.7;">Rich workspace document writer with formatting & local storage.</p>
-    </div>
-    <button id="store-btn-word" style="background: #6c5ce7; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer;" onclick="event.stopPropagation(); launchSomaStoreApp('word')">Get / Install</button>
-</div>
 
-        </div>
-
-        <!-- Developer Portal / Coming Soon -->
-        <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.6; margin-bottom: 12px;">Developer Ecosystem</div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px;">
-            <div class="soma-store-card" style="opacity: 0.85;">
-                <div style="font-size: 28px; background: rgba(255,255,255,0.05); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 10px;">🚀</div>
-                <div style="flex: 1;">
-                    <h4 style="margin: 0; font-size: 0.9rem;">Web SDK Pipeline</h4>
-                    <span style="font-size: 9px; font-weight: bold; background: rgba(253, 121, 168, 0.2); color: #fd79a8; padding: 2px 5px; border-radius: 4px;">COMING SOON</span>
-                    <p style="margin: 4px 0 0 0; font-size: 0.75rem; opacity: 0.7;">Third-party HTML/CSS/JS app launcher platform.</p>
-                </div>
-                <button style="background: rgba(255,255,255,0.1); color: var(--text-muted); border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: not-allowed;" disabled>Soon</button>
+    <!-- 🧘 SOMA BREATHE WINDOW -->
+    <div id="app-breathe" class="window hidden" style="top: 20%; left: 35%; width: 360px; height: 360px;">
+        <div class="window-header" onmousedown="dragStart(event, 'app-breathe')">
+            <div class="header-left">
+                <span class="window-dot" style="background: #74b9ff;"></span>
+                <span>Soma Breathe</span>
+            </div>
+            <div class="window-controls">
+                <button class="control-btn min-btn" onclick="minimizeApp('app-breathe')">─</button>
+                <button class="control-btn close-btn" onclick="closeApp('app-breathe')">✕</button>
             </div>
         </div>
 
-    </div>
-</div>
+        <div class="window-body-container"
+            style="padding: 20px; background: #0f172a; height: calc(100% - 38px); display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; box-sizing: border-box; color: #fff;">
 
-<!-- Modal Popup for Details & Features -->
-<div id="store-modal-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 99999;" onclick="closeSomaStoreModal()">
-    <div style="background: var(--card-bg, #0f172a); border: 1px solid rgba(255,255,255,0.15); width: 90%; max-width: 420px; border-radius: 14px; padding: 20px; position: relative; color: var(--text-color);" onclick="event.stopPropagation()">
-        <button style="position: absolute; top: 12px; right: 12px; background: none; border: none; color: var(--text-muted); font-size: 16px; cursor: pointer;" onclick="closeSomaStoreModal()">✕</button>
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px;">
-            <div id="store-modal-icon" style="font-size: 32px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 10px;">♟️</div>
-            <div>
-                <h3 id="store-modal-title" style="margin: 0; font-size: 1rem;">App Title</h3>
-                <span style="font-size: 9px; font-weight: bold; background: rgba(0, 206, 201, 0.2); color: #00cec9; padding: 2px 5px; border-radius: 4px;">FREE APP</span>
+            <!-- Breathing Ring -->
+            <div
+                style="position: relative; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; margin-top: 10px;">
+                <div id="breathe-circle"
+                    style="position: absolute; width: 60px; height: 60px; border-radius: 50%; background: radial-gradient(circle, #74b9ff 0%, #0984e3 100%); opacity: 0.8; transition: transform 4s ease-in-out;">
+                </div>
+                <span id="breathe-label"
+                    style="position: relative; font-weight: bold; font-size: 0.9rem; z-index: 2; text-shadow: 0 0 4px rgba(0,0,0,0.8);">Ready</span>
             </div>
-        </div>
-        <div style="font-size: 0.8rem; line-height: 1.5; opacity: 0.9;">
-            <p id="store-modal-desc" style="margin-top: 0;">Description text.</p>
-            <h4 style="margin: 12px 0 6px 0; font-size: 0.8rem; color: #a29bfe;">Features & Use Cases</h4>
-            <ul id="store-modal-uses" style="margin: 0; padding-left: 18px; opacity: 0.8; font-size: 0.75rem;"></ul>
-        </div>
-        <div style="margin-top: 18px; display: flex; justify-content: flex-end;">
-            <button id="store-modal-launch-btn" style="background: #00cec9; color: #0f172a; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer;">Launch App</button>
-        </div>
-    </div>
-</div>
 
-<!-- ♟️ 2D NEON CHESS WINDOW -->
-<div id="app-chess" class="window hidden" style="top: 10%; left: 20%; width: 520px; height: 580px;">
-    <div class="window-header" onmousedown="dragStart(event, 'app-chess')">
-        <div class="header-left">
-            <span class="window-dot" style="background: #00cec9;"></span>
-            <span>Soma Neon Chess v1.0</span>
-        </div>
-        <div class="window-controls">
-            <button class="control-btn min-btn" onclick="minimizeApp('app-chess')">─</button>
-            <button class="control-btn close-btn" onclick="closeApp('app-chess')">✕</button>
+            <div style="width: 100%;">
+                <button id="breathe-btn" onclick="toggleBreatheSession()"
+                    style="width: 100%; background: #0984e3; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer;">Begin
+                    Breathing</button>
+            </div>
+
+            <div style="font-size: 0.75rem; opacity: 0.6;">4-4-4 Box Breathing Relaxer</div>
         </div>
     </div>
 
-    <div class="window-body-container" style="padding: 15px; background: #0f172a; height: calc(100% - 38px); display: flex; flex-direction: column; align-items: center; justify-content: space-between; box-sizing: border-box;">
-        
-        <!-- Status Bar & Actions -->
-        <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; color: #a29bfe; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px;">
-            <span id="chess-status">Turn: White (Player)</span>
-            <button onclick="resetChessGame()" style="background: rgba(108, 92, 231, 0.2); border: 1px solid #6c5ce7; color: #a29bfe; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem;">🔄 Reset Matrix</button>
-        </div>
-
-        <!-- 8x8 Chessboard Grid -->
-        <div id="chess-board" style="width: 400px; height: 400px; display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); border: 2px solid #6c5ce7; border-radius: 8px; box-shadow: 0 0 15px rgba(108, 92, 231, 0.3); overflow: hidden;"></div>
-
-        <!-- Game Info Footer -->
-        <div style="width: 100%; font-size: 0.75rem; color: #64748b; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 6px;">
-            <span>Interactive 2D Cyber-Grid Engine • Local Save Sync</span>
-        </div>
-    </div>
-</div>
-
-<!-- 📝 SOMA WORD PRO EDITOR WINDOW -->
-<div id="app-word" class="window hidden" style="top: 12%; left: 22%; width: 650px; height: 500px;">
-    <div class="window-header" onmousedown="dragStart(event, 'app-word')">
-        <div class="header-left">
-            <span class="window-dot" style="background: #00cec9;"></span>
-            <span>Soma Word Pro</span>
-        </div>
-        <div class="window-controls">
-            <button class="control-btn min-btn" onclick="minimizeApp('app-word')">─</button>
-            <button class="control-btn close-btn" onclick="closeApp('app-word')">✕</button>
-        </div>
-    </div>
-
-    <!-- Word Toolbar -->
-    <div style="background: var(--card-bg); padding: 8px 12px; display: flex; gap: 8px; border-bottom: 1px solid rgba(0,0,0,0.1); align-items: center;">
-        <button onclick="formatWordText('bold')" style="padding: 4px 8px; cursor: pointer; font-weight: bold;">B</button>
-        <button onclick="formatWordText('italic')" style="padding: 4px 8px; cursor: pointer; font-style: italic;">I</button>
-        <button onclick="formatWordText('underline')" style="padding: 4px 8px; cursor: pointer; text-decoration: underline;">U</button>
-        <div style="width: 1px; height: 16px; background: rgba(0,0,0,0.1);"></div>
-        <button onclick="saveWordDocument()" style="background: #00cec9; color: #0f172a; border: none; padding: 4px 10px; border-radius: 4px; font-weight: bold; cursor: pointer;">💾 Save</button>
-    </div>
-
-    <!-- Editable Canvas Area -->
-    <div class="window-body-container" style="padding: 15px; height: calc(100% - 85px); background:rgba(0, 0, 0, 0.2); color:var(--text-color); overflow-y: auto;">
-        <div id="word-editor-canvas" contenteditable="true" style="min-height: 100%; outline: none; font-family: sans-serif; font-size: 14px; line-height: 1.6;" oninput="updateWordStats()">
-            Start typing your document...
-        </div>
-    </div>
-
-    <!-- Word Footer Statusbar -->
-    <div style="background: var(--sidebar-bg); padding: 6px 12px; font-size: 11px; display: flex; justify-content: space-between; border-top: 1px solid rgba(0,0,0,0.05); color: var(--text-color);">
-        <span id="word-stats">Words: 4 | Chars: 28</span>
-        <span id="word-save-status" style="color: #00cec9;">Saved in Local Storage</span>
-    </div>
-</div>
-
-        <div id="start-menu" class="start-menu hidden">
-            <div class="start-menu-sidebar">
-                <div class="start-user-profile">
-                    <div class="start-avatar">🌸</div>
-                    <div class="start-user-info">
-                        <div class="start-username">Creator</div>
-                        <div class="start-status">Online</div>
-                    </div>
-                </div>
-                <div class="start-sidebar-links">
-                    <div class="start-link-item" onclick="openWindow('my-space'); toggleStartMenu();">📂 My Personal
-                        Space</div>
-                    <div class="start-link-item" onclick="openWindow('computer'); toggleStartMenu();">💻 Core Computer
-                    </div>
-                    <div class="start-link-item" onclick="openWindow('recycle-bin'); toggleStartMenu();">🗑️ Recycle Bin
-                    </div>
-                </div>
-                <div class="start-sidebar-footer">
-                    <button class="start-footer-btn" onclick="lockSystemAuth()">🔒 Lock System</button>
+    <div id="start-menu" class="start-menu hidden">
+        <div class="start-menu-sidebar">
+            <div class="start-user-profile">
+                <div class="start-avatar">🌸</div>
+                <div class="start-user-info">
+                    <div class="start-username">Creator</div>
+                    <div class="start-status">Online</div>
                 </div>
             </div>
-            <div class="start-menu-apps">
-                <div class="apps-section-title">Pinned Applications</div>
-                <div class="apps-list-grid">
-                    <div class="app-item" onclick="openApp('app-notepad'); toggleStartMenu();">
-                        <span class="app-icon">📝</span> Notepad Editor
-                    </div>
-                    <div class="app-item" onclick="openApp('app-terminal'); toggleStartMenu();">
-                        <span class="app-icon">🕊️</span> Hridaya Terminal
-                    </div>
-                    <div class="app-item" onclick="openApp('app-calculator'); toggleStartMenu();">
-                        <span class="app-icon">🧮</span> Calculator
-                    </div>
-                    <div class="app-item" onclick="openApp('app-clock'); toggleStartMenu();">
-                        <span class="app-icon">⏱️</span> World Clock
-                    </div>
-                    <div class="app-item" onclick="toggleTheme(); toggleStartMenu();">
-                        <span class="app-icon">🌓</span> Switch Theme Mode
-                    </div>
+            <div class="start-sidebar-links">
+                <div class="start-link-item" onclick="openWindow('my-space'); toggleStartMenu();">📂 My Personal
+                    Space</div>
+                <div class="start-link-item" onclick="openWindow('computer'); toggleStartMenu();">💻 Core Computer
+                </div>
+                <div class="start-link-item" onclick="openWindow('recycle-bin'); toggleStartMenu();">🗑️ Recycle Bin
+                </div>
+            </div>
+            <div class="start-sidebar-footer">
+                <button class="start-footer-btn" onclick="lockSystemAuth()">🔒 Lock System</button>
+            </div>
+        </div>
+        <div class="start-menu-apps">
+            <div class="apps-section-title">Pinned Applications</div>
+            <div class="apps-list-grid">
+                <div class="app-item" onclick="openApp('app-notepad'); toggleStartMenu();">
+                    <span class="app-icon">📝</span> Notepad Editor
+                </div>
+                <div class="app-item" onclick="openApp('app-terminal'); toggleStartMenu();">
+                    <span class="app-icon">🕊️</span> Hridaya Terminal
+                </div>
+                <div class="app-item" onclick="openApp('app-calculator'); toggleStartMenu();">
+                    <span class="app-icon">🧮</span> Calculator
+                </div>
+                <div class="app-item" onclick="openApp('app-clock'); toggleStartMenu();">
+                    <span class="app-icon">⏱️</span> World Clock
+                </div>
+                <div class="app-item" onclick="toggleTheme(); toggleStartMenu();">
+                    <span class="app-icon">🌓</span> Switch Theme Mode
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="taskbar">
-            <button class="start-menu-btn" onclick="toggleStartMenu()">🌙</button>
-            <div class="taskbar-center" id="taskbar-apps"></div>
-            <div class="taskbar-right">
-                <button id="theme-toggle" onclick="toggleTheme()">🌓 Theme</button>
-                <div class="hardware-status"
-                    style="display: flex; gap: 12px; font-size: 0.8rem; color: var(--text-color); margin-right: 5px; cursor: pointer;">
-                    <i class="fas fa-wifi" id="sys-wifi" title="Wi-Fi: Connected"></i>
-                    <i class="fas fa-volume-up" id="sys-sound" title="Sound: 70%"></i> <!-- New Sound Icon -->
-                    <i class="fas fa-battery-three-quarters" id="sys-battery" title="Battery: 85% Remaining"></i>
-                </div>
-                <div id="digital-clock">00:00</div>
+    <div class="taskbar">
+        <button class="start-menu-btn" onclick="toggleStartMenu()">🌙</button>
+        <div class="taskbar-center" id="taskbar-apps"></div>
+        <div class="taskbar-right">
+            <button id="theme-toggle" onclick="toggleTheme()">🌓 Theme</button>
+            <div class="hardware-status"
+                style="display: flex; gap: 12px; font-size: 0.8rem; color: var(--text-color); margin-right: 5px; cursor: pointer;">
+                <i class="fas fa-wifi" id="sys-wifi" title="Wi-Fi: Connected"></i>
+                <i class="fas fa-volume-up" id="sys-sound" title="Sound: 70%"></i> <!-- New Sound Icon -->
+                <i class="fas fa-battery-three-quarters" id="sys-battery" title="Battery: 85% Remaining"></i>
             </div>
+            <div id="digital-clock">00:00</div>
         </div>
+    </div>
 
     </div>
 

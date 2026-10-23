@@ -237,6 +237,10 @@
                 <div class="icon-visual">🎙️</div>
                 <div class="icon-label">Voice</div>
             </div>
+            <div class="desktop-icon" onclick="openApp('app-browser')">
+                <div class="icon-visual">🌐</div>
+                <div class="icon-label">Browser</div>
+            </div>
         </div>
     </div>
 
@@ -289,6 +293,7 @@
             </div>
             <div class="window-controls">
                 <button class="control-btn min-btn" onclick="minimizeApp('app-paint')">─</button>
+                <button class="control-btn max-btn" onclick="maximizeApp('app-paint')">🗖</button>
                 <button class="control-btn close-btn" onclick="closeApp('app-paint')">✕</button>
             </div>
         </div>
@@ -358,6 +363,7 @@
             </div>
             <div class="window-controls">
                 <button class="control-btn min-btn" onclick="minimizeApp('app-notepad')">─</button>
+                <button class="control-btn max-btn" onclick="maximizeApp('app-notepad')">🗖</button>
                 <div class="window-control close-btn" onclick="closeNotepadWithSaveCheck()">✕</div>
             </div>
         </div>
@@ -400,32 +406,43 @@
         </div>
     </div>
 
-    <div id="app-camera" class="window hidden" style="top: 15%; left: 30%; width: 500px; height: 500px;"
-        onmousedown="dragStart(event, 'app-camera')">
-        <div class="window-header"
-            style="display: flex; justify-content: space-between; align-items: center; background:rgba(255,255,255,0.05); padding: 15px 15px; cursor: move; border-bottom: 1px solid rgba(255,255,255,0.05); user-select: none; ">
-            <div class="header-left">
-                <span class="window-dot" style="background: #2b1c1e;"></span>
-                <span>Camera</span>
-            </div>
-            <div class="window-controls">
-                <button class="control-btn min-btn" onclick="minimizeApp('app-camera')">─</button>
-                <button class="control-btn close-btn" onclick="closeCameraApp('app-camera')">✕</button>
-            </div>
+    <!-- 📸 SOMA CAMERA APP (FIXED MAXIMIZE LAYOUT) -->
+<div id="app-camera" class="window hidden" style="top: 15%; left: 30%; width: 500px; height: 500px;">
+    <!-- Window Header -->
+    <div class="window-header" onmousedown="dragStart(event, 'app-camera')"
+        style="display: flex; justify-content: space-between; align-items: center; background:rgba(255,255,255,0.05); padding: 12px 15px; cursor: move; border-bottom: 1px solid rgba(255,255,255,0.05); user-select: none;">
+        <div class="header-left">
+            <span class="window-dot" style="background: #2b1c1e;"></span>
+            <span style="font-weight: 600;">Camera</span>
         </div>
-        <div class="camera-body"
-            style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; gap: 12px; background:var(--sidebar-bg);">
-            <video id="camera-stream-preview" autoplay playsinline
-                style="width: 100%; height: 360px; background:#000; border-radius: 6px; object-fit: cover; border: 1px solid rgba(255,255,255,0.05);"></video>
-            <canvas id="camera-capture-canvas" style="display: none;" width="640" height="480"></canvas>
-            <div style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px;">
-                <button onclick="takeCameraSnapshot()"
-                    style="background:var(--accent-color); color:var(--text-color); border: none; padding: 8px 16px; font-size: 0.85rem; font-weight: 600; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                    📸 Snap Photo
-                </button>
-            </div>
+        <div class="window-controls">
+            <button class="control-btn min-btn" onclick="minimizeApp('app-camera')">─</button>
+            <button class="control-btn max-btn" onclick="maximizeApp('app-camera')">🗖</button>
+            <button class="control-btn close-btn" onclick="closeCameraApp('app-camera')">✕</button>
         </div>
     </div>
+
+    <!-- 🎯 FIX: Explicit flex height so controls stay pinned and stream resizes cleanly -->
+    <div class="camera-body"
+        style="height: calc(100% - 48px); display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 12px; gap: 12px; background:var(--sidebar-bg); box-sizing: border-box; overflow: hidden;">
+        
+        <!-- Camera Stream Viewport (flex: 1; min-height: 0; object-fit: contain) -->
+        <video id="camera-stream-preview" autoplay playsinline
+            style="flex: 1; min-height: 0; width: 100%; height: 100%; background:#000; border-radius: 8px; object-fit: contain; border: 1px solid rgba(255,255,255,0.05);"></video>
+        
+        <!-- Hidden Canvas for Capture -->
+        <canvas id="camera-capture-canvas" style="display: none;" width="640" height="480"></canvas>
+        
+        <!-- Snap Action Control Footer -->
+        <div style="width: 100%; display: flex; justify-content: center; align-items: center; flex-shrink: 0; padding-top: 4px;">
+            <button onclick="takeCameraSnapshot()"
+                style="background:var(--accent-color); color:var(--text-color); border: none; padding: 10px 20px; font-size: 0.85rem; font-weight: 600; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: transform 0.15s ease;"
+                onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                📸 Snap Photo
+            </button>
+        </div>
+    </div>
+</div>
 
 
 
@@ -465,24 +482,58 @@
         </div>
     </div>
 
-    <div id="app-clock" class="window hidden" style="top: 35%; left: 45%; width: 300px; height: 220px;">
-        <div class="window-header" onmousedown="dragStart(event, 'app-clock')">
-            <div class="header-left">
-                <span class="window-dot" style="background: #8a7074;"></span>
-                <span>World Clock</span>
-            </div>
-            <div class="window-controls">
-                <button class="control-btn min-btn" onclick="minimizeApp('app-clock')">─</button>
-                <button class="control-btn close-btn" onclick="closeApp('app-clock')">✕</button>
-            </div>
+    <!-- ⏱️ SOMA WORLD CLOCK WINDOW -->
+<div id="app-clock" class="window hidden" style="top: 25%; left: 35%; width: 460px; height: 320px;">
+    <!-- Window Header -->
+    <div class="window-header" onmousedown="dragStart(event, 'app-clock')">
+        <div class="header-left">
+            <span class="window-dot" style="background: #8a7074;"></span>
+            <span>World Clock</span>
         </div>
-        <div class="window-body-container"
-            style="padding: 20px; text-align: center; flex-direction: column; justify-content: center; gap: 8px;">
-            <div class="clock-widget-title">Local Core Node Time</div>
-            <div id="app-clock-display" style="font-size: 2.2rem; font-weight: 700;">00:00:00</div>
-            <div id="app-clock-date" style="font-size: 0.9rem; opacity: 0.7;">Loading System Date...</div>
+        <div class="window-controls">
+            <button class="control-btn min-btn" onclick="minimizeApp('app-clock')">─</button>
+            <button class="control-btn close-btn" onclick="closeApp('app-clock')">✕</button>
         </div>
     </div>
+
+    <!-- Main Clock Body Container -->
+    <div class="window-body-container"
+        style="padding: 16px; text-align: center; flex-direction: column; justify-content: space-between; gap: 12px; height: calc(100% - 38px); box-sizing: border-box;">
+        
+        <!-- Primary Local Core Node Section -->
+        <div class="main-clock-section" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 12px;">
+            <div class="clock-widget-title" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #8a7074; font-weight: 700;">Local Core Node Time</div>
+            <div id="app-clock-display" style="font-size: 2.2rem; font-weight: 700; font-family: monospace; letter-spacing: 1px; margin: 4px 0;">00:00:00</div>
+            <div id="app-clock-date" style="font-size: 0.85rem; opacity: 0.7;">Loading System Date...</div>
+        </div>
+
+        <!-- World Time Grid (USA, Japan, China) -->
+        <div class="world-zones-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%;">
+            
+            <!-- 🇺🇸 USA (New York) -->
+            <div class="zone-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 8px; border-radius: 8px;">
+                <div style="font-size: 0.7rem; opacity: 0.8; font-weight: 600;">🇺🇸 USA (NY)</div>
+                <div id="clock-usa" style="font-size: 0.95rem; font-weight: 700; font-family: monospace; margin-top: 4px;">00:00</div>
+                <div id="date-usa" style="font-size: 0.65rem; opacity: 0.5;">--</div>
+            </div>
+
+            <!-- 🇯🇵 Japan (Tokyo) -->
+            <div class="zone-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 8px; border-radius: 8px;">
+                <div style="font-size: 0.7rem; opacity: 0.8; font-weight: 600;">🇯🇵 Japan</div>
+                <div id="clock-japan" style="font-size: 0.95rem; font-weight: 700; font-family: monospace; margin-top: 4px;">00:00</div>
+                <div id="date-japan" style="font-size: 0.65rem; opacity: 0.5;">--</div>
+            </div>
+
+            <!-- 🇨🇳 China (Beijing) -->
+            <div class="zone-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 8px; border-radius: 8px;">
+                <div style="font-size: 0.7rem; opacity: 0.8; font-weight: 600;">🇨🇳 China</div>
+                <div id="clock-china" style="font-size: 0.95rem; font-weight: 700; font-family: monospace; margin-top: 4px;">00:00</div>
+                <div id="date-china" style="font-size: 0.65rem; opacity: 0.5;">--</div>
+            </div>
+
+        </div>
+    </div>
+</div>
 
     <div id="app-pictures" class="window hidden" style="width: 520px; height: 380px; top: 15%; left: 25%;">
         <div class="window-header" onmousedown="dragStart(event, 'app-pictures')">
@@ -603,63 +654,70 @@
     </div>
 
     <div id="app-video" class="window hidden" style="top: 15%; left: 40%; width: 580px; height: 380px;">
-        <div class="window-header" onmousedown="dragStart(event, 'app-video')">
-            <div class="header-left">
-                <span class="window-dot" style="background: #fdcb6e;"></span>
-                <span class="header-title">Soma Cinema</span>
-            </div>
-            <div class="window-controls">
-                <button class="control-btn min-btn" onclick="minimizeApp('app-video')">─</button>
-                <button class="control-btn close-btn" onclick="closeApp('app-video')">✕</button>
+    <!-- Window Header -->
+    <div class="window-header" onmousedown="dragStart(event, 'app-video')">
+        <div class="header-left">
+            <span class="window-dot" style="background: #fdcb6e;"></span>
+            <span class="header-title">Soma Cinema</span>
+        </div>
+        <div class="window-controls">
+            <button class="control-btn min-btn" onclick="minimizeApp('app-video')">─</button>
+            <button class="control-btn max-btn" onclick="maximizeApp('app-video')">🗖</button>
+            <button class="control-btn close-btn" onclick="closeApp('app-video')">✕</button>
+        </div>
+    </div>
+
+    <!-- Main Container Body -->
+    <div class="window-body-container video-player-layout"
+        style="padding: 0; flex-direction: column; background: var(--card-bg); height: calc(100% - 38px); display: flex; overflow: hidden;">
+
+        <!-- Video Canvas Box (Flex Grow with Max-Height Boundary) -->
+        <div class="video-display-canvas" id="video-screen"
+            style="flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; color:var(--text-color); position: relative; overflow: hidden; background:var(--sidebar-bg);">
+
+            <!-- 🎯 FIX: Height & Width both 100% + object-fit contain -->
+            <video id="video-player-render-target"
+                style="width: 100%; height: 100%; object-fit: contain; display: none;"></video>
+
+            <div class="video-overlay-text" id="video-status-msg"
+                style="font-family: sans-serif; font-size: 0.9rem; text-align: center; color:var(--text-muted); position: absolute;">
+                <i class="fas fa-film"
+                    style="font-size: 2.5rem; margin-bottom: 10px; color: #fdcb6e; display: block;"></i>
+                Soma Cinema Ready<br>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">Double-click a video file or load a track</span>
             </div>
         </div>
-        <div class="window-body-container video-player-layout"
-            style="padding: 0; flex-direction: column;background: var(--card-bg);height: calc(100% - 38px); display: flex;">
 
-            <div class="video-display-canvas" id="video-screen"
-                style="flex-grow: 1; display: flex; align-items: center; justify-content: center; color: #fff; position: relative; overflow: hidden;background: var(--sidebar-bg);">
+        <!-- Controls Bar Attached at Bottom -->
+        <div class="video-controls-strip"
+            style="background: var(--sidebar-bg); padding: 10px 14px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;">
 
-                <video id="video-player-render-target"
-                    style="width: 100%; height: 100%; object-fit: contain; display: none;"></video>
-
-                <div class="video-overlay-text" id="video-status-msg"
-                    style="font-family: sans-serif; font-size: 0.9rem; text-align: center; color:var(--text-muted); position: absolute;">
-                    <i class="fas fa-film"
-                        style="font-size: 2.5rem; margin-bottom: 10px; color: #fdcb6e; display: block;"></i>
-                    Soma Cinema Ready<br><span style="font-size: 0.75rem; color: var(--text-muted);">Double-click a
-                        video file or load a track</span>
-                </div>
+            <div class="video-time-row"
+                style="display: flex; justify-content: space-between; width: 100%; font-family: monospace; font-size: 0.75rem; color:var(--text-color); padding: 0 2px;">
+                <span id="video-time-current">00:00</span>
+                <span id="video-time-duration">00:00</span>
             </div>
 
-            <div class="video-controls-strip"
-                style="background: var(--sidebar-bg); padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 15px; width: 100%;">
+                <button class="video-control-btn" id="video-play-btn" onclick="toggleVideoPlayback()"
+                    style="background: none; border: none; color: var(--text-color); font-size: 1rem; cursor: pointer; display: flex; align-items: center;">
+                    <i class="fas fa-play" id="video-play-icon"></i>
+                </button>
 
-                <div class="video-time-row"
-                    style="display: flex; justify-content: space-between; width: 100%; font-family: monospace; font-size: 0.75rem; color:var(--text-color); padding: 0 4px;">
-                    <span id="video-time-current">00:00</span>
-                    <span id="video-time-duration">00:00</span>
+                <div style="flex-grow: 1; display: flex; align-items: center;">
+                    <input type="range" id="video-progress-slider" min="0" max="100" value="0" step="0.1"
+                        oninput="videoSliderUserSeek(this.value)"
+                        style="width: 100%; cursor: pointer; accent-color: #fdcb6e; height: 5px; border-radius: 3px; background: var(--card-hover);">
                 </div>
 
-                <div style="display: flex; align-items: center; gap: 15px; width: 100%;">
-                    <button class="video-control-btn" id="video-play-btn" onclick="toggleVideoPlayback()"
-                        style="background: none; border: none;color: var(--text-color); font-size: 1rem; cursor: pointer; display: flex; align-items: center;">
-                        <i class="fas fa-play" id="video-play-icon"></i>
-                    </button>
-
-                    <div style="flex-grow: 1; display: flex; align-items: center;">
-                        <input type="range" id="video-progress-slider" min="0" max="100" value="0" step="0.1"
-                            oninput="videoSliderUserSeek(this.value)"
-                            style="width: 100%; cursor: pointer; accent-color: #fdcb6e; height: 5px; border-radius: 3px; background: var(--card-hover);">
-                    </div>
-
-                    <button class="video-control-btn" onclick="resetVideoPlayer()"
-                        style="background: none; border: none;     color: var(--text-color); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center;">
-                        <i class="fas fa-redo"></i>
-                    </button>
-                </div>
+                <button class="video-control-btn" onclick="resetVideoPlayer()"
+                    style="background: none; border: none; color: var(--text-color); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center;">
+                    <i class="fas fa-redo"></i>
+                </button>
             </div>
         </div>
     </div>
+</div>
 
     <div id="app-game" class="window hidden" style="top: 25%; left: 30%; width: 340px; height: 470px;">
         <div class="window-header" onmousedown="dragStart(event, 'app-game')">
@@ -696,6 +754,7 @@
             </div>
             <div class="window-controls">
                 <button class="control-btn min-btn" onclick="minimizeApp('app-settings')">─</button>
+                <button class="control-btn max-btn" onclick="maximizeApp('app-settings')">🗖</button>
                 <button class="control-btn close-btn" onclick="closeApp('app-settings')">✕</button>
             </div>
         </div>
@@ -1277,6 +1336,79 @@
             <div style="font-size: 0.75rem; opacity: 0.6;">4-4-4 Box Breathing Relaxer</div>
         </div>
     </div>
+
+    <!-- 🌐 SOMA BROWSER WINDOW -->
+<!-- 🌐 SOMA BROWSER WINDOW -->
+<div id="app-browser" class="window hidden" style="width: 780px; height: 520px;">
+    <!-- Window Header -->
+    <div class="window-header" onmousedown="dragStart(event, 'app-browser')">
+        <div class="header-left">
+            <span class="window-dot" style="background: #38bdf8;"></span>
+            <span>Soma Web Browser</span>
+        </div>
+        <div class="window-controls">
+            <button class="control-btn min-btn" onclick="minimizeApp('app-browser')">─</button>
+            <button class="control-btn min-btn" onclick="maximizeApp('app-browser')">🗖</button>
+            <button class="control-btn close-btn" onclick="closeApp('app-browser')">✕</button>
+        </div>
+    </div>
+
+    <!-- Browser Controls & Address Bar -->
+    <div class="browser-nav-container" style="background:var(--card-bg); padding: 8px 12px; border-bottom: 1px solid var(--sidebar-bg); display: flex; gap: 8px; align-items: center;">
+        <button class="browser-btn" onclick="goSomaHome()" title="Soma Home">🏠</button>
+        <button class="browser-btn" onclick="reloadSomaBrowser()" title="Reload Page">🔄</button>
+
+        <input type="text" id="browser-url-bar" value="soma://home" 
+               onkeydown="if(event.key === 'Enter') navigateSomaBrowser()"
+               style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--card-bg); background:var(--card-hover); color: var(--text-color); font-size: 0.85rem; outline: none;" 
+               placeholder="Search Wikipedia or enter site URL...">
+
+        <button class="browser-go-btn" onclick="navigateSomaBrowser()" style="padding: 8px 16px; background: var(--accent-color); color:var(--text-color); border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Go</button>
+        <button class="browser-btn" onclick="openInExternalTab()" title="Open in real browser tab">↗️</button>
+    </div>
+
+    <!-- View Container: Home Page vs Iframe -->
+    <div style="position: relative; width: 100%; height: calc(100% - 48px); background:var(--sidebar-bg); overflow: hidden;">
+        
+        <!-- 🌙 SOMA CUSTOM HOME SCREEN -->
+        <div id="soma-browser-home" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; padding: 20px; box-sizing: border-box; text-align: center;">
+            
+            <!-- Branding: Center Moon + SOMA Logo -->
+            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 24px;">
+                <div style="font-size: 54px; filter: drop-shadow(0 0 18px var(--sidebar-bg)); animation: floatMoon 3s ease-in-out infinite;">🌙</div>
+                <div style="font-size: 42px; font-weight: 800; letter-spacing: 4px; color:var(--text-color); font-family: sans-serif;">SOMA</div>
+            </div>
+
+            <!-- Home Page Search Box -->
+            <div style="width: 100%; max-width: 480px; position: relative; margin-bottom: 20px;">
+                <input type="text" id="soma-home-search-input" 
+                       onkeydown="if(event.key === 'Enter') executeHomeSearch()"
+                       placeholder="Search the web with Soma Search..." 
+                       style="    width: 100%;
+    padding: 14px 20px;
+    border-radius: 28px;
+    border: 1px solid var(--sidebar-bg);
+    background: var(--card-bg);
+    color: var(--text-color);
+    font-size: 0.95rem;
+    outline: none;
+    box-shadow: var(--sidebar-bg);
+    box-sizing: border-box;">
+                <button onclick="executeHomeSearch()" style="position: absolute; right: 8px; top: 6px; bottom: 6px; padding: 0 18px; border-radius: 20px; border: none; background:var(--card-hover); color:var(--text-color); font-weight: bold; cursor: pointer;">Search</button>
+            </div>
+
+            <!-- Speed Dial Quick Links -->
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+                <button class="bookmark-chip" onclick="openBookmark('https://en.wikipedia.org')">🌐 Wikipedia</button>
+                <button class="bookmark-chip" onclick="openBookmark('https://archive.org')">🏛️ Internet Archive</button>
+                <button class="bookmark-chip" onclick="openBookmark('https://html5games.com')">🕹️ Web Games</button>
+            </div>
+        </div>
+
+        <!-- External Web View Iframe (Hidden by default when on Home Page) -->
+        <iframe id="soma-iframe" class="hidden" style="width: 100%; height: 100%; border: none; background: #ffffff;"></iframe>
+    </div>
+</div>
 
     <div id="start-menu" class="start-menu hidden">
         <div class="start-menu-sidebar">

@@ -143,6 +143,52 @@ function updateSystemClocks() {
         document.getElementById('app-clock-date').innerText = now.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
     }
 }
+/* --- ⏱️ SOMA WORLD CLOCK ENGINE --- */
+function updateSomaWorldClock() {
+    const now = new Date();
+
+    // 1. Local Time & Date
+    const localTimeStr = now.toLocaleTimeString('en-US', { hour12: false });
+    const localDateStr = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+
+    const localDisplay = document.getElementById('app-clock-display');
+    const localDate = document.getElementById('app-clock-date');
+
+    if (localDisplay) localDisplay.innerText = localTimeStr;
+    if (localDate) localDate.innerText = localDateStr;
+
+    // Helper to format world time & day difference
+    const formatZoneTime = (timeZone) => {
+        const time = now.toLocaleTimeString('en-US', { timeZone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+        const date = now.toLocaleDateString('en-US', { timeZone, weekday: 'short', month: 'numeric', day: 'numeric' });
+        return { time, date };
+    };
+
+    // 2. USA (New York)
+    const usa = formatZoneTime('America/New_York');
+    const usaClock = document.getElementById('clock-usa');
+    const usaDate = document.getElementById('date-usa');
+    if (usaClock) usaClock.innerText = usa.time;
+    if (usaDate) usaDate.innerText = usa.date;
+
+    // 3. Japan (Tokyo)
+    const japan = formatZoneTime('Asia/Tokyo');
+    const japanClock = document.getElementById('clock-japan');
+    const japanDate = document.getElementById('date-japan');
+    if (japanClock) japanClock.innerText = japan.time;
+    if (japanDate) japanDate.innerText = japan.date;
+
+    // 4. China (Beijing)
+    const china = formatZoneTime('Asia/Shanghai');
+    const chinaClock = document.getElementById('clock-china');
+    const chinaDate = document.getElementById('date-china');
+    if (chinaClock) chinaClock.innerText = china.time;
+    if (chinaDate) chinaDate.innerText = china.date;
+}
+
+// Start World Clock interval (updates every 1 second)
+setInterval(updateSomaWorldClock, 1000);
+document.addEventListener('DOMContentLoaded', updateSomaWorldClock);
 
 // 🔒 SECURITY GATE AND SESSION CONTROLLERS
 function liftLockScreen() {
@@ -800,8 +846,7 @@ function renderTaskbarTrays() {
         'app-word'   :'📝',
         'app-soma-store' : '🛍️',
         'app-voice':'🎙️',
-        'app-control':'🎛️',
-        'app-explore':'🧭'
+        'app-browser':'🌐'
     };
     
     Object.keys(activeRunningApps).forEach(id => {
@@ -3472,6 +3517,87 @@ function clearSomaStorage() {
         location.reload();
     }
 }
+/* --- 🌐 SOMA CUSTOM BROWSER CONTROLLER --- */
+
+function goSomaHome() {
+    const homeView = document.getElementById('soma-browser-home');
+    const iframeView = document.getElementById('soma-iframe');
+    const urlBar = document.getElementById('browser-url-bar');
+
+    if (homeView) homeView.classList.remove('hidden');
+    if (iframeView) {
+        iframeView.classList.add('hidden');
+        iframeView.src = 'about:blank';
+    }
+    if (urlBar) urlBar.value = 'soma://home';
+}
+
+function executeHomeSearch() {
+    const searchInput = document.getElementById('soma-home-search-input');
+    if (!searchInput) return;
+
+    const query = searchInput.value.trim();
+    if (query) {
+        loadWebPage(query);
+    }
+}
+
+function navigateSomaBrowser() {
+    const urlBar = document.getElementById('browser-url-bar');
+    if (!urlBar) return;
+
+    const query = urlBar.value.trim();
+    if (query === 'soma://home' || query === '') {
+        goSomaHome();
+    } else {
+        loadWebPage(query);
+    }
+}
+
+function loadWebPage(query) {
+    const homeView = document.getElementById('soma-browser-home');
+    const iframeView = document.getElementById('soma-iframe');
+    const urlBar = document.getElementById('browser-url-bar');
+
+    let targetUrl = '';
+
+    if (query.startsWith('http://') || query.startsWith('https://')) {
+        targetUrl = query;
+    } else if (query.includes('.') && !query.includes(' ')) {
+        targetUrl = 'https://' + query;
+    } else {
+        // Embed-safe search engine fallback (Wikipedia Knowledge Engine)
+        targetUrl = `https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(query)}`;
+    }
+
+    if (urlBar) urlBar.value = targetUrl;
+
+    if (homeView) homeView.classList.add('hidden');
+    if (iframeView) {
+        iframeView.classList.remove('hidden');
+        iframeView.src = targetUrl;
+    }
+}
+
+function openBookmark(url) {
+    loadWebPage(url);
+}
+
+function reloadSomaBrowser() {
+    const iframeView = document.getElementById('soma-iframe');
+    if (iframeView && !iframeView.classList.contains('hidden')) {
+        iframeView.src = iframeView.src;
+    }
+}
+
+function openInExternalTab() {
+    const urlBar = document.getElementById('browser-url-bar');
+    if (urlBar && urlBar.value && urlBar.value !== 'soma://home') {
+        window.open(urlBar.value, '_blank');
+    }
+}
+
+
 
 // ── SERVICE WORKER ──
     if ("serviceWorker" in navigator) {

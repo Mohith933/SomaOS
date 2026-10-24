@@ -57,6 +57,15 @@ The underlying CLI engine accepts human-centric, readable operational commands. 
 
 ```
 
+## 🔮 Vision 2026-2050
+
+> Build useful software now. Earn the right to build hardware later.
+
+*📊 Full Vision Deck:* [View PDF](SOMA_Vision_Roadmap_2026-2050.pdf)
+
+- *Real (Today):* Hridaya OS CLI + Soma OS 2026 - 25 apps + Store + SDK
+- *Upcoming:* Soma Watch (2030) -> Cast Pro (2033) -> Laptop (2035) -> Ring (2040) -> Air Tech (2050)
+
 ---
 
 ## 🚀 Getting Started

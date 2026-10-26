@@ -503,19 +503,36 @@ function openWindow(spaceKey) {
         gridEl.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted); font-size:0.9rem;">✨ This directory workspace folder is empty.</div>`;
     }
 
+    const isBin = spaceKey === 'recycle-bin';
+
     activeData.items.forEach((item, index) => {
-        // ✨ FIXED: Check item format descriptor type instead of defaulting blindly to launchAppTextContent
         let action = item.type === 'folder' 
             ? `openWindow('${item.target}')` 
             : `handleFileDoubleClick('${item.name}')`;
 
-        gridEl.insertAdjacentHTML('beforeend', `
-            <div class="file-card" data-name="${item.name}" data-index="${index}" onclick="${action}">
-                <div class="card-icon">${item.icon}</div>
-                <div class="card-name">${item.name}</div>
-                <div class="card-meta">${item.meta || 'System Data Document'}</div>
-            </div>
-        `);
+        if (isBin) {
+            // 🌟 Special Recycle Bin Card Layout with Action Buttons
+            gridEl.insertAdjacentHTML('beforeend', `
+                <div class="file-card" data-name="${item.name}" data-index="${index}" style="cursor: default;">
+                    <div class="card-icon">${item.icon}</div>
+                    <div class="card-name">${item.name}</div>
+                    <div class="card-meta">${item.meta || 'Deleted Item'}</div>
+                    <div style="display: flex; gap: 6px; margin-top: 8px;">
+                        <button onclick="event.stopPropagation(); restoreItem(${index})" style="background: rgba(0,206,201,0.2); border: 1px solid #00cec9; color: #00cec9; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">Restore</button>
+                        <button onclick="event.stopPropagation(); permanentDelete(${index})" style="background: rgba(255,118,117,0.2); border: 1px solid #ff7675; color: #ff7675; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">Delete</button>
+                    </div>
+                </div>
+            `);
+        } else {
+            // Standard File Explorer Card
+            gridEl.insertAdjacentHTML('beforeend', `
+                <div class="file-card" data-name="${item.name}" data-index="${index}" onclick="${action}">
+                    <div class="card-icon">${item.icon}</div>
+                    <div class="card-name">${item.name}</div>
+                    <div class="card-meta">${item.meta || 'System Data Document'}</div>
+                </div>
+            `);
+        }
     });
 
     document.querySelectorAll('.explorer-sidebar .sidebar-item').forEach(el => el.classList.remove('active'));
@@ -846,7 +863,8 @@ function renderTaskbarTrays() {
         'app-word'   :'📝',
         'app-soma-store' : '🛍️',
         'app-voice':'🎙️',
-        'app-browser':'🌐'
+        'app-browser':'🌐',
+        'app-vr':'🥽'
     };
     
     Object.keys(activeRunningApps).forEach(id => {
@@ -1085,16 +1103,8 @@ function handleTerminalCommand(e) {
             res = `\n📄 Success: Allocated file sector map entry '${finalTxtName}'.`;
         }
     }
-    // ==========================================
-    // 🗑️ DESTRUCTIVE SCRUB OPERATORS (DELETE)
-    // ==========================================
-   // ==========================================
-// 🗑️ DESTRUCTIVE SCRUB OPERATORS (DELETE / MOVE TO BIN)
-// ==========================================
-// Replace your existing DELETE block with this hardened version
 else if (cmd === 'delete' || cmd === 'rm') {
     const isForce = args.includes('-f');
-    // Get the name by removing 'delete', 'rm', and '-f'
     const nameParam = args.filter(a => a !== 'delete' && a !== 'rm' && a !== '-f').join(' ');
     
     const targetIndex = activeDirectory.items.findIndex(i => i.name.toLowerCase() === nameParam.toLowerCase());
@@ -1105,14 +1115,12 @@ else if (cmd === 'delete' || cmd === 'rm') {
         const removedItem = activeDirectory.items.splice(targetIndex, 1)[0];
 
         if (isForce) {
-            // PERMANENT WIPE: Do not push to bin, just kill it
             res = `\n💥 PERMANENT DELETE: Scoured ${removedItem.type} '${nameParam}' from registers.`;
         } else {
-            // MOVE TO BIN
-            const binKey = 'recycle-bin'; // Ensure this matches exactly
+            const binKey = 'recycle-bin';
             if (somaFileSystem[binKey]) {
                 somaFileSystem[binKey].items.push(removedItem);
-                res = `\n🗑️ RECYCLE BIN: Relocated '${nameParam}'.`;
+                res = `\n🗑️ RECYCLE BIN: Relocated '${nameParam}' to Recycle Bin.`;
             }
         }
         commitFileSystem();
@@ -2119,10 +2127,11 @@ let selectedWizardAvatar = '👨‍💻';
 
 function selectWizardEmoji(emoji, btnElement) {
     selectedWizardAvatar = emoji;
-    document.getElementById('setup-selected-emoji').value = emoji;
+    const hiddenInput = document.getElementById('setup-selected-emoji');
+    if (hiddenInput) hiddenInput.value = emoji;
     
-    // Update active visual state across buttons
-    document.querySelectorAll('.start-avatar').forEach(b => {
+    // ✨ FIX: Target .wizard-emoji-btn correctly
+    document.querySelectorAll('.wizard-emoji-btn').forEach(b => {
         b.style.background = 'rgba(255,255,255,0.05)';
         b.style.borderColor = 'rgba(255,255,255,0.1)';
     });
@@ -2185,12 +2194,14 @@ function provisionSoma2IdentityNode() {
     localStorage.setItem('soma_username', extractedHandle);
     localStorage.setItem('soma_region', localizedRegionField);
     localStorage.setItem('soma_network', verifiedNetworkSSID);
-    localStorage.setItem('soma_identity_configured', 'true'); // 🌟 The "Never Show Again" Lock Token
+    localStorage.setItem('soma_avatar', selectedWizardAvatar); // 🌟 Save chosen avatar
+    localStorage.setItem('soma_identity_configured', 'true');
 
     // Update system presentation wrappers instantly across layouts
     updateSystemInterfaceIdentityLabels(extractedHandle);
+    applySavedProfileCredentials(); // Apply avatar to UI
 
-    // Minimize wizard interface setup window smoothly using transitional timelines
+    // Minimize wizard interface setup window smoothly
     const currentSetupWizardFrame = document.getElementById('setup-wizard-screen');
     if (currentSetupWizardFrame) {
         currentSetupWizardFrame.style.opacity = '0';
@@ -2201,6 +2212,23 @@ function provisionSoma2IdentityNode() {
         }, 500);
     }
 }
+
+// 🌟 Helper to load saved avatar into login & start menu
+function applySavedProfileCredentials() {
+    const savedAvatar = localStorage.getItem('soma_avatar') || '👨‍💻';
+    const savedName = localStorage.getItem('soma_username') || 'Creator';
+
+    const loginAvatar = document.getElementById('login-display-avatar');
+    if (loginAvatar) loginAvatar.innerText = savedAvatar;
+
+    const startAvatar = document.querySelector('.start-avatar');
+    if (startAvatar) startAvatar.innerText = savedAvatar;
+
+    updateSystemInterfaceIdentityLabels(savedName);
+}
+
+// Call on startup
+document.addEventListener('DOMContentLoaded', applySavedProfileCredentials);
 
 /**
  * Triggers a premium animated compilation pipeline layout representation
@@ -3596,8 +3624,6 @@ function openInExternalTab() {
         window.open(urlBar.value, '_blank');
     }
 }
-
-
 
 // ── SERVICE WORKER ──
     if ("serviceWorker" in navigator) {
